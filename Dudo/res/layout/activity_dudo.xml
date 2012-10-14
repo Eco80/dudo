@@ -1,0 +1,139 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parentLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageButton
+        android:id="@+id/buttonReroll"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:contentDescription="@string/button_reroll_descr"
+        android:minWidth="10mm"
+        android:src="@android:drawable/ic_menu_rotate" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <RelativeLayout
+                    android:id="@+id/LayoutDice01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton01"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/dice1_description"
+                        android:src="@drawable/dice1" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/LayoutDice02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/dice2_description"
+                        android:src="@drawable/dice2" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/LayoutDice03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton03"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/dice3_description"
+                        android:src="@drawable/dice3" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <RelativeLayout
+                    android:id="@+id/LayoutDice04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton04"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/dice4_description"
+                        android:src="@drawable/dice4" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/LayoutDice05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton05"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/dice5_description"
+                        android:src="@drawable/dice5" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/buttonHideDice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:contentDescription="@string/button_hidedice_descr"
+            android:minHeight="8mm"
+            android:src="@android:drawable/ic_menu_view" />
+
+    </LinearLayout>
+
+<ImageButton
+    android:id="@+id/buttonDeldice"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="right"
+    android:contentDescription="@string/button_deldice_descr"
+    android:minWidth="10mm"
+    android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+</LinearLayout>

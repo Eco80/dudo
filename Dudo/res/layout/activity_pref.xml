@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="sound_setting"
+        android:title="@string/sound_setting_title"
+        android:summary="@string/sound_setting_summ"
+        android:defaultValue="true" />
+     <CheckBoxPreference
+        android:key="animation_setting"
+        android:title="@string/animation_setting_title"
+        android:summary="@string/animation_setting_summ"
+        android:defaultValue="true" />
+     <CheckBoxPreference
+        android:key="sorting_setting"
+        android:title="@string/sorting_setting_title"
+        android:summary="@string/sorting_setting_summ"
+        android:defaultValue="false" />
+     <CheckBoxPreference
+        android:key="vibration_setting"
+        android:title="@string/vibration_setting_title"
+        android:summary="@string/vibration_setting_summ"
+        android:defaultValue="true" />
+     <ListPreference
+        android:key="background_setting"
+        android:title="@string/background_color_setting_title"
+        android:summary="@string/background_color_setting_summ"
+        android:defaultValue="#66EE66"
+        android:entries="@array/colors_name"
+        android:entryValues="@array/colors_value" />
+</PreferenceScreen>

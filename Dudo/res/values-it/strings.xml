@@ -6,6 +6,7 @@
     <string name="alert_about_label">About Dudo</string>
     <string name="alert_about_msg">Dudo è stato scritto da Enrico Strocchi</string>
     <string name="alert_help_label">Aiuto</string>
+    <string name="menu_restart">Ricomincia</string>
     <string name="menu_settings">Preferenze</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_about">About</string>

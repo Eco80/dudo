@@ -193,6 +193,12 @@ public class DudoMainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
     	switch (item.getItemId()){
+    	case R.id.menu_restart:
+    		d.restart();
+    		playSoundRoll();
+    		vibration();
+    		return true;
+    	
     	case R.id.menu_settings:
     		Intent intent = new Intent(getBaseContext(),SettingsActivity.class);
     		startActivity(intent);

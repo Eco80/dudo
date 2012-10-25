@@ -120,6 +120,14 @@ public class DiceSetAdapter extends DiceSet {
 	}
 	
 	/**
+	 * Restart the match
+	 */
+	public void restart(){
+		restoreAllDice();
+		update(anim);
+	}
+	
+	/**
 	 * Update graphics
 	 */
 	private void update(boolean anim){
@@ -151,6 +159,10 @@ public class DiceSetAdapter extends DiceSet {
 		}
 	}
 	
+	/**
+	 * Generate animation for dice
+	 * @return Animation for dice
+	 */
 	private Animation animationFactory(){
 		//Rotate Animation
 		RotateAnimation ra = new RotateAnimation(0,rnd.nextInt(70)-35, 

@@ -22,19 +22,17 @@ package it.ecosw.dudo.games;
  * @author Enrico Strocchi
  *
  */
-public class DiceSet {
+public class DieSet {
 
 	private Dice[] set = null;
 	
 	/**
 	 * Constructor, include 6 dice
-	 * @param sorting true if you want dice ordered in decreasing order
 	 */
-	public DiceSet(boolean sorting) {
+	public DieSet() {
 		// TODO Auto-generated constructor stub
 		set = new Dice[5];
 		for(int i=0; i<5; i++) set[i] = new Dice();
-		if (sorting) sort();
 	}
 	
 	/**
@@ -42,10 +40,9 @@ public class DiceSet {
 	 * @param sorting ture if you want dice ordered in decreasing order
 	 * @param init starting values
 	 */
-	public DiceSet(boolean sorting, String init){
+	public DieSet(String init){
 		set = new Dice[5];
 		for(int i=0; i<5; i++) set[i] = new Dice(init.charAt(i));
-		if (sorting) sort();
 	}
 	
 	
@@ -65,11 +62,13 @@ public class DiceSet {
 	
 	/**
 	 * Restore all dice in set
+	 * @param sorting true to sort the dice
 	 */
-	protected void restoreAllDice(){
+	protected void restoreAllDie(boolean sorting){
 		for (int i=0;i<5;i++){
 			set[i].restore();
 		}
+		if(sorting) java.util.Arrays.sort(set);
 	}
 	
 	/**
@@ -89,7 +88,7 @@ public class DiceSet {
 	 */
 	public boolean rollSet(boolean sorting){
 			for(int i=0;i<5;i++) set[i].newRoll();
-			if (sorting) sort();
+			if (sorting) java.util.Arrays.sort(set);
 			return true;
 	}
 
@@ -112,13 +111,6 @@ public class DiceSet {
 		for(int i=0;i<5;i++)
 			if(set[i].getLastRoll()==value) count++;
 		return count;
-	}
-	
-	/**
-	 * Order the dice in decreasing order
-	 */
-	public void sort(){
-		java.util.Arrays.sort(set);
 	}
 	
 	/**

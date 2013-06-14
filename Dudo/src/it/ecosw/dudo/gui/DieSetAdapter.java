@@ -1,4 +1,4 @@
-package it.ecosw.dudo.adapter;
+package it.ecosw.dudo.gui;
 
 /**
  * This file is part of Dudo for Android software.
@@ -19,6 +19,7 @@ package it.ecosw.dudo.adapter;
 
 import java.util.Random;
 
+import android.content.Context;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -28,10 +29,10 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import it.ecosw.dudo.games.DiceSet;
-import it.ecosw.dudo.R;
+import it.ecosw.dudo.games.DieSet;
+import it.ecosw.dudo.media.GenDiceImage;
 
-public class DiceSetAdapter extends DiceSet {
+public class DieSetAdapter extends DieSet {
 	
 	private ImageView[] images = null;
 	
@@ -43,24 +44,30 @@ public class DiceSetAdapter extends DiceSet {
 	
 	private Random rnd = null;
 	
+	private Context context;
+	
 
-	public DiceSetAdapter(boolean sorting, boolean anim, ImageView[] images, RelativeLayout[] layouts) {
-		super(sorting);
+	public DieSetAdapter(Context context, boolean sorting, boolean anim, ImageView[] images, RelativeLayout[] layouts) {
+		super();
 		// TODO Auto-generated constructor stub
+		this.context = context;
 		this.images = images;
 		this.anim = anim;
 		this.layouts = layouts;
 		rnd = new Random();
+		for(int i=0;i<5;i++)images[i].setImageBitmap(GenDiceImage.getImage(context, 1));
 		update(anim);
 	}
 
-	public DiceSetAdapter(boolean sorting, boolean anim, String init, ImageView[] images, RelativeLayout[] layouts) {
-		super(sorting, init);
+	public DieSetAdapter(Context context, boolean sorting, boolean anim, String init, ImageView[] images, RelativeLayout[] layouts) {
+		super(init);
 		// TODO Auto-generated constructor stub
+		this.context = context;
 		this.images = images;
 		this.anim = anim;
 		this.layouts = layouts;
 		rnd = new Random();
+		for(int i=0;i<5;i++)images[i].setImageBitmap(GenDiceImage.getImage(context, 1));
 		update(anim);
 	}
 	
@@ -78,7 +85,7 @@ public class DiceSetAdapter extends DiceSet {
 	
 		
 	/* (non-Javadoc)
-	 * @see it.ecosw.dudo.games.DiceSet#delDice()
+	 * @see it.ecosw.dudo.games.DieSet#delDice()
 	 */
 	@Override
 	public int delDice() {
@@ -92,14 +99,14 @@ public class DiceSetAdapter extends DiceSet {
 
 
 	/* (non-Javadoc)
-	 * @see it.ecosw.dudo.games.DiceSet#rollSet(boolean)
+	 * @see it.ecosw.dudo.games.DieSet#rollSet(boolean)
 	 */
 	@Override
-	public boolean rollSet(boolean sorting) {
+	public boolean rollSet(boolean sort) {
 		// TODO Auto-generated method stub
-		if (numDice()==0) restoreAllDice();
+		if (numDice()==0) restoreAllDie(sort);
 		if (diceHide) return false;
-		super.rollSet(sorting);
+		super.rollSet(sort);
 		update(anim);
 		return true;
 	}
@@ -112,7 +119,7 @@ public class DiceSetAdapter extends DiceSet {
 		if (!diceHide && this.numDice()!=0){
 			diceHide = true;
 			for (int i=0; i<5; i++) 
-				images[i].setImageResource(R.drawable.dice_empty);
+				images[i].setImageBitmap(GenDiceImage.getImage(context, 0));
 		} else {
 			diceHide = false;
 			update(false);
@@ -121,9 +128,10 @@ public class DiceSetAdapter extends DiceSet {
 	
 	/**
 	 * Restart the match
+	 * @param sorting true if the die shall be sort
 	 */
-	public void restart(){
-		restoreAllDice();
+	public void restart(boolean sorting){
+		restoreAllDie(sorting);
 		update(anim);
 	}
 	
@@ -147,12 +155,12 @@ public class DiceSetAdapter extends DiceSet {
 		int value = getDiceValue(pos);
 		if (value != 0) layouts[pos].setVisibility(View.VISIBLE);
 		switch (value) {
-			case 1: images[pos].setImageResource(R.drawable.dice1); break;
-			case 2: images[pos].setImageResource(R.drawable.dice2); break;
-			case 3: images[pos].setImageResource(R.drawable.dice3); break;
-			case 4: images[pos].setImageResource(R.drawable.dice4); break;
-			case 5: images[pos].setImageResource(R.drawable.dice5); break;
-			case 6: images[pos].setImageResource(R.drawable.dice6); break;
+			case 1: images[pos].setImageBitmap(GenDiceImage.getImage(context, 1)); break;
+			case 2: images[pos].setImageBitmap(GenDiceImage.getImage(context, 2)); break;
+			case 3: images[pos].setImageBitmap(GenDiceImage.getImage(context, 3)); break;
+			case 4: images[pos].setImageBitmap(GenDiceImage.getImage(context, 4)); break;
+			case 5: images[pos].setImageBitmap(GenDiceImage.getImage(context, 5)); break;
+			case 6: images[pos].setImageBitmap(GenDiceImage.getImage(context, 6)); break;
 			default: 
 				images[pos].clearAnimation();
 				layouts[pos].setVisibility(View.GONE);

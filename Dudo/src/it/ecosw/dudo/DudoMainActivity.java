@@ -17,14 +17,13 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import it.ecosw.dudo.adapter.DiceSetAdapter;
+import it.ecosw.dudo.gui.DieSetAdapter;
+import it.ecosw.dudo.media.PlayFX;
 import it.ecosw.dudo.settings.SettingsActivity;
 import it.ecosw.dudo.settings.SettingsHelper;
 import it.ecosw.dudo.R;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -49,21 +48,16 @@ import android.widget.Toast;
  *
  */
 public class DudoMainActivity extends Activity {
-	
-	private MediaPlayer roll_sound = null;
-	
-	private MediaPlayer losedice_sound = null;
-	
-	private DiceSetAdapter d = null;
+		
+	private DieSetAdapter d = null;
 	
 	private SettingsHelper settings;
 	
-	private Vibrator vib;
+	private PlayFX fx;
 	
 	private String version;
 	
 	private View parentLayout;
-	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,9 +73,6 @@ public class DudoMainActivity extends Activity {
         // Avoid Standby Mode
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         
-        // Vibration service
-        vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        
         try {
         	version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e) {
@@ -91,13 +82,12 @@ public class DudoMainActivity extends Activity {
         
         settings = new SettingsHelper(this);
         
+        // Sound Management
+        fx = new PlayFX(this,settings);
+        
         parentLayout = (View) findViewById(R.id.parentLayout);
         changeBackground();
-        
-        // Load game sound
-        roll_sound = MediaPlayer.create(this, R.raw.dice_sound) ;
-        losedice_sound = MediaPlayer.create(this, R.raw.lose_dice) ;
-        
+                
         // initialize image
         ImageView[] images = new ImageView[5];
         images[0] = (ImageView)findViewById(R.id.ImageButton01);
@@ -116,13 +106,12 @@ public class DudoMainActivity extends Activity {
                 
         // Create new Dice Set
         if (settings.getSavedPlay().equals("00000")) {
-    		d = new DiceSetAdapter(settings.isSortingActivated(),settings.isAnimationActivated(),images,layouts);
+    		d = new DieSetAdapter(this,settings.isSortingActivated(),settings.isAnimationActivated(),images,layouts);
     		Toast.makeText(DudoMainActivity.this,getText(R.string.new_play),Toast.LENGTH_SHORT).show();
         } else {
-        	d = new DiceSetAdapter(settings.isSortingActivated(),settings.isAnimationActivated(),settings.getSavedPlay(),images,layouts);
+        	d = new DieSetAdapter(this,settings.isSortingActivated(),settings.isAnimationActivated(),settings.getSavedPlay(),images,layouts);
         	Toast.makeText(DudoMainActivity.this,getText(R.string.last_play_restored),Toast.LENGTH_SHORT).show();
         }
-        
         
         ImageButton reroll = (ImageButton)findViewById(R.id.buttonReroll);
         reroll.setOnClickListener(new OnClickListener() {
@@ -131,8 +120,8 @@ public class DudoMainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (d.rollSet(settings.isSortingActivated())){;
-					playSoundRoll();
-					vibration();
+					fx.playSoundRoll();
+					fx.vibration();
 				}				
 			}
 		});
@@ -144,8 +133,8 @@ public class DudoMainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (d.delDice()!=0) {
-					playSoundLoseDice();
-					vibration();
+					fx.playSoundLoseDice();
+					fx.vibration();
 					if (d.numDice()==0) Toast.makeText(DudoMainActivity.this,getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
 				}
 			}
@@ -194,9 +183,9 @@ public class DudoMainActivity extends Activity {
 		// TODO Auto-generated method stub
     	switch (item.getItemId()){
     	case R.id.menu_restart:
-    		d.restart();
-    		playSoundRoll();
-    		vibration();
+    		d.restart(settings.isSortingActivated());
+    		fx.playSoundRoll();
+    		fx.vibration();
     		return true;
     	
     	case R.id.menu_settings:
@@ -248,35 +237,7 @@ public class DudoMainActivity extends Activity {
     		return super.onOptionsItemSelected(item);
     	}
 	}
-    
-    /**
-     * Rolling dice roll_sound
-     */
-    private void playSoundRoll(){
-    	if (settings.isSoundActivated()) {
-    		if (roll_sound.isPlaying()) roll_sound.seekTo(0);
-    		roll_sound.start();
-    	}
-    }
-    
-    /**
-     * Rolling lose dice sound fx
-     */
-    private void playSoundLoseDice(){
-    	if (settings.isSoundActivated()) {
-    		if (losedice_sound.isPlaying()) losedice_sound.seekTo(0);
-    		losedice_sound.start();
-    	}
-    }
-    
-    /**
-     * If are enable a vibration of 500ms will be activated
-     */
-    private void vibration(){
-    	if (settings.isVibrationActivated())
-    		vib.vibrate(500);
-    }
-    
+        
     /**
      * Update the background color
      */

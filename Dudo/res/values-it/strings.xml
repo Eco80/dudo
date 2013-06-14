@@ -3,14 +3,32 @@
     <string name="app_name">Dudo</string>
     <string name="close">Chiudi</string>
     <string name="version">Versione</string>
+    <string name="title_activity_main">Dudo</string>
+    
+    <!-- Generic -->
+    <string name="text_player">Giocatore</string>
+    <string name="text_players">Giocatori</string>
+	<string name="text_round">Turno</string>
+	<string name="text_player_name">Nome Giocatore</string>
+	<string name="text_player_points">Punti Giocatore</string>
+    <string name="text_points">Punti</string>
+    <string name="text_close">Chiudi</string>
+    <string name="text_version">Versione</string>
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Annulla</string>
+    
+    <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
     <string name="alert_about_msg">Dudo è stato scritto da Enrico Strocchi</string>
     <string name="alert_help_label">Aiuto</string>
+    
+    <!-- Description menu elements -->
     <string name="menu_restart">Ricomincia</string>
     <string name="menu_settings">Preferenze</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_about">About</string>
-    <string name="title_activity_main">Dudo</string>
+    
+    <!-- Description graphics elements -->
     <string name="dice1_description">Dado 1</string>
 	<string name="dice2_description">Dado 2</string>
 	<string name="dice3_description">Dado 3</string>
@@ -23,7 +41,11 @@
 	<string name="button_deldice_descr">Clicca per eliminare un dado</string>
 	<string name="button_reroll_descr">Clicca per ritirare i dadi</string>
 	<string name="button_hidedice_descr">Clicca per nascondere il valore dei dadi</string>
+	
+	<!-- Description settings elements -->
 	<string name="settings">Preferenze</string>
+	<string name="numplayer_setting_title">Numero di Giocatori</string>
+	<string name="numplayer_setting_summ">Imposta il numero di giocatori della partita</string>
 	<string name="sound_setting_title">Suono</string>
 	<string name="sound_setting_summ">Abilita o disabilita i suoni durante il gioco</string>
 	<string name="animation_setting_title">Animazioni</string>
@@ -35,6 +57,7 @@
 	<string name="background_color_setting_title">Colore di sfondo</string>
 	<string name="background_color_setting_summ">Scegli il colore di sfondo</string>
 	
+	<!-- Colors -->
 	<string name="color_red">Rosso</string>
 	<string name="color_green">Verde</string>
 	<string name="color_blue">Blu</string>

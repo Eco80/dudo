@@ -23,6 +23,8 @@ public class APerudoStatistics {
 	private int del = 0;
 	private int match = 0;
 	
+	
+	
 	/**
 	 * Constructor
 	 * @param roll Number of dice Roll

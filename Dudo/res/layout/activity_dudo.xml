@@ -5,12 +5,12 @@
     android:layout_height="fill_parent" >
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
             android:layout_above="@+id/buttonHideDice"
-            android:gravity="center">
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -107,8 +107,6 @@
     android:layout_width="wrap_content" 
     android:layout_height="match_parent" 
     android:layout_alignParentLeft="true"
-    android:padding="5dp"
-    android:paddingTop="10dp" 
     android:contentDescription="@string/button_reroll_descr" 
     android:minWidth="60dp" 
     android:src="@android:drawable/ic_menu_rotate" />
@@ -120,8 +118,6 @@
     android:layout_alignParentBottom="true"
     android:layout_toRightOf="@+id/buttonReroll"
     android:layout_toLeftOf="@+id/buttonDeldice"
-    android:paddingBottom="5dp"
-    android:paddingTop="5dp" 
     android:contentDescription="@string/button_hidedice_descr" 
     android:minHeight="50dp" 
     android:src="@android:drawable/ic_menu_view" />
@@ -131,8 +127,6 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_alignParentRight="true"
-    android:padding="5dp"
-    android:paddingTop="10dp"
     android:contentDescription="@string/button_deldice_descr"
     android:minWidth="60dp"
     android:src="@android:drawable/ic_menu_close_clear_cancel" />

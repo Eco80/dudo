@@ -103,6 +103,7 @@ public final class R {
         public static final int numplayer_setting_title=0x7f070022;
         public static final int package_not_found=0x7f07001b;
         /**  Backgrounds 
+ Backgrounds 
          */
         public static final int pattern_green_carpet=0x7f07002e;
         /**  Description settings elements 

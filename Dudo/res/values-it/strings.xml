@@ -57,6 +57,9 @@
 	<string name="background_color_setting_title">Colore di sfondo</string>
 	<string name="background_color_setting_summ">Scegli il colore di sfondo</string>
 	
+	<!-- Backgrounds -->
+	<string name="pattern_green_carpet">Tappeto Verde</string>
+	
 	<!-- Colors -->
 	<string name="color_red">Rosso</string>
 	<string name="color_green">Verde</string>

@@ -57,6 +57,9 @@
 	<string name="background_color_setting_title">Background color</string>
 	<string name="background_color_setting_summ">Change the background color</string>
 	
+	<!-- Backgrounds -->
+	<string name="pattern_green_carpet">Green Carpet</string>
+	
 	<!-- Colors -->
 	<string name="color_red">Red</string>
 	<string name="color_green">Green</string>

@@ -20,9 +20,10 @@ public final class R {
     }
     public static final class drawable {
         public static final int dice_empty=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int lama=0x7f020002;
-        public static final int redpoint=0x7f020003;
+        public static final int green_carpet=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int lama=0x7f020003;
+        public static final int redpoint=0x7f020004;
     }
     public static final class id {
         public static final int ImageButton01=0x7f0a0003;
@@ -72,15 +73,15 @@ public final class R {
         public static final int button_hidedice_descr=0x7f070020;
         public static final int button_reroll_descr=0x7f07001f;
         public static final int close=0x7f070001;
-        public static final int color_blue=0x7f070030;
-        public static final int color_brown=0x7f070032;
-        public static final int color_green=0x7f07002f;
-        public static final int color_orange=0x7f070033;
+        public static final int color_blue=0x7f070031;
+        public static final int color_brown=0x7f070033;
+        public static final int color_green=0x7f070030;
+        public static final int color_orange=0x7f070034;
         /**  Colors 
  Colors 
          */
-        public static final int color_red=0x7f07002e;
-        public static final int color_yellow=0x7f070031;
+        public static final int color_red=0x7f07002f;
+        public static final int color_yellow=0x7f070032;
         /**  Description graphics elements 
  Description graphics elements 
          */
@@ -101,6 +102,9 @@ public final class R {
         public static final int numplayer_setting_summ=0x7f070023;
         public static final int numplayer_setting_title=0x7f070022;
         public static final int package_not_found=0x7f07001b;
+        /**  Backgrounds 
+         */
+        public static final int pattern_green_carpet=0x7f07002e;
         /**  Description settings elements 
  Description settings elements 
          */

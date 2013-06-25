@@ -30,7 +30,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -242,7 +246,15 @@ public class DudoMainActivity extends Activity {
      * Update the background color
      */
     private void changeBackground(){
-    	 parentLayout.setBackgroundColor(Color.parseColor(settings.getColorBackground()));
+    	String back = settings.getColorBackground();
+    	if(back.equals("GREENCARPET")) {
+    		Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.green_carpet);
+    	    BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(),bmp);
+    	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
+    		parentLayout.setBackgroundDrawable(bitmapDrawable);
+    	} else { 	
+    		parentLayout.setBackgroundColor(Color.parseColor(settings.getColorBackground()));
+    	}
     }
     
 

@@ -107,7 +107,8 @@
     android:layout_width="wrap_content" 
     android:layout_height="match_parent" 
     android:layout_alignParentLeft="true"
-    android:padding="5dp" 
+    android:padding="5dp"
+    android:paddingTop="10dp" 
     android:contentDescription="@string/button_reroll_descr" 
     android:minWidth="60dp" 
     android:src="@android:drawable/ic_menu_rotate" />
@@ -131,6 +132,7 @@
     android:layout_height="match_parent"
     android:layout_alignParentRight="true"
     android:padding="5dp"
+    android:paddingTop="10dp"
     android:contentDescription="@string/button_deldice_descr"
     android:minWidth="60dp"
     android:src="@android:drawable/ic_menu_close_clear_cancel" />

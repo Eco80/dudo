@@ -1,5 +1,6 @@
 <resources>
      <string-array name="colors_name">
+        <item>@string/pattern_green_carpet</item>
         <item>@string/color_green</item>
         <item>@string/color_red</item>
         <item>@string/color_blue</item>
@@ -8,6 +9,7 @@
          <item>@string/color_orange</item>
     </string-array>
     <string-array name="colors_value">
+        <item>GREENCARPET</item>
         <item>#21FF21</item> 
 	    <item>#FF0000</item>
 	    <item>#076EFF</item>

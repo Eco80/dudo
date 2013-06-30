@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="playername_setting"
+        android:title="@string/playername_setting_title"
+        android:summary="@string/playername_setting_summ"
+        android:defaultValue="@string/text_player"/>
     <CheckBoxPreference
         android:key="sound_setting"
         android:title="@string/sound_setting_title"
@@ -24,7 +29,7 @@
         android:key="background_setting"
         android:title="@string/background_color_setting_title"
         android:summary="@string/background_color_setting_summ"
-        android:defaultValue="#66EE66"
+        android:defaultValue="GREENCARPET"
         android:entries="@array/colors_name"
         android:entryValues="@array/colors_value" />
 </PreferenceScreen>

@@ -44,8 +44,8 @@
 	
 	<!-- Description settings elements -->
 	<string name="settings">Preferenze</string>
-	<string name="numplayer_setting_title">Numero di Giocatori</string>
-	<string name="numplayer_setting_summ">Imposta il numero di giocatori della partita</string>
+	<string name="playername_setting_title">Il tuo nome</string>
+	<string name="playername_setting_summ">Inserisci il tuo nome</string>
 	<string name="sound_setting_title">Suono</string>
 	<string name="sound_setting_summ">Abilita o disabilita i suoni durante il gioco</string>
 	<string name="animation_setting_title">Animazioni</string>

@@ -144,8 +144,8 @@ public class DudoMainActivity extends Activity {
 			}
 		});
         
-        ImageButton hideDice = (ImageButton)findViewById(R.id.buttonHideDice);
-        hideDice.setOnClickListener(new OnClickListener() {
+        View die = (View)findViewById(R.id.dieLayout);
+        die.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -153,6 +153,16 @@ public class DudoMainActivity extends Activity {
 				d.switchDiceHide();
 			}
 		});
+        
+       /* ImageButton hideDice = (ImageButton)findViewById(R.id.buttonHideDice);
+        hideDice.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				d.switchDiceHide();
+			}
+		});*/
     }
 
     @Override

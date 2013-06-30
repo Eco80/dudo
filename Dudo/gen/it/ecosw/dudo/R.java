@@ -11,7 +11,6 @@ public final class R {
     public static final class array {
         public static final int colors_name=0x7f050000;
         public static final int colors_value=0x7f050001;
-        public static final int num_players=0x7f050002;
     }
     public static final class attr {
     }
@@ -26,24 +25,30 @@ public final class R {
         public static final int redpoint=0x7f020004;
     }
     public static final class id {
-        public static final int ImageButton01=0x7f0a0003;
-        public static final int ImageButton02=0x7f0a0005;
-        public static final int ImageButton03=0x7f0a0007;
-        public static final int ImageButton04=0x7f0a0009;
-        public static final int ImageButton05=0x7f0a000b;
-        public static final int LayoutDice01=0x7f0a0002;
-        public static final int LayoutDice02=0x7f0a0004;
-        public static final int LayoutDice03=0x7f0a0006;
-        public static final int LayoutDice04=0x7f0a0008;
-        public static final int LayoutDice05=0x7f0a000a;
-        public static final int buttonDeldice=0x7f0a000d;
-        public static final int buttonHideDice=0x7f0a0001;
-        public static final int buttonReroll=0x7f0a000c;
-        public static final int menu_about=0x7f0a0011;
-        public static final int menu_help=0x7f0a0010;
-        public static final int menu_restart=0x7f0a000e;
-        public static final int menu_settings=0x7f0a000f;
+        public static final int ImageButton01=0x7f0a000b;
+        public static final int ImageButton02=0x7f0a000d;
+        public static final int ImageButton03=0x7f0a000f;
+        public static final int ImageButton04=0x7f0a0011;
+        public static final int ImageButton05=0x7f0a0013;
+        public static final int LayoutDice01=0x7f0a000a;
+        public static final int LayoutDice02=0x7f0a000c;
+        public static final int LayoutDice03=0x7f0a000e;
+        public static final int LayoutDice04=0x7f0a0010;
+        public static final int LayoutDice05=0x7f0a0012;
+        public static final int button1=0x7f0a0002;
+        public static final int button2=0x7f0a0003;
+        public static final int button3=0x7f0a0004;
+        public static final int button4=0x7f0a0005;
+        public static final int button5=0x7f0a0006;
+        public static final int buttonDeldice=0x7f0a0008;
+        public static final int buttonReroll=0x7f0a0009;
+        public static final int dieLayout=0x7f0a0007;
+        public static final int menu_about=0x7f0a0017;
+        public static final int menu_help=0x7f0a0016;
+        public static final int menu_restart=0x7f0a0014;
+        public static final int menu_settings=0x7f0a0015;
         public static final int parentLayout=0x7f0a0000;
+        public static final int playerBar=0x7f0a0001;
     }
     public static final class layout {
         public static final int activity_dudo=0x7f030000;
@@ -99,13 +104,13 @@ public final class R {
         public static final int menu_restart=0x7f070011;
         public static final int menu_settings=0x7f070012;
         public static final int new_play=0x7f07001c;
-        public static final int numplayer_setting_summ=0x7f070023;
-        public static final int numplayer_setting_title=0x7f070022;
         public static final int package_not_found=0x7f07001b;
         /**  Backgrounds 
  Backgrounds 
          */
         public static final int pattern_green_carpet=0x7f07002e;
+        public static final int playername_setting_summ=0x7f070023;
+        public static final int playername_setting_title=0x7f070022;
         /**  Description settings elements 
  Description settings elements 
          */

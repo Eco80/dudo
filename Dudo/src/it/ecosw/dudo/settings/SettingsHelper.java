@@ -17,6 +17,7 @@ package it.ecosw.dudo.settings;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import it.ecosw.dudo.R;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -29,6 +30,8 @@ import android.preference.PreferenceManager;
 public class SettingsHelper {
 	
 	private Activity mContext;
+	
+	public static final String PLAYERNAME_SETTING = "playername_setting";
 	
 	public static final String SOUND_SETTING = "sound_setting";
 	
@@ -87,9 +90,16 @@ public class SettingsHelper {
 	 * @return color for the background
 	 */
 	public String getColorBackground(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_SETTING, "#21FF21");
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_SETTING, "GREENCARPET");
 	}
 	
+	/**
+	 * Return the player name
+	 * @return playername
+	 */
+	public String getPlayerName(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING,mContext.getText(R.string.text_player).toString());
+	}
 	/**
 	 * Return the value of the last match
 	 * @return value.

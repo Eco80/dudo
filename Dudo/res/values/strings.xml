@@ -44,8 +44,8 @@
 	
 	<!-- Description settings elements -->
 	<string name="settings">Settings</string>
-	<string name="numplayer_setting_title">Number of Players</string>
-	<string name="numplayer_setting_summ">Set the number of players in the game</string>
+	<string name="playername_setting_title">Your name</string>
+	<string name="playername_setting_summ">Insert your name</string>
 	<string name="sound_setting_title">Sound</string>
 	<string name="sound_setting_summ">Enable or Disable sound during the game</string>
 	<string name="animation_setting_title">Animations</string>

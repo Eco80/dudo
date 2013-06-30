@@ -19,7 +19,6 @@
     
     <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
-    <string name="alert_about_msg">Dudo is created by Enrico Strocchi</string>
     <string name="alert_help_label">Help</string>
     
     <!-- Description menu elements -->
@@ -55,16 +54,20 @@
 	<string name="vibration_setting_title">Vibration</string>
 	<string name="vibration_setting_summ">Enable the vibration during rolldice</string>
 	<string name="background_color_setting_title">Background color</string>
-	<string name="background_color_setting_summ">Change the background color</string>
+	<string name="background_color_setting_summ">Change the background color or image</string>
 	
 	<!-- Backgrounds -->
 	<string name="pattern_green_carpet">Green Carpet</string>
+	<string name="pattern_partylight">Party Light</string>
+	<string name="pattern_wood">Wood</string>
+	<string name="pattern_galaxy">Galaxy</string>
+	<string name="pattern_lava">Lava</string>
 	
 	<!-- Colors -->
-	<string name="color_red">Red</string>
-	<string name="color_green">Green</string>
-	<string name="color_blue">Blue</string>
-	<string name="color_yellow">Yellow</string>
-	<string name="color_brown">Brown</string>
-	<string name="color_orange">Orange</string>
+	<string name="color_red">Solid Red</string>
+	<string name="color_green">Solid Green</string>
+	<string name="color_blue">Solid Blue</string>
+	<string name="color_yellow">Solid Yellow</string>
+	<string name="color_brown">Solid Brown</string>
+	<string name="color_orange">Solid Orange</string>
 </resources>

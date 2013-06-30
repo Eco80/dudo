@@ -4,56 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <LinearLayout
-        android:id="@+id/playerBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:paddingTop="2dp" >
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_player" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_player" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_player" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_player" />
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_player" />
-
-    </LinearLayout>
-
         <LinearLayout
             android:id="@+id/dieLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/playerBar"
             android:layout_toLeftOf="@+id/buttonDeldice"
             android:layout_toRightOf="@+id/buttonReroll"
             android:gravity="center"
@@ -146,8 +100,6 @@
 
             </LinearLayout>
 
-        
-
     </LinearLayout>
 
 <ImageButton
@@ -155,7 +107,6 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_alignParentLeft="true"
-    android:layout_below="@+id/playerBar"
     android:contentDescription="@string/button_reroll_descr"
     android:src="@android:drawable/ic_menu_rotate" />
 
@@ -164,7 +115,6 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_alignParentRight="true"
-    android:layout_below="@+id/playerBar"
     android:contentDescription="@string/button_deldice_descr"
     android:src="@android:drawable/ic_menu_close_clear_cancel" />
 

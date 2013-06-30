@@ -18,6 +18,8 @@ package it.ecosw.dudo;
  */
 
 import it.ecosw.dudo.gui.DieSetAdapter;
+import it.ecosw.dudo.gui.HtmlViewerWindow;
+import it.ecosw.dudo.media.Background;
 import it.ecosw.dudo.media.PlayFX;
 import it.ecosw.dudo.settings.SettingsActivity;
 import it.ecosw.dudo.settings.SettingsHelper;
@@ -25,22 +27,14 @@ import it.ecosw.dudo.R;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Shader.TileMode;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -62,6 +56,8 @@ public class DudoMainActivity extends Activity {
 	private String version;
 	
 	private View parentLayout;
+	
+	private Background background;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +86,8 @@ public class DudoMainActivity extends Activity {
         fx = new PlayFX(this,settings);
         
         parentLayout = (View) findViewById(R.id.parentLayout);
-        changeBackground();
+        background = new Background(this, parentLayout);
+        background.setImagebyString(settings.getColorBackground());
                 
         // initialize image
         ImageView[] images = new ImageView[5];
@@ -139,7 +136,7 @@ public class DudoMainActivity extends Activity {
 				if (d.delDice()!=0) {
 					fx.playSoundLoseDice();
 					fx.vibration();
-					if (d.numDice()==0) Toast.makeText(DudoMainActivity.this,getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
+					if (d.numDice()==0) Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -154,15 +151,6 @@ public class DudoMainActivity extends Activity {
 			}
 		});
         
-       /* ImageButton hideDice = (ImageButton)findViewById(R.id.buttonHideDice);
-        hideDice.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				d.switchDiceHide();
-			}
-		});*/
     }
 
     @Override
@@ -188,7 +176,7 @@ public class DudoMainActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		changeBackground();
+		background.setImagebyString(settings.getColorBackground());
 		d.setAnimEnabled(settings.isAnimationActivated());
 	}
 
@@ -210,62 +198,17 @@ public class DudoMainActivity extends Activity {
     	case R.id.menu_help:
     		// Convert HTML file in raw resource to string
     	    String help = new java.util.Scanner(getResources().openRawResource(R.raw.help)).useDelimiter("\\A").next();
-    	    // Create the webview
-    		WebView wv = new WebView (getBaseContext());
-    		wv.loadData(help, "text/html", "utf-8");
-    		wv.setBackgroundColor(Color.WHITE);
-    		wv.getSettings().setDefaultTextEncodingName("utf-8");
-    		// Create the alert dialog
-    		new AlertDialog.Builder(this)
-    		.setTitle(R.string.alert_help_label)
-    		.setView(wv)
-    		.setNeutralButton(R.string.close, new DialogInterface.OnClickListener(){
-    		    @Override
-    		    public void onClick(DialogInterface dialog, int which) {
-    		        dialog.cancel();
-    		    }
-
-    		  }) 
-    		 .show();
+    		HtmlViewerWindow.showWindow(this, help,getString(R.string.alert_help_label),R.drawable.ic_help);
     		return true;
     		
     	case R.id.menu_about:
-    		new AlertDialog.Builder(this)
-    		.setIcon(R.drawable.ic_launcher)
-    		.setTitle(R.string.alert_about_label)
-    		.setMessage(getString(R.string.alert_about_msg)+"\n"+getString(R.string.version)+" "+version)
-    		.setNeutralButton(R.string.close, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					dialog.cancel();
-				}
-    			
-    		})
-    		.show();
-    		//AlertDialog creditDialog = builder.create();
-    		//creditDialog.show();
+    		String about = new java.util.Scanner(getResources().openRawResource(R.raw.about)).useDelimiter("\\A").next();
+    		HtmlViewerWindow.showWindow(this, about, getString(R.string.alert_about_label)+" - "+getString(R.string.version)+" "+version, R.drawable.ic_launcher);
     		return true;
     		
     	default:
     		return super.onOptionsItemSelected(item);
     	}
 	}
-        
-    /**
-     * Update the background color
-     */
-    private void changeBackground(){
-    	String back = settings.getColorBackground();
-    	if(back.equals("GREENCARPET")) {
-    		Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.green_carpet);
-    	    BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(),bmp);
-    	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
-    		parentLayout.setBackgroundDrawable(bitmapDrawable);
-    	} else { 	
-    		parentLayout.setBackgroundColor(Color.parseColor(settings.getColorBackground()));
-    	}
-    }
-    
 
 }

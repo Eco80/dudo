@@ -80,14 +80,23 @@ public class DudoMainActivity extends Activity {
 			Toast.makeText(DudoMainActivity.this,getText(R.string.package_not_found),Toast.LENGTH_SHORT).show();
 		}
         
+        // Load setting object
         settings = new SettingsHelper(this);
+        
+        // Check if last version runned was different
+        String last = settings.getLastVersionRun();
+        if(!version.equals(last)) {
+        	   String help = new java.util.Scanner(getResources().openRawResource(R.raw.changelog)).useDelimiter("\\A").next();
+       			HtmlViewerWindow.showWindow(this, help,getString(R.string.alert_changelog_label),R.drawable.ic_launcher);
+        }
+        settings.setLastVersionRun(version);
         
         // Sound Management
         fx = new PlayFX(this,settings);
         
         parentLayout = (View) findViewById(R.id.parentLayout);
         background = new Background(this, parentLayout);
-        background.setImagebyString(settings.getColorBackground());
+        background.setImagebyString(settings);
                 
         // initialize image
         ImageView[] images = new ImageView[5];
@@ -176,7 +185,7 @@ public class DudoMainActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		background.setImagebyString(settings.getColorBackground());
+		background.setImagebyString(settings);
 		d.setAnimEnabled(settings.isAnimationActivated());
 	}
 

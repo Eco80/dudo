@@ -20,6 +20,7 @@
     <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
     <string name="alert_help_label">Aiuto</string>
+    <string name="alert_changelog_label">Changelog</string>
     
     <!-- Description menu elements -->
     <string name="menu_restart">Ricomincia</string>
@@ -53,8 +54,13 @@
 	<string name="sorting_setting_summ">Abilita per mostrare i dadi in ordine crescente</string>
 	<string name="vibration_setting_title">Vibrazione</string>
 	<string name="vibration_setting_summ">Abilita la vibrazione quando si lanciano i dadi</string>
-	<string name="background_color_setting_title">Colore di sfondo</string>
-	<string name="background_color_setting_summ">Scegli il colore o l\'immagine di sfondo</string>
+	<string name="background_category_setting">Sfondo</string>
+	<string name="backgroundtype_setting_title">Usa immagine per lo sfondo</string>
+	<string name="backgroundtype_setting_summary">Abilita per utilizzare una immagine come sfondo, disabilita per usare un colore</string>
+	<string name="pickccolor_setting_title">Scegli il colore</string>
+	<string name="pickccolor_setting_summary">Scegli un colore per lo sfondo</string>
+	<string name="background_color_setting_title">Immagine di sfondo</string>
+	<string name="background_color_setting_summ">Scegli l\'immagine di sfondo</string>
 	
 	<!-- Backgrounds -->
 	<string name="pattern_green_carpet">Tappeto Verde</string>
@@ -62,13 +68,6 @@
 	<string name="pattern_wood">Legno</string>
 	<string name="pattern_galaxy">Galassia</string>
 	<string name="pattern_lava">Lava</string>
-	
-	<!-- Colors -->
-	<string name="color_red">Colore Rosso</string>
-	<string name="color_green">Colore Verde</string>
-	<string name="color_blue">Colore Blu</string>
-	<string name="color_yellow">Colore Giallo</string>
-	<string name="color_brown">Colore Marrone</string>
-	<string name="color_orange">Colore Arancione</string>
+	<string name="pattern_rock">Roccia</string>
 	
 </resources>

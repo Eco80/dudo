@@ -20,6 +20,7 @@
     <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
     <string name="alert_help_label">Help</string>
+    <string name="alert_changelog_label">Changelog</string>
     
     <!-- Description menu elements -->
     <string name="menu_restart">Restart</string>
@@ -53,8 +54,13 @@
 	<string name="sorting_setting_summ">Enable to show dices in increasing order</string>
 	<string name="vibration_setting_title">Vibration</string>
 	<string name="vibration_setting_summ">Enable the vibration during rolldice</string>
-	<string name="background_color_setting_title">Background color</string>
-	<string name="background_color_setting_summ">Change the background color or image</string>
+	<string name="background_category_setting">Background</string>
+	<string name="backgroundtype_setting_title">Use image as backgroud</string>
+	<string name="backgroundtype_setting_summary">Enable to use an image as background, disable for solid color</string>
+	<string name="pickccolor_setting_title">Choose solid color</string>
+	<string name="pickccolor_setting_summary">Choose the background solid color</string>
+	<string name="background_color_setting_title">Choose background image</string>
+	<string name="background_color_setting_summ">Change the background image</string>
 	
 	<!-- Backgrounds -->
 	<string name="pattern_green_carpet">Green Carpet</string>
@@ -62,12 +68,21 @@
 	<string name="pattern_wood">Wood</string>
 	<string name="pattern_galaxy">Galaxy</string>
 	<string name="pattern_lava">Lava</string>
+	<string name="pattern_rock">Rock</string>
 	
-	<!-- Colors -->
-	<string name="color_red">Solid Red</string>
-	<string name="color_green">Solid Green</string>
-	<string name="color_blue">Solid Blue</string>
-	<string name="color_yellow">Solid Yellow</string>
-	<string name="color_brown">Solid Brown</string>
-	<string name="color_orange">Solid Orange</string>
+	<!-- Color Picker -->
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="press_color_to_apply">Press on Color to apply</string>    
+    
+    <!-- Preferences -->
+    <string name="pref_category">Category</string>
+    <string name="color1_title">Color 1</string>
+    <string name="color1_summary">black color by default, set by reference</string>
+    <string name="color2_title">Color 2</string>
+    <string name="color2_summary">not persistent color\nalpha slider added via code</string>
+    <string name="color3_title">Color 3</string>
+    <string name="color3_summary">picker with alpha slider</string>
+    <string name="color4_title">Color 4</string>
+    <string name="color4_summary">color set with HEX code in xml</string>
+    
 </resources>

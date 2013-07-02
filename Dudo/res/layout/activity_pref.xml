@@ -25,11 +25,23 @@
         android:title="@string/vibration_setting_title"
         android:summary="@string/vibration_setting_summ"
         android:defaultValue="true" />
+     <PreferenceCategory android:title="@string/background_category_setting">
+     <CheckBoxPreference
+        android:key="backgroundtype_setting"
+        android:title="@string/backgroundtype_setting_title"
+        android:summary="@string/backgroundtype_setting_summary"
+        android:defaultValue="true" />
+     <net.margaritov.preference.colorpicker.ColorPickerPreference
+        android:key="background_solidcolor_setting"
+        android:title="@string/pickccolor_setting_title"
+        android:summary="@string/pickccolor_setting_summary"
+        android:defaultValue="@color/Black"/>
      <ListPreference
-        android:key="background_setting"
+        android:key="background_image_setting"
         android:title="@string/background_color_setting_title"
         android:summary="@string/background_color_setting_summ"
         android:defaultValue="GREENCARPET"
         android:entries="@array/colors_name"
         android:entryValues="@array/colors_value" />
+     </PreferenceCategory>
 </PreferenceScreen>

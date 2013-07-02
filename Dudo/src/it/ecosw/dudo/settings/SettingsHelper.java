@@ -41,7 +41,13 @@ public class SettingsHelper {
 	
 	public static final String VIBRATION_SETTING = "vibration_setting";
 	
-	public static final String BACKGROUND_SETTING = "background_setting";
+	public static final String BACKGROUNDTYPE_SETTING = "backgroundtype_setting";
+	
+	public static final String BACKGROUND_SOLIDCOLOR_SETTING = "background_solidcolor_setting";
+	
+	public static final String BACKGROUND_IMAGE_SETTING = "background_image_setting";
+	
+	public static final String LASTVERSIONRUN_SETTING = "lastversionrun_setting";
 	
 	public static final String SAVEDPLAY_SETTING = "savedplay_setting";
 	
@@ -86,11 +92,28 @@ public class SettingsHelper {
 	}
 	
 	/**
+	 * Return true if background shall be an image
+	 * @return true if background shall be an image
+	 */
+	public boolean isImageBackgroundType(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(BACKGROUNDTYPE_SETTING, true);
+	}
+	
+	/**
 	 * Return the color for the background
 	 * @return color for the background
 	 */
-	public String getColorBackground(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_SETTING, "GREENCARPET");
+	public int getColorBackground(){
+		//return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_SOLIDCOLOR_SETTING, "#22FF22");
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUND_SOLIDCOLOR_SETTING,0);
+	}
+	
+	/**
+	 * Return the image for the background
+	 * @return image for the background
+	 */
+	public String getImageBackground(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_IMAGE_SETTING, "GREENCARPET");
 	}
 	
 	/**
@@ -100,6 +123,27 @@ public class SettingsHelper {
 	public String getPlayerName(){
 		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING,mContext.getText(R.string.text_player).toString());
 	}
+	
+	/**
+	 * Return last version of software was run
+	 * @return last version of software
+	 */
+	public String getLastVersionRun(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(LASTVERSIONRUN_SETTING, "0");
+	}
+	
+	/**
+	 * Save the version of software
+	 * @param version software version
+	 * @return 0 if writing was correct
+	 */
+	public int setLastVersionRun(String version){
+		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+		spe.putString(LASTVERSIONRUN_SETTING, version);
+		spe.commit();
+		return 0;
+	}
+	
 	/**
 	 * Return the value of the last match
 	 * @return value.

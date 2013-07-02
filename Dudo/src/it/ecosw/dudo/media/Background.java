@@ -17,10 +17,10 @@ package it.ecosw.dudo.media;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import it.ecosw.dudo.settings.SettingsHelper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
@@ -49,13 +49,15 @@ public class Background {
 	 * Set image or solid color
 	 * solor color if string start with '#' otherwise is considered as image
 	 * image shall be indicated with the same name in ImageBackground class
-	 * @param name Solid color or image
+	 * @param isimage true if is a image
+	 * @param color Solid color
+	 * @param image Image name
 	 */
-	public void setImagebyString(String name){
-		if(name.charAt(0)=='#') setSolidColor(name);
+	public void setImagebyString(SettingsHelper setting){
+		if(!setting.isImageBackgroundType()) setSolidColor(setting.getColorBackground());
 		else {
 			for (ImageBackground st : ImageBackground.values()) {
-		        if (name.equals(st.name())) {
+		        if (setting.getImageBackground().equals(st.name())) {
 		        	setImageBackground(st);
 		        	break;
 		        }
@@ -78,8 +80,9 @@ public class Background {
 	 * Set the background to the solid color passed by parametes
 	 * @param color new color of background
 	 */
-	private void setSolidColor(String color){
-		parentLayout.setBackgroundColor(Color.parseColor(color));
+	private void setSolidColor(int color){
+		//parentLayout.setBackgroundColor(Color.parseColor(color));
+		parentLayout.setBackgroundColor(color);
 	}
 	
 }

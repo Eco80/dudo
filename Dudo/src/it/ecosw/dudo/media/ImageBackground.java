@@ -29,7 +29,8 @@ public enum ImageBackground {
 	PARTYLIGHT(R.drawable.partylight),
 	WOOD(R.drawable.wood),
 	GALAXY(R.drawable.galaxy),
-	LAVA(R.drawable.lava);
+	LAVA(R.drawable.lava),
+	ROCK(R.drawable.rock);
 	
 	private int imageid;
 	

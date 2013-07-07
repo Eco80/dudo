@@ -30,7 +30,8 @@ public enum ImageBackground {
 	WOOD(R.drawable.wood),
 	GALAXY(R.drawable.galaxy),
 	LAVA(R.drawable.lava),
-	ROCK(R.drawable.rock);
+	ROCK(R.drawable.rock),
+	SOCCER(R.drawable.soccer);
 	
 	private int imageid;
 	

@@ -26,6 +26,7 @@ import it.ecosw.dudo.settings.SettingsHelper;
 import it.ecosw.dudo.R;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -35,9 +36,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -58,6 +61,10 @@ public class DudoMainActivity extends Activity {
 	private View parentLayout;
 	
 	private Background background;
+	
+	private TextView playername;
+	
+	private Chronometer chrono;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,7 +120,16 @@ public class DudoMainActivity extends Activity {
         layouts[2] = (RelativeLayout)findViewById(R.id.LayoutDice03);
         layouts[3] = (RelativeLayout)findViewById(R.id.LayoutDice04);
         layouts[4] = (RelativeLayout)findViewById(R.id.LayoutDice05);
-                
+        
+        // Set playerName
+        playername = (TextView)findViewById(R.id.playernameTextView);
+        playername.setText(settings.getPlayerName());
+        
+        // Set chrono
+        chrono = (Chronometer)findViewById(R.id.chronometer);
+        chrono.setFormat(getText(R.string.text_time)+" %s");
+        chrono.start();
+        
         // Create new Dice Set
         if (settings.getSavedPlay().equals("00000")) {
     		d = new DieSetAdapter(this,settings.isSortingActivated(),settings.isAnimationActivated(),images,layouts);
@@ -130,9 +146,10 @@ public class DudoMainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (d.rollSet(settings.isSortingActivated())){;
+					chrono.setBase(SystemClock.elapsedRealtime());
 					fx.playSoundRoll();
 					fx.vibration();
-				}				
+				}
 			}
 		});
         
@@ -143,9 +160,13 @@ public class DudoMainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (d.delDice()!=0) {
+					chrono.setBase(SystemClock.elapsedRealtime());
 					fx.playSoundLoseDice();
 					fx.vibration();
-					if (d.numDice()==0) Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
+					if (d.numDice()==0) {
+						Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
+						chrono.stop();
+					}
 				}
 			}
 		});

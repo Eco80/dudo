@@ -170,7 +170,8 @@ public final class R {
         public static final int partylight=0x7f020007;
         public static final int redpoint=0x7f020008;
         public static final int rock=0x7f020009;
-        public static final int wood=0x7f02000a;
+        public static final int soccer=0x7f02000a;
+        public static final int wood=0x7f02000b;
     }
     public static final class id {
         public static final int ImageButton01=0x7f0b0005;
@@ -185,16 +186,18 @@ public final class R {
         public static final int LayoutDice05=0x7f0b000c;
         public static final int buttonDeldice=0x7f0b0002;
         public static final int buttonReroll=0x7f0b0003;
-        public static final int color_picker_view=0x7f0b000e;
+        public static final int chronometer=0x7f0b000f;
+        public static final int color_picker_view=0x7f0b0010;
         public static final int dieLayout=0x7f0b0001;
-        public static final int hex_val=0x7f0b000f;
-        public static final int menu_about=0x7f0b0015;
-        public static final int menu_help=0x7f0b0014;
-        public static final int menu_restart=0x7f0b0012;
-        public static final int menu_settings=0x7f0b0013;
-        public static final int new_color_panel=0x7f0b0011;
-        public static final int old_color_panel=0x7f0b0010;
+        public static final int hex_val=0x7f0b0011;
+        public static final int menu_about=0x7f0b0017;
+        public static final int menu_help=0x7f0b0016;
+        public static final int menu_restart=0x7f0b0014;
+        public static final int menu_settings=0x7f0b0015;
+        public static final int new_color_panel=0x7f0b0013;
+        public static final int old_color_panel=0x7f0b0012;
         public static final int parentLayout=0x7f0b0000;
+        public static final int playernameTextView=0x7f0b000e;
     }
     public static final class layout {
         public static final int activity_dudo=0x7f030000;
@@ -215,75 +218,77 @@ public final class R {
         /**  About dialog 
  About dialog 
          */
-        public static final int alert_about_label=0x7f08000e;
-        public static final int alert_changelog_label=0x7f080010;
-        public static final int alert_help_label=0x7f08000f;
-        public static final int animation_setting_summ=0x7f080027;
-        public static final int animation_setting_title=0x7f080026;
+        public static final int alert_about_label=0x7f08000f;
+        public static final int alert_changelog_label=0x7f080011;
+        public static final int alert_help_label=0x7f080010;
+        public static final int animation_setting_summ=0x7f080028;
+        public static final int animation_setting_title=0x7f080027;
         public static final int app_name=0x7f080000;
-        public static final int background_category_setting=0x7f08002c;
-        public static final int background_color_setting_summ=0x7f080032;
-        public static final int background_color_setting_title=0x7f080031;
-        public static final int backgroundtype_setting_summary=0x7f08002e;
-        public static final int backgroundtype_setting_title=0x7f08002d;
-        public static final int button_deldice_descr=0x7f08001e;
-        public static final int button_hidedice_descr=0x7f080020;
-        public static final int button_reroll_descr=0x7f08001f;
+        public static final int background_category_setting=0x7f08002d;
+        public static final int background_color_setting_summ=0x7f080033;
+        public static final int background_color_setting_title=0x7f080032;
+        public static final int backgroundtype_setting_summary=0x7f08002f;
+        public static final int backgroundtype_setting_title=0x7f08002e;
+        public static final int button_deldice_descr=0x7f08001f;
+        public static final int button_hidedice_descr=0x7f080021;
+        public static final int button_reroll_descr=0x7f080020;
         public static final int close=0x7f080001;
-        public static final int color1_summary=0x7f08003d;
-        public static final int color1_title=0x7f08003c;
-        public static final int color2_summary=0x7f08003f;
-        public static final int color2_title=0x7f08003e;
-        public static final int color3_summary=0x7f080041;
-        public static final int color3_title=0x7f080040;
-        public static final int color4_summary=0x7f080043;
-        public static final int color4_title=0x7f080042;
+        public static final int color1_summary=0x7f08003f;
+        public static final int color1_title=0x7f08003e;
+        public static final int color2_summary=0x7f080041;
+        public static final int color2_title=0x7f080040;
+        public static final int color3_summary=0x7f080043;
+        public static final int color3_title=0x7f080042;
+        public static final int color4_summary=0x7f080045;
+        public static final int color4_title=0x7f080044;
         /**  Color Picker 
          */
-        public static final int dialog_color_picker=0x7f080039;
+        public static final int dialog_color_picker=0x7f08003b;
         /**  Description graphics elements 
  Description graphics elements 
          */
-        public static final int dice1_description=0x7f080015;
-        public static final int dice2_description=0x7f080016;
-        public static final int dice3_description=0x7f080017;
-        public static final int dice4_description=0x7f080018;
-        public static final int dice5_description=0x7f080019;
-        public static final int last_play_restored=0x7f08001d;
-        public static final int menu_about=0x7f080014;
-        public static final int menu_help=0x7f080013;
+        public static final int dice1_description=0x7f080016;
+        public static final int dice2_description=0x7f080017;
+        public static final int dice3_description=0x7f080018;
+        public static final int dice4_description=0x7f080019;
+        public static final int dice5_description=0x7f08001a;
+        public static final int last_play_restored=0x7f08001e;
+        public static final int menu_about=0x7f080015;
+        public static final int menu_help=0x7f080014;
         /**  Description menu elements 
  Description menu elements 
          */
-        public static final int menu_restart=0x7f080011;
-        public static final int menu_settings=0x7f080012;
-        public static final int new_play=0x7f08001c;
-        public static final int package_not_found=0x7f08001b;
-        public static final int pattern_galaxy=0x7f080036;
+        public static final int menu_restart=0x7f080012;
+        public static final int menu_settings=0x7f080013;
+        public static final int new_play=0x7f08001d;
+        public static final int package_not_found=0x7f08001c;
+        public static final int pattern_galaxy=0x7f080037;
         /**  Backgrounds 
  Backgrounds 
          */
-        public static final int pattern_green_carpet=0x7f080033;
-        public static final int pattern_lava=0x7f080037;
-        public static final int pattern_partylight=0x7f080034;
-        public static final int pattern_rock=0x7f080038;
-        public static final int pattern_wood=0x7f080035;
-        public static final int pickccolor_setting_summary=0x7f080030;
-        public static final int pickccolor_setting_title=0x7f08002f;
-        public static final int playername_setting_summ=0x7f080023;
-        public static final int playername_setting_title=0x7f080022;
+        public static final int pattern_green_carpet=0x7f080034;
+        public static final int pattern_lava=0x7f080038;
+        public static final int pattern_partylight=0x7f080035;
+        public static final int pattern_rock=0x7f080039;
+        public static final int pattern_soccer=0x7f08003a;
+        public static final int pattern_wood=0x7f080036;
+        public static final int pickccolor_setting_summary=0x7f080031;
+        public static final int pickccolor_setting_title=0x7f080030;
+        public static final int playername_setting_summ=0x7f080024;
+        public static final int playername_setting_title=0x7f080023;
         /**  Preferences 
+ Preferences 
          */
-        public static final int pref_category=0x7f08003b;
-        public static final int press_color_to_apply=0x7f08003a;
+        public static final int pref_category=0x7f08003d;
+        public static final int press_color_to_apply=0x7f08003c;
         /**  Description settings elements 
  Description settings elements 
          */
-        public static final int settings=0x7f080021;
-        public static final int sorting_setting_summ=0x7f080029;
-        public static final int sorting_setting_title=0x7f080028;
-        public static final int sound_setting_summ=0x7f080025;
-        public static final int sound_setting_title=0x7f080024;
+        public static final int settings=0x7f080022;
+        public static final int sorting_setting_summ=0x7f08002a;
+        public static final int sorting_setting_title=0x7f080029;
+        public static final int sound_setting_summ=0x7f080026;
+        public static final int sound_setting_title=0x7f080025;
         public static final int text_cancel=0x7f08000d;
         public static final int text_close=0x7f08000a;
         public static final int text_ok=0x7f08000c;
@@ -296,12 +301,13 @@ public final class R {
         public static final int text_players=0x7f080005;
         public static final int text_points=0x7f080009;
         public static final int text_round=0x7f080006;
+        public static final int text_time=0x7f08000e;
         public static final int text_version=0x7f08000b;
         public static final int title_activity_main=0x7f080003;
         public static final int version=0x7f080002;
-        public static final int vibration_setting_summ=0x7f08002b;
-        public static final int vibration_setting_title=0x7f08002a;
-        public static final int you_lose=0x7f08001a;
+        public static final int vibration_setting_summ=0x7f08002c;
+        public static final int vibration_setting_title=0x7f08002b;
+        public static final int you_lose=0x7f08001b;
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;

@@ -16,6 +16,7 @@
     <string name="text_version">Version</string>
     <string name="text_ok">OK</string>
     <string name="text_cancel">Cancel</string>
+    <string name="text_time">Time</string>
     
     <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
@@ -69,6 +70,7 @@
 	<string name="pattern_galaxy">Galaxy</string>
 	<string name="pattern_lava">Lava</string>
 	<string name="pattern_rock">Rock</string>
+	<string name="pattern_soccer">Soccer</string>
 	
 	<!-- Color Picker -->
     <string name="dialog_color_picker">Color Picker</string>

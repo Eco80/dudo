@@ -16,6 +16,7 @@
     <string name="text_version">Versione</string>
     <string name="text_ok">OK</string>
     <string name="text_cancel">Annulla</string>
+    <string name="text_time">Tempo</string>
     
     <!-- About dialog -->
     <string name="alert_about_label">About Dudo</string>
@@ -69,5 +70,17 @@
 	<string name="pattern_galaxy">Galassia</string>
 	<string name="pattern_lava">Lava</string>
 	<string name="pattern_rock">Roccia</string>
+	<string name="pattern_soccer">Campo Calcio</string>
+	
+	<!-- Preferences -->
+    <string name="pref_category">Categoria</string>
+    <string name="color1_title">Colore 1</string>
+    <string name="color1_summary">colore nero di default, impostato dalle reference</string>
+    <string name="color2_title">Colore 2</string>
+    <string name="color2_summary">colore non persistente\nalpha slider agginto da codice</string>
+    <string name="color3_title">Colore 3</string>
+    <string name="color3_summary">picker con alpha slider</string>
+    <string name="color4_title">Colore 4</string>
+    <string name="color4_summary">colore impostato con valore esadecimale in xml</string>
 	
 </resources>

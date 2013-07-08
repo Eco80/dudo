@@ -31,13 +31,36 @@ import it.ecosw.dudo.R;
  */
 public class GenDiceImage {
 	
+	private Bitmap[] images;
+	
+	/**
+	 * Constructor
+	 * @param context context of the apps
+	 */
+	public GenDiceImage(Context context){
+		images = new Bitmap[7];
+		for(int i=0;i<7;i++) {
+			images[i] = genImage(context,i);
+		}
+	}
+	
+	/**
+	 * Return bitmap of dice
+	 * @param value 0 dice empty, 1-6 dice with 1 to 6
+	 * @return bitmap of the dice
+	 */
+	public Bitmap getImage(int value){
+		if(value<0 || value>6) return images[0];
+		return images[value];
+	}
+	
 	/**
 	 * Generate a bitmap for the dice
 	 * @param context app context
 	 * @param value value of dice
 	 * @return bitmap object
 	 */
-	public static Bitmap getImage(Context context, int value) {
+	private static Bitmap genImage(Context context, int value) {
 		//Create a new image bitmap and attach a brand new canvas to it
 		Options options = new BitmapFactory.Options();
 		options.inScaled = false;

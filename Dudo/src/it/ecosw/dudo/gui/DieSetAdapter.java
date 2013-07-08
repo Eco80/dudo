@@ -17,19 +17,12 @@ package it.ecosw.dudo.gui;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Random;
-
 import android.content.Context;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import it.ecosw.dudo.games.DieSet;
+import it.ecosw.dudo.media.GenDiceAnimation;
 import it.ecosw.dudo.media.GenDiceImage;
 
 public class DieSetAdapter extends DieSet {
@@ -42,32 +35,27 @@ public class DieSetAdapter extends DieSet {
 	
 	private boolean diceHide = false;
 	
-	private Random rnd = null;
+	private GenDiceImage gdi;
 	
-	private Context context;
-	
-
 	public DieSetAdapter(Context context, boolean sorting, boolean anim, ImageView[] images, RelativeLayout[] layouts) {
 		super();
 		// TODO Auto-generated constructor stub
-		this.context = context;
 		this.images = images;
 		this.anim = anim;
 		this.layouts = layouts;
-		rnd = new Random();
-		for(int i=0;i<5;i++)images[i].setImageBitmap(GenDiceImage.getImage(context, 1));
+		gdi = new GenDiceImage(context);
+		for(int i=0;i<5;i++)images[i].setImageBitmap(gdi.getImage(1));
 		update(anim);
 	}
 
 	public DieSetAdapter(Context context, boolean sorting, boolean anim, String init, ImageView[] images, RelativeLayout[] layouts) {
 		super(init);
 		// TODO Auto-generated constructor stub
-		this.context = context;
 		this.images = images;
 		this.anim = anim;
 		this.layouts = layouts;
-		rnd = new Random();
-		for(int i=0;i<5;i++)images[i].setImageBitmap(GenDiceImage.getImage(context, 1));
+		gdi = new GenDiceImage(context);
+		for(int i=0;i<5;i++)images[i].setImageBitmap(gdi.getImage(1));
 		update(anim);
 	}
 	
@@ -119,7 +107,7 @@ public class DieSetAdapter extends DieSet {
 		if (!diceHide && this.numDice()!=0){
 			diceHide = true;
 			for (int i=0; i<5; i++) 
-				images[i].setImageBitmap(GenDiceImage.getImage(context, 0));
+				images[i].setImageBitmap(gdi.getImage(0));
 		} else {
 			diceHide = false;
 			update(false);
@@ -142,7 +130,7 @@ public class DieSetAdapter extends DieSet {
 		for (int i=0; i < 5; i++ ){
 			updateDice(i);
 			if (getDiceValue(i)!=0 && anim) { 
-				images[i].startAnimation(animationFactory());
+				images[i].startAnimation(GenDiceAnimation.animationFactory());
 			} 
 		}
 	}
@@ -152,50 +140,21 @@ public class DieSetAdapter extends DieSet {
 	 * @param pos position of the dice
 	 */
 	private void updateDice(int pos){
-		int value = getDiceValue(pos);
-		if (value != 0) layouts[pos].setVisibility(View.VISIBLE);
-		switch (value) {
-			case 1: images[pos].setImageBitmap(GenDiceImage.getImage(context, 1)); break;
-			case 2: images[pos].setImageBitmap(GenDiceImage.getImage(context, 2)); break;
-			case 3: images[pos].setImageBitmap(GenDiceImage.getImage(context, 3)); break;
-			case 4: images[pos].setImageBitmap(GenDiceImage.getImage(context, 4)); break;
-			case 5: images[pos].setImageBitmap(GenDiceImage.getImage(context, 5)); break;
-			case 6: images[pos].setImageBitmap(GenDiceImage.getImage(context, 6)); break;
-			default: 
-				images[pos].clearAnimation();
-				layouts[pos].setVisibility(View.GONE);
+		if (isDiceDeleted(pos)) {
+			images[pos].clearAnimation();
+			layouts[pos].setVisibility(View.GONE);
+		} else {
+			layouts[pos].setVisibility(View.VISIBLE);
+			switch (getDiceValue(pos)) {
+				case 1: images[pos].setImageBitmap(gdi.getImage(1)); break;
+				case 2: images[pos].setImageBitmap(gdi.getImage(2)); break;
+				case 3: images[pos].setImageBitmap(gdi.getImage(3)); break;
+				case 4: images[pos].setImageBitmap(gdi.getImage(4)); break;
+				case 5: images[pos].setImageBitmap(gdi.getImage(5)); break;
+				case 6: images[pos].setImageBitmap(gdi.getImage(6)); break;
+			}
 		}
 	}
 	
-	/**
-	 * Generate animation for dice
-	 * @return Animation for dice
-	 */
-	private Animation animationFactory(){
-		//Rotate Animation
-		RotateAnimation ra = new RotateAnimation(0,rnd.nextInt(70)-35, 
-				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-		ra.setInterpolator(new LinearInterpolator());
-		ra.setDuration(500);
-		ra.setFillAfter(true);
-		
-		//Scale Animation
-		ScaleAnimation sa = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, 
-				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-		sa.setInterpolator(new LinearInterpolator());
-		sa.setDuration(500);
-		sa.setFillAfter(false);
-		
-		// Animation Set with combination of Rotate and Scale
-		AnimationSet as = new AnimationSet(true);
-	    as.setFillEnabled(true);
-	    as.setFillAfter(true);
-	    as.setInterpolator(new BounceInterpolator());
-	    as.addAnimation(ra);
-	    as.addAnimation(sa);
-		
-	    return as;
-		
-	}
 
 }

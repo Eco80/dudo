@@ -102,6 +102,15 @@ public class DieSet {
 	}
 	
 	/**
+	 * Return true if dice was deleted
+	 * @param i dice number
+	 * @return true if it is deleted
+	 */
+	public boolean isDiceDeleted(int i){
+		return set[i].isDeleted();
+	}
+	
+	/**
 	 * Return number of dice with the value reported
 	 * @param value value to be checked
 	 * @return number of dices

@@ -207,6 +207,7 @@ public class DudoMainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStart();
 		background.setImagebyString(settings);
+		playername.setText(settings.getPlayerName());
 		d.setAnimEnabled(settings.isAnimationActivated());
 	}
 

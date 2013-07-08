@@ -30,19 +30,23 @@ public class Dice implements Comparable<Dice>{
 	
 	private int lastroll;
 	
+	private boolean deleted;
+	
 	/**
 	 * Constructor empty for 1d6
 	 */
 	public Dice(){
 		lastroll = rnd.nextInt(6)+1;
+		deleted = false;
 	}
 	
 	/**
-	 * Constructor empty for 1d6
+	 * Constructor not empty to restore old match
 	 * @param val value of dice
 	 */
 	public Dice(char c){
 		lastroll = Character.getNumericValue(c);
+		deleted = false;
 	}
 		
 	/**
@@ -58,21 +62,21 @@ public class Dice implements Comparable<Dice>{
 	 * @return true if deleted
 	 */
 	public boolean isDeleted(){
-		return (lastroll == 0);
+		return deleted;
 	}
 	
 	/**
 	 * Delete the current dice
 	 */
 	public void delete(){
-		lastroll = 0;
+		deleted = true;
 	}
 	
 	/**
 	 * Restore the current dice
 	 */
 	public void restore(){
-		lastroll = rnd.nextInt(6)+1;
+		deleted = false;
 	}
 	
 	/**
@@ -80,7 +84,7 @@ public class Dice implements Comparable<Dice>{
 	 * @return Value of roll
 	 */
 	public int newRoll(){
-		if (lastroll == 0) return 0;
+		if (deleted) return 0;
 		lastroll = rnd.nextInt(6)+1;
 		return getLastRoll();
 	}
@@ -88,6 +92,7 @@ public class Dice implements Comparable<Dice>{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
+		if(deleted) return "D";
 		return lastroll+"";
 	}
 

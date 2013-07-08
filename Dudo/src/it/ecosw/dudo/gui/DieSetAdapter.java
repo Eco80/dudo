@@ -44,7 +44,6 @@ public class DieSetAdapter extends DieSet {
 		this.anim = anim;
 		this.layouts = layouts;
 		gdi = new GenDiceImage(context);
-		for(int i=0;i<5;i++)images[i].setImageBitmap(gdi.getImage(1));
 		update(anim);
 	}
 
@@ -55,7 +54,6 @@ public class DieSetAdapter extends DieSet {
 		this.anim = anim;
 		this.layouts = layouts;
 		gdi = new GenDiceImage(context);
-		for(int i=0;i<5;i++)images[i].setImageBitmap(gdi.getImage(1));
 		update(anim);
 	}
 	
@@ -104,14 +102,9 @@ public class DieSetAdapter extends DieSet {
 	 * @param true to hide dice
 	 */
 	public void switchDiceHide(){
-		if (!diceHide && this.numDice()!=0){
-			diceHide = true;
-			for (int i=0; i<5; i++) 
-				images[i].setImageBitmap(gdi.getImage(0));
-		} else {
-			diceHide = false;
-			update(false);
-		}
+		if (!diceHide && numDice()!=0) diceHide = true;
+		else diceHide = false;
+		update(false);
 	}
 	
 	/**
@@ -127,34 +120,21 @@ public class DieSetAdapter extends DieSet {
 	 * Update graphics
 	 */
 	private void update(boolean anim){
-		for (int i=0; i < 5; i++ ){
-			updateDice(i);
-			if (getDiceValue(i)!=0 && anim) { 
-				images[i].startAnimation(GenDiceAnimation.animationFactory());
-			} 
+		if(diceHide){
+			for(int i=0;i<5;i++) 
+				images[i].setImageBitmap(gdi.getImage(0));
+			return;
 		}
-	}
-	
-	/**
-	 * Update the imageview for the single dice
-	 * @param pos position of the dice
-	 */
-	private void updateDice(int pos){
-		if (isDiceDeleted(pos)) {
-			images[pos].clearAnimation();
-			layouts[pos].setVisibility(View.GONE);
-		} else {
-			layouts[pos].setVisibility(View.VISIBLE);
-			switch (getDiceValue(pos)) {
-				case 1: images[pos].setImageBitmap(gdi.getImage(1)); break;
-				case 2: images[pos].setImageBitmap(gdi.getImage(2)); break;
-				case 3: images[pos].setImageBitmap(gdi.getImage(3)); break;
-				case 4: images[pos].setImageBitmap(gdi.getImage(4)); break;
-				case 5: images[pos].setImageBitmap(gdi.getImage(5)); break;
-				case 6: images[pos].setImageBitmap(gdi.getImage(6)); break;
+		for (int i=0; i<5; i++ ){
+			if (isDiceDeleted(i)) {
+				images[i].clearAnimation();
+				layouts[i].setVisibility(View.GONE);
+			} else {
+				images[i].setImageBitmap(gdi.getImage(getDiceValue(i)));
+				layouts[i].setVisibility(View.VISIBLE);
+				if(anim)images[i].startAnimation(GenDiceAnimation.animationFactory(900));
 			}
 		}
 	}
 	
-
 }

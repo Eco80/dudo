@@ -37,7 +37,7 @@ public class Dice implements Comparable<Dice>{
 	 */
 	public Dice(){
 		lastroll = rnd.nextInt(6)+1;
-		deleted = false;
+		delete();
 	}
 	
 	/**
@@ -46,7 +46,8 @@ public class Dice implements Comparable<Dice>{
 	 */
 	public Dice(char c){
 		lastroll = Character.getNumericValue(c);
-		deleted = false;
+		if(c=='0') delete();
+		else restore();
 	}
 		
 	/**
@@ -70,6 +71,7 @@ public class Dice implements Comparable<Dice>{
 	 */
 	public void delete(){
 		deleted = true;
+		lastroll=0;
 	}
 	
 	/**
@@ -77,6 +79,7 @@ public class Dice implements Comparable<Dice>{
 	 */
 	public void restore(){
 		deleted = false;
+		lastroll = rnd.nextInt(6)+1;
 	}
 	
 	/**
@@ -92,7 +95,7 @@ public class Dice implements Comparable<Dice>{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		if(deleted) return "D";
+		if(deleted) return "0";
 		return lastroll+"";
 	}
 

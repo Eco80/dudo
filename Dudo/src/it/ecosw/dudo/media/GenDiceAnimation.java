@@ -2,6 +2,9 @@ package it.ecosw.dudo.media;
 
 import java.util.Random;
 
+import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
@@ -36,21 +39,22 @@ public class GenDiceAnimation {
 	
 	/**
 	 * Generate animation for dice
+	 * @param duration
 	 * @return Animation for dice
 	 */
-	public static Animation animationFactory(){
+	public static Animation animationFactory(int duration){
 		//Rotate Animation
 		RotateAnimation ra = new RotateAnimation(0,rnd.nextInt(70)-35, 
 				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 		ra.setInterpolator(new LinearInterpolator());
-		ra.setDuration(600);
+		ra.setDuration(duration);
 		ra.setFillAfter(true);
 			
 		//Scale Animation
 		ScaleAnimation sa = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, 
 				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 		sa.setInterpolator(new LinearInterpolator());
-		sa.setDuration(600);
+		sa.setDuration(duration);
 		sa.setFillAfter(false);
 		
 		// Animation Set with combination of Rotate and Scale
@@ -62,7 +66,25 @@ public class GenDiceAnimation {
 	    as.addAnimation(sa);
 		
 	    return as;
-		
+	}
+	
+	/**
+	 * Return a drawable as sequence of dice value
+	 * @param context app context
+	 * @param gdi Generate Dice Image class
+	 * @param numframe number of total frame
+	 * @param duration duration in ms of each frame
+	 * @param lastvalue last value to show
+	 * @return drawable
+	 */
+	public static AnimationDrawable sequenceFactory(Context context, GenDiceImage gdi, int numframe, int duration, int lastvalue){
+		AnimationDrawable ad = new AnimationDrawable();
+		ad.setOneShot(true);
+		for(int i=0;i<numframe-1;i++){
+			ad.addFrame(new BitmapDrawable(context.getResources(),gdi.getImage(rnd.nextInt(6)+1)), duration);
+		}
+		ad.addFrame(new BitmapDrawable(context.getResources(),gdi.getImage(lastvalue)), duration);
+		return ad;
 	}
 	
 }

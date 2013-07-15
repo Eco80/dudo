@@ -20,118 +20,56 @@ package it.ecosw.dudo.games;
 /**
  * Create the set of dice to be roll
  * @author Enrico Strocchi
- *
  */
-public class DieSet {
+public class DieSet <T extends IDice> implements IDieSet<T>{
 
-	private Dice[] set = null;
+	protected T[] set = null;
 	
 	/**
 	 * Constructor, include 6 dice
 	 */
-	public DieSet() {
+	public DieSet(T[] set) {
 		// TODO Auto-generated constructor stub
-		set = new Dice[5];
-		for(int i=0; i<5; i++) set[i] = new Dice();
+		this.set = set;
 	}
 	
-	/**
-	 * Constructor include 6 defined dice
-	 * @param sorting ture if you want dice ordered in decreasing order
-	 * @param init starting values
-	 */
-	public DieSet(String init){
-		set = new Dice[5];
-		for(int i=0; i<5; i++) set[i] = new Dice(init.charAt(i));
-	}
-	
-	
-	/**
-	 * Remove a Dice from set
-	 * @return Dice Removed
+	/* (non-Javadoc)
+	 * @see it.ecosw.dudo.games.IDieSet#delDice()
 	 */
 	public int delDice(){
-		for (int i=4; i>=0; i--) {
-			if (!set[i].isDeleted()) {
+		for(int i=4;i>=0;i--) {
+			if(!set[i].isDeleted()) {
 				set[i].delete();
-				return i+1;
+				return i;
 			}
 		}
-		return 0;
+		return -1;
 	}
 	
-	/**
-	 * Restore all dice in set
-	 * @param sorting true to sort the dice
-	 */
-	protected void restoreAllDie(boolean sorting){
-		for (int i=0;i<5;i++){
-			set[i].restore();
-		}
-		if(sorting) java.util.Arrays.sort(set);
+	@Override
+	public boolean restoreAllDie(boolean sorting) {
+		// TODO Auto-generated method stub
+		for(int i=0;i<5;i++) set[i].restore();
+		if (sorting) java.util.Arrays.sort(set);
+		return true;
 	}
-	
-	/**
-	 * Return the number of dice in the set
-	 * @return number of dices
-	 */
-	public int numDice(){
-		int j = 0;
-		for (int i=0;i<5;i++) if (!set[i].isDeleted()) j++;
-		return j;
-	}
-	
-	/**
-	 * Roll all the dice in the set
-	 * @param sorting true if you want dice ordered in decreasing order
-	 * @return true if the roll was correct
+
+	/* (non-Javadoc)
+	 * @see it.ecosw.dudo.games.IDieSet#rollSet(boolean)
 	 */
 	public boolean rollSet(boolean sorting){
-			for(int i=0;i<5;i++) set[i].newRoll();
+			for(int i=0;i<5;i++) if(!set[i].isDeleted()) set[i].newRoll();
 			if (sorting) java.util.Arrays.sort(set);
 			return true;
 	}
+		
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		for(int i=0;i<5;i++) if(!set[i].isDeleted()) return false;
+		return true;
+	}
 
-	/**
-	 * Return the value of dices, 0 if it's deleted
-	 * @param i dice number
-	 * @return value of dice
-	 */
-	public int getDiceValue(int i){
-		return set[i].getLastRoll();
-	}
-	
-	/**
-	 * Return true if dice was deleted
-	 * @param i dice number
-	 * @return true if it is deleted
-	 */
-	public boolean isDiceDeleted(int i){
-		return set[i].isDeleted();
-	}
-	
-	/**
-	 * Return number of dice with the value reported
-	 * @param value value to be checked
-	 * @return number of dices
-	 */
-	public int getNumValue(int value){
-		int count = 0;
-		for(int i=0;i<5;i++)
-			if(set[i].getLastRoll()==value) count++;
-		return count;
-	}
-	
-	/**
-	 * Return current status of values
-	 * @return values
-	 */
-	public int[] getValue(){
-		int[] val = new int[5];
-		for(int i=0; i<5;i++) val[i] = set[i].getLastRoll();
-		return val;
-	}
-	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
@@ -141,6 +79,4 @@ public class DieSet {
 		return s;
 	}
 	
-	
-
 }

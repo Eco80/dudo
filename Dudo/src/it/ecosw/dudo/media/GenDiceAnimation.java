@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
@@ -42,7 +43,7 @@ public class GenDiceAnimation {
 	 * @param duration
 	 * @return Animation for dice
 	 */
-	public static Animation animationFactory(int duration){
+	public static Animation animationRollFactory(int duration){
 		//Rotate Animation
 		RotateAnimation ra = new RotateAnimation(0,rnd.nextInt(70)-35, 
 				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -62,6 +63,38 @@ public class GenDiceAnimation {
 	    as.setFillEnabled(true);
 	    as.setFillAfter(true);
 	    as.setInterpolator(new BounceInterpolator());
+	    as.addAnimation(ra);
+	    as.addAnimation(sa);
+		
+	    return as;
+	}
+	
+	/**
+	 * Generate a fade out animation when a dice is deleted
+	 * @param duration duration of the animation
+	 * @return animation
+	 */
+	public static Animation animationDelFactory(int duration){
+		
+		//Rotate Animation
+		RotateAnimation ra = new RotateAnimation(0,720, 
+		Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+		ra.setInterpolator(new LinearInterpolator());
+		ra.setDuration(duration);
+		ra.setFillAfter(true);
+		
+		// Scale Animation
+		ScaleAnimation sa = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f, 
+		Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+		sa.setInterpolator(new LinearInterpolator());
+		sa.setDuration(duration);
+		sa.setFillAfter(true);
+		
+		// Animation Set with combination of Rotate and Scale
+		AnimationSet as = new AnimationSet(true);
+	    as.setFillEnabled(true);
+	    as.setFillAfter(true);
+	    as.setInterpolator(new DecelerateInterpolator());
 	    as.addAnimation(ra);
 	    as.addAnimation(sa);
 		

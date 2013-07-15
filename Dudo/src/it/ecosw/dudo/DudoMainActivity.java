@@ -17,9 +17,12 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import it.ecosw.dudo.gui.DiceAdapter;
+import it.ecosw.dudo.gui.DiceGraphicObjects;
 import it.ecosw.dudo.gui.DieSetAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
 import it.ecosw.dudo.media.Background;
+import it.ecosw.dudo.media.GenDiceImage;
 import it.ecosw.dudo.media.PlayFX;
 import it.ecosw.dudo.settings.SettingsActivity;
 import it.ecosw.dudo.settings.SettingsHelper;
@@ -105,22 +108,6 @@ public class DudoMainActivity extends Activity {
         background = new Background(this, parentLayout);
         background.setImagebyString(settings);
                 
-        // initialize image
-        ImageView[] images = new ImageView[5];
-        images[0] = (ImageView)findViewById(R.id.ImageButton01);
-        images[1] = (ImageView)findViewById(R.id.ImageButton02);
-        images[2] = (ImageView)findViewById(R.id.ImageButton03);
-        images[3] = (ImageView)findViewById(R.id.ImageButton04);
-        images[4] = (ImageView)findViewById(R.id.ImageButton05);
-        
-        // initialize layout
-        RelativeLayout[] layouts = new RelativeLayout[5];
-        layouts[0] = (RelativeLayout)findViewById(R.id.LayoutDice01);
-        layouts[1] = (RelativeLayout)findViewById(R.id.LayoutDice02);
-        layouts[2] = (RelativeLayout)findViewById(R.id.LayoutDice03);
-        layouts[3] = (RelativeLayout)findViewById(R.id.LayoutDice04);
-        layouts[4] = (RelativeLayout)findViewById(R.id.LayoutDice05);
-        
         // Set playerName
         playername = (TextView)findViewById(R.id.playernameTextView);
         playername.setText(settings.getPlayerName());
@@ -130,12 +117,43 @@ public class DudoMainActivity extends Activity {
         chrono.setFormat(getText(R.string.text_time)+" %s");
         chrono.start();
         
+        DiceGraphicObjects[] dgos = new DiceGraphicObjects[5];
+        dgos[0] = new DiceGraphicObjects(
+        		1, 
+        		(ImageView)findViewById(R.id.ImageButton01), 
+        		(RelativeLayout)findViewById(R.id.LayoutDice01)
+        );
+        dgos[1] = new DiceGraphicObjects(
+        		2, 
+        		(ImageView)findViewById(R.id.ImageButton02), 
+        		(RelativeLayout)findViewById(R.id.LayoutDice02)
+        );
+        dgos[2] = new DiceGraphicObjects(
+        		3, 
+        		(ImageView)findViewById(R.id.ImageButton03), 
+        		(RelativeLayout)findViewById(R.id.LayoutDice03)
+        );
+        dgos[3] = new DiceGraphicObjects(
+        		4, 
+        		(ImageView)findViewById(R.id.ImageButton04), 
+        		(RelativeLayout)findViewById(R.id.LayoutDice04)
+        );
+        dgos[4] = new DiceGraphicObjects(
+        		5, 
+        		(ImageView)findViewById(R.id.ImageButton05), 
+        		(RelativeLayout)findViewById(R.id.LayoutDice05)
+        );
+        
         // Create new Dice Set
+        GenDiceImage gdi = new GenDiceImage(this);
+        DiceAdapter[] set = new DiceAdapter[5];
         if (settings.getSavedPlay().equals("00000")) {
-    		d = new DieSetAdapter(this,settings.isSortingActivated(),settings.isAnimationActivated(),images,layouts);
+        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(gdi, dgos[i],settings.isAnimationActivated());
+    		d = new DieSetAdapter(set,dgos,settings.isSortingActivated());
     		Toast.makeText(DudoMainActivity.this,getText(R.string.new_play),Toast.LENGTH_SHORT).show();
         } else {
-        	d = new DieSetAdapter(this,settings.isSortingActivated(),settings.isAnimationActivated(),settings.getSavedPlay(),images,layouts);
+        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(settings.getSavedPlay().charAt(i),gdi, dgos[i],settings.isAnimationActivated());
+        	d = new DieSetAdapter(set,dgos,settings.isSortingActivated());
         	Toast.makeText(DudoMainActivity.this,getText(R.string.last_play_restored),Toast.LENGTH_SHORT).show();
         }
         
@@ -147,6 +165,7 @@ public class DudoMainActivity extends Activity {
 				// TODO Auto-generated method stub
 				if (d.rollSet(settings.isSortingActivated())){;
 					chrono.setBase(SystemClock.elapsedRealtime());
+					chrono.start();
 					fx.playSoundRoll();
 					fx.vibration();
 				}
@@ -161,11 +180,11 @@ public class DudoMainActivity extends Activity {
 				// TODO Auto-generated method stub
 				if (d.delDice()!=0) {
 					chrono.setBase(SystemClock.elapsedRealtime());
+					chrono.stop();
 					fx.playSoundLoseDice();
 					fx.vibration();
-					if (d.numDice()==0) {
+					if (d.isEmpty()) {
 						Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
-						chrono.stop();
 					}
 				}
 			}

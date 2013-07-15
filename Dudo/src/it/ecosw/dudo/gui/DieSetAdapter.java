@@ -17,56 +17,30 @@ package it.ecosw.dudo.gui;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import android.content.Context;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import it.ecosw.dudo.games.DieSet;
-import it.ecosw.dudo.media.GenDiceAnimation;
-import it.ecosw.dudo.media.GenDiceImage;
 
-public class DieSetAdapter extends DieSet {
+public class DieSetAdapter extends DieSet<DiceAdapter> {
 	
-	private ImageView[] images = null;
-	
-	private RelativeLayout[] layouts = null;
-	
-	private boolean anim = true;
+	private DiceGraphicObjects[] dgos = null;
 	
 	private boolean diceHide = false;
 	
-	private GenDiceImage gdi;
-	
-	public DieSetAdapter(Context context, boolean sorting, boolean anim, ImageView[] images, RelativeLayout[] layouts) {
-		super();
+	public DieSetAdapter(DiceAdapter[] set, DiceGraphicObjects[] dgos, boolean sorting) {
+		super(set);
 		// TODO Auto-generated constructor stub
-		this.images = images;
-		this.anim = anim;
-		this.layouts = layouts;
-		gdi = new GenDiceImage(context);
-		update(anim);
+		this.dgos = dgos;
+		for(int i=0;i<5;i++) {
+			set[i].setDgo(dgos[i]);
+			set[i].update();
+		}
 	}
-
-	public DieSetAdapter(Context context, boolean sorting, boolean anim, String init, ImageView[] images, RelativeLayout[] layouts) {
-		super(init);
-		// TODO Auto-generated constructor stub
-		this.images = images;
-		this.anim = anim;
-		this.layouts = layouts;
-		gdi = new GenDiceImage(context);
-		update(anim);
-	}
-	
 
 	/**
 	 * Activate or deactivate animation during dice roll
 	 * @param anim the anim to set
 	 */
 	public void setAnimEnabled(boolean anim) {
-		this.anim = anim;
-		if (anim == false) {
-			for(int i=0;i<5;i++) images[i].setAnimation(null);
-		}
+		for(int i=0;i<5;i++) set[i].setAnimated(anim);
 	}
 	
 		
@@ -77,10 +51,7 @@ public class DieSetAdapter extends DieSet {
 	public int delDice() {
 		// TODO Auto-generated method stub
 		if (diceHide) return 0;
-		int num = super.delDice();
-		if (num == 0) return 0;
-		update(false);
-		return num;
+		return super.delDice();
 	}
 
 
@@ -90,10 +61,13 @@ public class DieSetAdapter extends DieSet {
 	@Override
 	public boolean rollSet(boolean sort) {
 		// TODO Auto-generated method stub
-		if (numDice()==0) restoreAllDie(sort);
 		if (diceHide) return false;
+		if (isEmpty()) restoreAllDie(sort);
 		super.rollSet(sort);
-		update(anim);
+		for(int i=0;i<5;i++) {
+			set[i].setDgo(dgos[i]);
+			set[i].update();
+		}
 		return true;
 	}
 
@@ -102,9 +76,16 @@ public class DieSetAdapter extends DieSet {
 	 * @param true to hide dice
 	 */
 	public void switchDiceHide(){
-		if (!diceHide && numDice()!=0) diceHide = true;
-		else diceHide = false;
-		update(false);
+		if (!diceHide && !isEmpty()) {
+			diceHide = true;
+			for(int i=0;i<5;i++) set[i].hide();
+			return;
+		} 
+		if (diceHide && !isEmpty()) {
+			diceHide = false;
+			for(int i=0;i<5;i++) set[i].show();
+			return;
+		}
 	}
 	
 	/**
@@ -113,28 +94,6 @@ public class DieSetAdapter extends DieSet {
 	 */
 	public void restart(boolean sorting){
 		restoreAllDie(sorting);
-		update(anim);
-	}
-	
-	/**
-	 * Update graphics
-	 */
-	private void update(boolean anim){
-		if(diceHide){
-			for(int i=0;i<5;i++) 
-				images[i].setImageBitmap(gdi.getImage(0));
-			return;
-		}
-		for (int i=0; i<5; i++ ){
-			if (isDiceDeleted(i)) {
-				images[i].clearAnimation();
-				layouts[i].setVisibility(View.GONE);
-			} else {
-				images[i].setImageBitmap(gdi.getImage(getDiceValue(i)));
-				layouts[i].setVisibility(View.VISIBLE);
-				if(anim)images[i].startAnimation(GenDiceAnimation.animationFactory(900));
-			}
-		}
 	}
 	
 }

@@ -24,7 +24,7 @@ import java.util.Random;
  * @author Enrico Strocchi
  *
  */
-public class Dice implements Comparable<Dice>{
+public class Dice implements IDice{
 	
 	private final static Random rnd = new Random();
 	
@@ -37,7 +37,6 @@ public class Dice implements Comparable<Dice>{
 	 */
 	public Dice(){
 		lastroll = rnd.nextInt(6)+1;
-		delete();
 	}
 	
 	/**
@@ -45,49 +44,23 @@ public class Dice implements Comparable<Dice>{
 	 * @param val value of dice
 	 */
 	public Dice(char c){
+		if(c=='0') deleted=true;
 		lastroll = Character.getNumericValue(c);
-		if(c=='0') delete();
-		else restore();
 	}
 		
-	/**
-	 * Return last roll value
-	 * @return last roll
+	/* (non-Javadoc)
+	 * @see it.ecosw.dudo.games.IDice#getLastRoll()
 	 */
 	public int getLastRoll(){
+		if(isDeleted()) return 0;
 		return lastroll;
 	}
 	
-	/**
-	 * Return true if dice is deleted;
-	 * @return true if deleted
-	 */
-	public boolean isDeleted(){
-		return deleted;
-	}
-	
-	/**
-	 * Delete the current dice
-	 */
-	public void delete(){
-		deleted = true;
-		lastroll=0;
-	}
-	
-	/**
-	 * Restore the current dice
-	 */
-	public void restore(){
-		deleted = false;
-		lastroll = rnd.nextInt(6)+1;
-	}
-	
-	/**
-	 * Roll Dice Again
-	 * @return Value of roll
+	/* (non-Javadoc)
+	 * @see it.ecosw.dudo.games.IDice#newRoll()
 	 */
 	public int newRoll(){
-		if (deleted) return 0;
+		if(isDeleted()) return 0;
 		lastroll = rnd.nextInt(6)+1;
 		return getLastRoll();
 	}
@@ -95,16 +68,41 @@ public class Dice implements Comparable<Dice>{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		if(deleted) return "0";
 		return lastroll+"";
 	}
 
+	/* (non-Javadoc)
+	 * @see it.ecosw.dudo.games.IDice#compareTo(it.ecosw.dudo.games.Dice)
+	 */
 	@Override
-	public int compareTo(Dice dice) {
+	public int compareTo(IDice dice) {
 		// TODO Auto-generated method stub
 		if (lastroll > dice.getLastRoll() || lastroll == 0) return 1;
 		else if (lastroll == dice.getLastRoll()) return 0;
 		else return -1;
+	}
+
+	@Override
+	public boolean isDeleted() {
+		// TODO Auto-generated method stub
+		return deleted;
+	}
+
+	@Override
+	public boolean delete() {
+		// TODO Auto-generated method stub
+		if(deleted) return false;
+		deleted = true;
+		lastroll = 0;
+		return true;
+	}
+
+	@Override
+	public int restore() {
+		// TODO Auto-generated method stub
+		if(!deleted) return 0;
+		deleted = false;
+		return newRoll();
 	}
 	
 	

@@ -36,6 +36,7 @@ public class Dice implements IDice{
 	 * Constructor empty for 1d6
 	 */
 	public Dice(){
+		deleted = false;
 		lastroll = rnd.nextInt(6)+1;
 	}
 	
@@ -44,6 +45,7 @@ public class Dice implements IDice{
 	 * @param val value of dice
 	 */
 	public Dice(char c){
+		deleted = false;
 		if(c=='0') deleted=true;
 		lastroll = Character.getNumericValue(c);
 	}
@@ -68,6 +70,7 @@ public class Dice implements IDice{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
+		if(isDeleted()) return "0";
 		return lastroll+"";
 	}
 
@@ -77,7 +80,11 @@ public class Dice implements IDice{
 	@Override
 	public int compareTo(IDice dice) {
 		// TODO Auto-generated method stub
-		if (lastroll > dice.getLastRoll() || lastroll == 0) return 1;
+		if(!isDeleted() && dice.isDeleted()) return -1;
+		else if (isDeleted() && dice.isDeleted()) return 0;
+		else if (isDeleted() && !dice.isDeleted()) return 1;
+		
+		if (lastroll > dice.getLastRoll()) return 1;
 		else if (lastroll == dice.getLastRoll()) return 0;
 		else return -1;
 	}
@@ -93,7 +100,6 @@ public class Dice implements IDice{
 		// TODO Auto-generated method stub
 		if(deleted) return false;
 		deleted = true;
-		lastroll = 0;
 		return true;
 	}
 

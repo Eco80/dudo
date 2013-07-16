@@ -52,7 +52,7 @@ import android.widget.Toast;
  *
  */
 public class DudoMainActivity extends Activity {
-		
+	
 	private DieSetAdapter d = null;
 	
 	private SettingsHelper settings;
@@ -104,10 +104,11 @@ public class DudoMainActivity extends Activity {
         // Sound Management
         fx = new PlayFX(this,settings);
         
+        // Set initial background
         parentLayout = (View) findViewById(R.id.parentLayout);
         background = new Background(this, parentLayout);
-        background.setImagebyString(settings);
-                
+        background.setImagebyString(settings);  
+        
         // Set playerName
         playername = (TextView)findViewById(R.id.playernameTextView);
         playername.setText(settings.getPlayerName());
@@ -117,32 +118,23 @@ public class DudoMainActivity extends Activity {
         chrono.setFormat(getText(R.string.text_time)+" %s");
         chrono.start();
         
+        // Generate static graphic object
         DiceGraphicObjects[] dgos = new DiceGraphicObjects[5];
-        dgos[0] = new DiceGraphicObjects(
-        		1, 
+        dgos[0] = new DiceGraphicObjects(1, 
         		(ImageView)findViewById(R.id.ImageButton01), 
-        		(RelativeLayout)findViewById(R.id.LayoutDice01)
-        );
-        dgos[1] = new DiceGraphicObjects(
-        		2, 
+        		(RelativeLayout)findViewById(R.id.LayoutDice01));
+        dgos[1] = new DiceGraphicObjects(2, 
         		(ImageView)findViewById(R.id.ImageButton02), 
-        		(RelativeLayout)findViewById(R.id.LayoutDice02)
-        );
-        dgos[2] = new DiceGraphicObjects(
-        		3, 
+        		(RelativeLayout)findViewById(R.id.LayoutDice02));
+        dgos[2] = new DiceGraphicObjects(3, 
         		(ImageView)findViewById(R.id.ImageButton03), 
-        		(RelativeLayout)findViewById(R.id.LayoutDice03)
-        );
-        dgos[3] = new DiceGraphicObjects(
-        		4, 
+        		(RelativeLayout)findViewById(R.id.LayoutDice03));
+        dgos[3] = new DiceGraphicObjects(4, 
         		(ImageView)findViewById(R.id.ImageButton04), 
-        		(RelativeLayout)findViewById(R.id.LayoutDice04)
-        );
-        dgos[4] = new DiceGraphicObjects(
-        		5, 
+        		(RelativeLayout)findViewById(R.id.LayoutDice04));
+        dgos[4] = new DiceGraphicObjects(5, 
         		(ImageView)findViewById(R.id.ImageButton05), 
-        		(RelativeLayout)findViewById(R.id.LayoutDice05)
-        );
+        		(RelativeLayout)findViewById(R.id.LayoutDice05));
         
         // Create new Dice Set
         GenDiceImage gdi = new GenDiceImage(this);

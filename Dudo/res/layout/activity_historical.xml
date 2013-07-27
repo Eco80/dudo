@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/historyParent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+    
+    <ListView
+        android:id="@+id/historicalListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/histOkButton"
+        android:layout_margin="5dp" 
+        android:background="@drawable/backbox"
+        android:cacheColorHint="#00000000"
+        tools:listitem="@layout/historical_row">
+    </ListView>
+
+    <Button
+        android:id="@+id/histOkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/text_close" />
+    
+</RelativeLayout>

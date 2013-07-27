@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textRollID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="4dp"
+        android:paddingTop="4dp"
+        android:text="XX)"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:id="@+id/layoutDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" 
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/textRollID"
+        android:paddingBottom="4dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/textRollDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="XX-XX-XXXX"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+        <TextView
+            android:id="@+id/textRollTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="XX:XX"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageHistDice1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageHistDice5"
+        android:layout_toLeftOf="@+id/imageHistDice2"
+        android:contentDescription="@string/dice1_description"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/dice_empty" />
+
+    <ImageView
+        android:id="@+id/imageHistDice2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageHistDice5"
+        android:layout_toLeftOf="@+id/imageHistDice3"
+        android:contentDescription="@string/dice2_description"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/dice_empty" />
+
+    <ImageView
+        android:id="@+id/imageHistDice3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageHistDice5"
+        android:layout_toLeftOf="@+id/imageHistDice4"
+        android:contentDescription="@string/dice3_description"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/dice_empty" />
+
+    <ImageView
+        android:id="@+id/imageHistDice4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageHistDice5"
+        android:layout_toLeftOf="@+id/imageHistDice5"
+        android:contentDescription="@string/dice4_description"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/dice_empty" />
+
+    <ImageView
+        android:id="@+id/imageHistDice5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/dice5_description"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="12dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/dice_empty" />
+
+</RelativeLayout>

@@ -17,7 +17,7 @@ package it.ecosw.dudo.media;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import it.ecosw.dudo.settings.SettingsHelper;
+import it.ecosw.dudo.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,6 +31,38 @@ import android.view.View;
  *
  */
 public class Background {
+	
+	/**
+	 * Enum with the list of background images
+	 * @author Enrico Strocchi
+	 */
+	private enum EnumImageBackground {
+		GREENCARPET(R.drawable.green_carpet),
+		PARTYLIGHT(R.drawable.partylight),
+		WOOD(R.drawable.wood),
+		GALAXY(R.drawable.galaxy),
+		LAVA(R.drawable.lava),
+		ROCK(R.drawable.rock),
+		SOCCER(R.drawable.soccer);
+		
+		private int imageid;
+		
+		/**
+		 * Constructors
+		 * @param id Image id
+		 */
+		private EnumImageBackground(int id){
+			imageid = id;
+		}
+		
+		/**
+		 * Get ID of image
+		 * @return id of image
+		 */
+		public int getImageId(){
+			return imageid;
+		}
+	}
 	
 	private Context context;
 	
@@ -48,16 +80,16 @@ public class Background {
 	/**
 	 * Set image or solid color
 	 * solor color if string start with '#' otherwise is considered as image
-	 * image shall be indicated with the same name in ImageBackground class
+	 * image shall be indicated with the same name in EnumImageBackground class
 	 * @param isimage true if is a image
 	 * @param color Solid color
 	 * @param image Image name
 	 */
-	public void setImagebyString(SettingsHelper setting){
-		if(!setting.isImageBackgroundType()) setSolidColor(setting.getColorBackground());
+	public void setBackground(BackgroundStatus status){
+		if(!status.isImage()) setSolidColor(status.getColor());
 		else {
-			for (ImageBackground st : ImageBackground.values()) {
-		        if (setting.getImageBackground().equals(st.name())) {
+			for (EnumImageBackground st : EnumImageBackground.values()) {
+				if (status.getImage().equals(st.name())) {
 		        	setImageBackground(st);
 		        	break;
 		        }
@@ -69,7 +101,7 @@ public class Background {
 	 * Set one image as background
 	 * @param ib image to set
 	 */
-	private void setImageBackground(ImageBackground ib){
+	private void setImageBackground(EnumImageBackground ib){
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(),ib.getImageId());
 	    BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(),bmp);
 	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);

@@ -17,10 +17,15 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
+import java.util.Date;
 import it.ecosw.dudo.gui.DiceAdapter;
 import it.ecosw.dudo.gui.DiceGraphicObjects;
 import it.ecosw.dudo.gui.DieSetAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
+import it.ecosw.dudo.historical.HistoryActivity;
+import it.ecosw.dudo.historical.RollData;
+import it.ecosw.dudo.historical.SqlHelper;
 import it.ecosw.dudo.media.Background;
 import it.ecosw.dudo.media.GenDiceImage;
 import it.ecosw.dudo.media.PlayFX;
@@ -34,6 +39,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +59,8 @@ import android.widget.Toast;
  */
 public class DudoMainActivity extends Activity {
 	
+	protected static final int SUB_ACTIVITY_HISTORY = 100;
+	
 	private DieSetAdapter d = null;
 	
 	private SettingsHelper settings;
@@ -68,6 +76,8 @@ public class DudoMainActivity extends Activity {
 	private TextView playername;
 	
 	private Chronometer chrono;
+	
+	private SqlHelper historian;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +100,8 @@ public class DudoMainActivity extends Activity {
 			Toast.makeText(DudoMainActivity.this,getText(R.string.package_not_found),Toast.LENGTH_SHORT).show();
 		}
         
+        historian = new SqlHelper(this);
+        
         // Load setting object
         settings = new SettingsHelper(this);
         
@@ -107,7 +119,7 @@ public class DudoMainActivity extends Activity {
         // Set initial background
         parentLayout = (View) findViewById(R.id.parentLayout);
         background = new Background(this, parentLayout);
-        background.setImagebyString(settings);  
+        background.setBackground(settings.getBackgroundStatus());  
         
         // Set playerName
         playername = (TextView)findViewById(R.id.playernameTextView);
@@ -155,7 +167,8 @@ public class DudoMainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (d.rollSet(settings.isSortingActivated())){;
+				if (!d.isEmpty()) historian.insertRoll(settings.getPlayerName(),d.toString(), new Date(),settings.getHistoryNumElement());
+				if (d.rollSet(settings.isSortingActivated())){					
 					chrono.setBase(SystemClock.elapsedRealtime());
 					chrono.start();
 					fx.playSoundRoll();
@@ -178,6 +191,11 @@ public class DudoMainActivity extends Activity {
 					if (d.isEmpty()) {
 						Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
 					}
+					Log.i("DUDO", "Element: "+historian.countRow());
+					ArrayList<RollData> list = historian.getRollData();
+					for(int i=0;i<list.size();i++){
+						Log.i("DUDO", list.get(i).toString());
+					}
 				}
 			}
 		});
@@ -196,7 +214,7 @@ public class DudoMainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_perudo_main, menu);
+        getMenuInflater().inflate(R.menu.dudo_menu, menu);
         return true;
     }
     
@@ -217,7 +235,7 @@ public class DudoMainActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		background.setImagebyString(settings);
+		background.setBackground(settings.getBackgroundStatus());
 		playername.setText(settings.getPlayerName());
 		d.setAnimEnabled(settings.isAnimationActivated());
 	}
@@ -230,6 +248,14 @@ public class DudoMainActivity extends Activity {
     		d.restart(settings.isSortingActivated());
     		fx.playSoundRoll();
     		fx.vibration();
+    		return true;
+    	
+    	case R.id.menu_history:
+    		Intent i = new Intent(this,HistoryActivity.class);
+    		Bundle b = new Bundle();
+    		b.putSerializable("BACKGROUND", settings.getBackgroundStatus());
+    		i.putExtras(b);
+    		startActivityForResult(i,SUB_ACTIVITY_HISTORY);
     		return true;
     	
     	case R.id.menu_settings:

@@ -18,6 +18,7 @@ package it.ecosw.dudo.settings;
  */
 
 import it.ecosw.dudo.R;
+import it.ecosw.dudo.media.BackgroundStatus;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -50,6 +51,8 @@ public class SettingsHelper {
 	public static final String LASTVERSIONRUN_SETTING = "lastversionrun_setting";
 	
 	public static final String SAVEDPLAY_SETTING = "savedplay_setting";
+	
+	public static final String HISTORYELEMENT_SETTING = "historyelement_setting";
 	
 	/**
 	 * Constructor
@@ -92,28 +95,27 @@ public class SettingsHelper {
 	}
 	
 	/**
-	 * Return true if background shall be an image
-	 * @return true if background shall be an image
+	 * Return the number of element in history
+	 * @return history number of element
 	 */
-	public boolean isImageBackgroundType(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(BACKGROUNDTYPE_SETTING, true);
+	public int getHistoryNumElement(){
+		String num = PreferenceManager.getDefaultSharedPreferences(mContext).getString(HISTORYELEMENT_SETTING, "100");
+		return Integer.parseInt(num);
 	}
 	
 	/**
-	 * Return the color for the background
-	 * @return color for the background
+	 * Return the background status
+	 * @return background status
 	 */
-	public int getColorBackground(){
-		//return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_SOLIDCOLOR_SETTING, "#22FF22");
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUND_SOLIDCOLOR_SETTING,0);
-	}
-	
-	/**
-	 * Return the image for the background
-	 * @return image for the background
-	 */
-	public String getImageBackground(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_IMAGE_SETTING, "GREENCARPET");
+	public BackgroundStatus getBackgroundStatus(){
+		boolean isimage = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(BACKGROUNDTYPE_SETTING, true);
+		if(!isimage) {
+			int color = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUND_SOLIDCOLOR_SETTING,0);
+			return new BackgroundStatus(color);
+		} else {
+			String image = PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_IMAGE_SETTING, "GREENCARPET");
+			return new BackgroundStatus(image);
+		}
 	}
 	
 	/**

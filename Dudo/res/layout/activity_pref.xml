@@ -25,6 +25,12 @@
         android:title="@string/vibration_setting_title"
         android:summary="@string/vibration_setting_summ"
         android:defaultValue="true" />
+     <EditTextPreference
+        android:key="historyelement_setting"
+        android:title="@string/historyelement_setting_title"
+        android:summary="@string/historyelement_setting_summ"
+        android:inputType="number"
+        android:defaultValue="100" />
      <PreferenceCategory android:title="@string/background_category_setting">
      <CheckBoxPreference
         android:key="backgroundtype_setting"

@@ -25,6 +25,7 @@
     
     <!-- Description menu elements -->
     <string name="menu_restart">Restart</string>
+    <string name="menu_history">History</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_help">Help</string>
     <string name="menu_about">About</string>
@@ -55,6 +56,8 @@
 	<string name="sorting_setting_summ">Enable to show dices in increasing order</string>
 	<string name="vibration_setting_title">Vibration</string>
 	<string name="vibration_setting_summ">Enable the vibration during rolldice</string>
+	<string name="historyelement_setting_title">History number of elements</string>
+	<string name="historyelement_setting_summ">Define number of elements to show in history</string>
 	<string name="background_category_setting">Background</string>
 	<string name="backgroundtype_setting_title">Use image as backgroud</string>
 	<string name="backgroundtype_setting_summary">Enable to use an image as background, disable for solid color</string>

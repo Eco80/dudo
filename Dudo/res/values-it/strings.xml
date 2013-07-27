@@ -25,6 +25,7 @@
     
     <!-- Description menu elements -->
     <string name="menu_restart">Ricomincia</string>
+    <string name="menu_history">Storia</string>
     <string name="menu_settings">Preferenze</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_about">About</string>
@@ -55,6 +56,8 @@
 	<string name="sorting_setting_summ">Abilita per mostrare i dadi in ordine crescente</string>
 	<string name="vibration_setting_title">Vibrazione</string>
 	<string name="vibration_setting_summ">Abilita la vibrazione quando si lanciano i dadi</string>
+	<string name="historyelement_setting_title">Elementi nello storico</string>
+	<string name="historyelement_setting_summ">Definisci il numero di elementi da visualizzare nello storico</string>	
 	<string name="background_category_setting">Sfondo</string>
 	<string name="backgroundtype_setting_title">Usa immagine per lo sfondo</string>
 	<string name="backgroundtype_setting_summary">Abilita per utilizzare una immagine come sfondo, disabilita per usare un colore</string>

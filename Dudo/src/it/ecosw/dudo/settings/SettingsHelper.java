@@ -21,6 +21,7 @@ import it.ecosw.dudo.R;
 import it.ecosw.dudo.media.BackgroundStatus;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 
 /**
@@ -42,9 +43,13 @@ public class SettingsHelper {
 	
 	public static final String VIBRATION_SETTING = "vibration_setting";
 	
+	public static final String STYLE_SETTING = "style_setting";
+	
 	public static final String BACKGROUNDTYPE_SETTING = "backgroundtype_setting";
 	
 	public static final String BACKGROUND_SOLIDCOLOR_SETTING = "background_solidcolor_setting";
+	
+	public static final String BACKGROUD_TEXTCOLOR_SETTING = "background_textcolor_setting";
 	
 	public static final String BACKGROUND_IMAGE_SETTING = "background_image_setting";
 	
@@ -104,17 +109,26 @@ public class SettingsHelper {
 	}
 	
 	/**
+	 * Return the style for die
+	 * @return description of style for dice
+	 */
+	public String getStyle(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(STYLE_SETTING, "CLASSIC");
+	}
+	
+	/**
 	 * Return the background status
 	 * @return background status
 	 */
 	public BackgroundStatus getBackgroundStatus(){
 		boolean isimage = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(BACKGROUNDTYPE_SETTING, true);
+		int textcolor = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUD_TEXTCOLOR_SETTING,Color.BLACK);
 		if(!isimage) {
-			int color = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUND_SOLIDCOLOR_SETTING,0);
-			return new BackgroundStatus(color);
+			int backcolor = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(BACKGROUND_SOLIDCOLOR_SETTING,0);
+			return new BackgroundStatus(backcolor,textcolor);
 		} else {
 			String image = PreferenceManager.getDefaultSharedPreferences(mContext).getString(BACKGROUND_IMAGE_SETTING, "GREENCARPET");
-			return new BackgroundStatus(image);
+			return new BackgroundStatus(image,textcolor);
 		}
 	}
 	

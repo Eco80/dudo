@@ -31,6 +31,13 @@
         android:summary="@string/historyelement_setting_summ"
         android:inputType="number"
         android:defaultValue="100" />
+      <ListPreference
+        android:key="style_setting"
+        android:title="@string/style_setting_title"
+        android:summary="@string/style_setting_summ"
+        android:defaultValue="CLASSIC"
+        android:entries="@array/style_name"
+        android:entryValues="@array/style_value" />
      <PreferenceCategory android:title="@string/background_category_setting">
      <CheckBoxPreference
         android:key="backgroundtype_setting"
@@ -39,8 +46,13 @@
         android:defaultValue="true" />
      <net.margaritov.preference.colorpicker.ColorPickerPreference
         android:key="background_solidcolor_setting"
-        android:title="@string/pickccolor_setting_title"
-        android:summary="@string/pickccolor_setting_summary"
+        android:title="@string/solidcolor_setting_title"
+        android:summary="@string/solidcolor_setting_summary"
+        android:defaultValue="@color/White"/>
+     <net.margaritov.preference.colorpicker.ColorPickerPreference
+        android:key="background_textcolor_setting"
+        android:title="@string/textcolor_setting_title"
+        android:summary="@string/textcolor_setting_summary"
         android:defaultValue="@color/Black"/>
      <ListPreference
         android:key="background_image_setting"

@@ -24,25 +24,29 @@ public class BackgroundStatus implements Serializable {
 	private static final long serialVersionUID = 151317204284453887L;
 
 	private boolean isimage;
-	private int color;
+	private int colorbackground;
+	private int colortext;
 	private String image;
 	
 	/**
-	 * Constructor to set background as solid color
-	 * @param color solid color
+	 * Constructor to set background as solid colorbackground
+	 * @param colorbackground solid colorbackground
+	 * @param colortext color of text in the background
 	 */
-	public BackgroundStatus(int color){
+	public BackgroundStatus(int colorBackground, int colorText){
 		isimage = false;
-		this.color = color;
+		this.colorbackground = colorBackground;
+		this.colortext = colorText;
 	}
 	
 	/**
 	 * Constructor to set background as image
 	 * @param image id of background image
 	 */
-	public BackgroundStatus(String image){
+	public BackgroundStatus(String image, int colorText){
 		isimage = true;
 		this.image = image;
+		this.colortext = colorText;
 	}
 
 	/**
@@ -54,11 +58,19 @@ public class BackgroundStatus implements Serializable {
 	}
 
 	/**
-	 * Return the solid color of background
-	 * @return the color
+	 * Return the solid colorbackground of background
+	 * @return the colorbackground
 	 */
-	public int getColor() {
-		return color;
+	public int getColorBackground() {
+		return colorbackground;
+	}
+	
+	/**
+	 * Return color for text in the background
+	 * @return color for text in the background
+	 */
+	public int getColorText(){
+		return colortext;
 	}
 
 	/**

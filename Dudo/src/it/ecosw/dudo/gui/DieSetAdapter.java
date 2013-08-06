@@ -43,7 +43,6 @@ public class DieSetAdapter extends DieSet<DiceAdapter> {
 		for(int i=0;i<5;i++) set[i].setAnimated(anim);
 	}
 	
-		
 	/* (non-Javadoc)
 	 * @see it.ecosw.dudo.games.DieSet#delDice()
 	 */

@@ -17,12 +17,17 @@ package it.ecosw.dudo.media;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Picture;
+import android.graphics.Rect;
 import it.ecosw.dudo.R;
 
 /**
@@ -31,17 +36,37 @@ import it.ecosw.dudo.R;
  */
 public class GenDiceImage {
 	
+	public final static String CLASSIC = "CLASSIC";
+	public final static String ANDROID = "ANDROID";
+	
 	private Bitmap[] images;
+	private String current;
+	private Context context;
 	
 	/**
 	 * Constructor
 	 * @param context context of the apps
+	 * @param style of dice image
 	 */
-	public GenDiceImage(Context context){
+	public GenDiceImage(Context context,String style){
+		this.context = context;
 		images = new Bitmap[7];
+		current = style;
 		for(int i=0;i<7;i++) {
-			images[i] = genImage(context,i);
+			images[i] = genImage(context,i,style);
 		}
+	}
+	
+	/**
+	 * Replace current style
+	 * @param style new style
+	 * @return true if the style was changed
+	 */
+	public boolean setStyle(String style){
+		if(current.equals(style)) return false;
+		current = style;
+		for(int i=0;i<7;i++) images[i] = genImage(context,i,style);
+		return true;
 	}
 	
 	/**
@@ -55,25 +80,40 @@ public class GenDiceImage {
 	}
 	
 	/**
+	 * Return name of current dice style
+	 * @return name of current dice style
+	 */
+	public String getCurrent(){
+		return current;
+	}
+	
+	/**
 	 * Generate a bitmap for the dice
 	 * @param context app context
 	 * @param value value of dice
+	 * @param style style for dice
 	 * @return bitmap object
 	 */
-	private static Bitmap genImage(Context context, int value) {
+	private static Bitmap genImage(Context context, int value, String style) {
 		//Create a new image bitmap and attach a brand new canvas to it
 		Options options = new BitmapFactory.Options();
 		options.inScaled = false;
 		options.inDither = false;
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.dice_empty,options).copy(Bitmap.Config.ARGB_8888, true);
-		Bitmap dot;
-		dot = BitmapFactory.decodeResource(context.getResources(), R.drawable.redpoint,options).copy(Bitmap.Config.ARGB_8888, true);
+		Bitmap dot = null;
+		Bitmap lama = null;
+		if (style.equals(CLASSIC)){
+			dot = getBitmapFromSVG(context, R.drawable.svgredpoint,(int)Math.round(bm.getWidth()/5),(int)Math.round(bm.getHeight()/5));
+			lama = getBitmapFromSVG(context,R.drawable.svglama,(int)Math.round(bm.getWidth()/1.5),(int)Math.round(bm.getHeight()/1.5));
+		} else if(style.equals(ANDROID)){
+			dot = getBitmapFromSVG(context, R.drawable.svggreenpoint,(int)Math.round(bm.getWidth()/5),(int)Math.round(bm.getHeight()/5));
+			lama = getBitmapFromSVG(context,R.drawable.svgandroid,(int)Math.round(bm.getWidth()/1.5),(int)Math.round(bm.getHeight()/1.5));
+		}
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		Canvas canvas = new Canvas(bm);
 		switch(value){
 		case(1):
-			Bitmap lama = BitmapFactory.decodeResource(context.getResources(), R.drawable.lama,options).copy(Bitmap.Config.ARGB_8888, true);
 			canvas.drawBitmap(lama,bm.getWidth()/2-lama.getWidth()/2, bm.getHeight()/2-lama.getHeight()/2, paint);
 			break;
 		case(2):
@@ -108,6 +148,30 @@ public class GenDiceImage {
 			break;
 		}
 		return bm;
+	}
+	
+	/**
+	 * Convert a SVG saved between the resources in a Bitmap
+	 * @param context App context
+	 * @param resourceId ID of svg
+	 * @param width final width
+	 * @param height final height
+	 * @return bitmap
+	 * @throws SVGParseException svg parsing exception
+	 */
+	private static Bitmap getBitmapFromSVG(Context context, int resourceId, int width, int height){
+		Picture picture = null;
+		try {
+			picture = SVG.getFromResource(context, resourceId).renderToPicture();
+		} catch (SVGParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(0);
+		}
+		Bitmap bmp = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+		Canvas canvas = new Canvas(bmp);
+		canvas.drawPicture(picture, new Rect(0,0,width,height));
+		return bmp;
 	}
 
 }

@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.widget.TextView;
 
 /**
  * Class to change background image or color
@@ -52,7 +53,7 @@ public class Background {
 		 * @param id Image id
 		 */
 		private EnumImageBackground(int id){
-			imageid = id;
+			this.imageid = id;
 		}
 		
 		/**
@@ -62,19 +63,23 @@ public class Background {
 		public int getImageId(){
 			return imageid;
 		}
+		
 	}
 	
 	private Context context;
 	
 	private View parentLayout;
 	
+	private TextView[] text;
+	
 	/**
 	 * Constructor
 	 * @param context App context
 	 */
-	public Background(Context context,View parentLayout){
+	public Background(Context context,View parentLayout, TextView[] text){
 		this.context = context;
 		this.parentLayout = parentLayout;
+		this.text = text;
 	}
 	
 	/**
@@ -86,11 +91,11 @@ public class Background {
 	 * @param image Image name
 	 */
 	public void setBackground(BackgroundStatus status){
-		if(!status.isImage()) setSolidColor(status.getColor());
+		if(!status.isImage()) setSolidColor(status.getColorBackground(),status.getColorText());
 		else {
 			for (EnumImageBackground st : EnumImageBackground.values()) {
 				if (status.getImage().equals(st.name())) {
-		        	setImageBackground(st);
+		        	setImageBackground(st,status.getColorText());
 		        	break;
 		        }
 		    }
@@ -100,21 +105,33 @@ public class Background {
 	/**
 	 * Set one image as background
 	 * @param ib image to set
+	 * @param textcolor for text in the background
 	 */
-	private void setImageBackground(EnumImageBackground ib){
+	private void setImageBackground(EnumImageBackground ib, int textcolor){
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(),ib.getImageId());
 	    BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(),bmp);
 	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 		parentLayout.setBackgroundDrawable(bitmapDrawable);
+		if(text != null) {
+			for(int i=0;i<text.length;i++){
+				text[i].setTextColor(textcolor);
+			}
+		}
 	}
 	
 	/**
 	 * Set the background to the solid color passed by parametes
 	 * @param color new color of background
+	 * @param textcolor for text in the background
 	 */
-	private void setSolidColor(int color){
+	private void setSolidColor(int color, int textcolor){
 		//parentLayout.setBackgroundColor(Color.parseColor(color));
 		parentLayout.setBackgroundColor(color);
+		if(text != null) {
+			for(int i=0;i<text.length;i++){
+				text[i].setTextColor(textcolor);
+			}
+		}
 	}
 	
 }

@@ -79,6 +79,8 @@ public class DudoMainActivity extends Activity {
 	
 	private SqlHelper historian;
 	
+	private GenDiceImage gdi;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,11 +118,6 @@ public class DudoMainActivity extends Activity {
         // Sound Management
         fx = new PlayFX(this,settings);
         
-        // Set initial background
-        parentLayout = (View) findViewById(R.id.parentLayout);
-        background = new Background(this, parentLayout);
-        background.setBackground(settings.getBackgroundStatus());  
-        
         // Set playerName
         playername = (TextView)findViewById(R.id.playernameTextView);
         playername.setText(settings.getPlayerName());
@@ -129,6 +126,12 @@ public class DudoMainActivity extends Activity {
         chrono = (Chronometer)findViewById(R.id.chronometer);
         chrono.setFormat(getText(R.string.text_time)+" %s");
         chrono.start();
+        
+        // Set initial background
+        TextView[] text = new TextView[]{playername,chrono};
+        parentLayout = (View) findViewById(R.id.parentLayout);
+        background = new Background(this, parentLayout,text);
+        background.setBackground(settings.getBackgroundStatus());  
         
         // Generate static graphic object
         DiceGraphicObjects[] dgos = new DiceGraphicObjects[5];
@@ -149,14 +152,14 @@ public class DudoMainActivity extends Activity {
         		(RelativeLayout)findViewById(R.id.LayoutDice05));
         
         // Create new Dice Set
-        GenDiceImage gdi = new GenDiceImage(this);
+        gdi = new GenDiceImage(this, settings.getStyle());
         DiceAdapter[] set = new DiceAdapter[5];
         if (settings.getSavedPlay().equals("00000")) {
-        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(gdi, dgos[i],settings.isAnimationActivated());
+        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(gdi,dgos[i],settings.isAnimationActivated());
     		d = new DieSetAdapter(set,dgos,settings.isSortingActivated());
     		Toast.makeText(DudoMainActivity.this,getText(R.string.new_play),Toast.LENGTH_SHORT).show();
         } else {
-        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(settings.getSavedPlay().charAt(i),gdi, dgos[i],settings.isAnimationActivated());
+        	for(int i=0;i<5;i++) set[i] = new DiceAdapter(settings.getSavedPlay().charAt(i),gdi,dgos[i],settings.isAnimationActivated());
         	d = new DieSetAdapter(set,dgos,settings.isSortingActivated());
         	Toast.makeText(DudoMainActivity.this,getText(R.string.last_play_restored),Toast.LENGTH_SHORT).show();
         }
@@ -238,6 +241,9 @@ public class DudoMainActivity extends Activity {
 		background.setBackground(settings.getBackgroundStatus());
 		playername.setText(settings.getPlayerName());
 		d.setAnimEnabled(settings.isAnimationActivated());
+		if(!gdi.getCurrent().equals(settings.getStyle())) {
+			gdi.setStyle(settings.getStyle());
+		}
 	}
 
 	@Override
@@ -254,6 +260,7 @@ public class DudoMainActivity extends Activity {
     		Intent i = new Intent(this,HistoryActivity.class);
     		Bundle b = new Bundle();
     		b.putSerializable("BACKGROUND", settings.getBackgroundStatus());
+    		b.putString("STYLE", settings.getStyle());
     		i.putExtras(b);
     		startActivityForResult(i,SUB_ACTIVITY_HISTORY);
     		return true;
@@ -278,5 +285,5 @@ public class DudoMainActivity extends Activity {
     		return super.onOptionsItemSelected(item);
     	}
 	}
-
+	
 }

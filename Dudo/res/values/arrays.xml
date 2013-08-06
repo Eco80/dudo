@@ -17,4 +17,12 @@
         <item>ROCK</item>
         <item>SOCCER</item>
     </string-array>
+    <string-array name="style_name">
+        <item>@string/style_classic</item>
+        <item>@string/style_android</item>
+    </string-array>
+    <string-array name="style_value">
+        <item>CLASSIC</item>
+        <item>ANDROID</item>
+    </string-array>
 </resources>

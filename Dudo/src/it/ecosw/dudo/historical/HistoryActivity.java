@@ -28,12 +28,11 @@ public class HistoryActivity extends Activity implements OnClickListener {
 
         Bundle bundle = (Bundle)this.getIntent().getExtras();
         BackgroundStatus status = (BackgroundStatus)bundle.getSerializable("BACKGROUND");
-        Background back = new Background(this, (View)findViewById(R.id.historyParent));
+        Background back = new Background(this, (View)findViewById(R.id.historyParent),null);
         back.setBackground(status);
         
-        
         SqlHelper hysto = new SqlHelper(this);
-        GenDiceImage gdi = new GenDiceImage(this);
+        GenDiceImage gdi = new GenDiceImage(this, bundle.getString("STYLE"));
         
         ListView lv = (ListView)findViewById(R.id.historicalListView);
         RollData[] rolls = hysto.getRollData().toArray(new RollData[hysto.countRow()]);

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.ecosw.dudo"
-    android:versionCode="12"
-    android:versionName="0.5.0 @ 27th-Jul-13" >
+    android:versionCode="13"
+    android:versionName="0.5.1 @ 6th-Ago-13" >
 
     <uses-sdk
         android:minSdkVersion="8"

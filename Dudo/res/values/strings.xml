@@ -58,11 +58,15 @@
 	<string name="vibration_setting_summ">Enable the vibration during rolldice</string>
 	<string name="historyelement_setting_title">History number of elements</string>
 	<string name="historyelement_setting_summ">Define number of elements to show in history</string>
+	<string name="style_setting_title">Die style</string>
+	<string name="style_setting_summ">Set the style for die</string>
 	<string name="background_category_setting">Background</string>
 	<string name="backgroundtype_setting_title">Use image as backgroud</string>
 	<string name="backgroundtype_setting_summary">Enable to use an image as background, disable for solid color</string>
-	<string name="pickccolor_setting_title">Choose solid color</string>
-	<string name="pickccolor_setting_summary">Choose the background solid color</string>
+	<string name="solidcolor_setting_title">Choose solid background color</string>
+	<string name="solidcolor_setting_summary">Choose the background solid color</string>
+	<string name="textcolor_setting_title">Choose solid text color</string>
+	<string name="textcolor_setting_summary">Choose the text color in background</string>
 	<string name="background_color_setting_title">Choose background image</string>
 	<string name="background_color_setting_summ">Change the background image</string>
 	
@@ -74,7 +78,11 @@
 	<string name="pattern_lava">Lava</string>
 	<string name="pattern_rock">Rock</string>
 	<string name="pattern_soccer">Soccer</string>
-	
+
+	<!-- Style -->
+	<string name="style_classic">Classic</string>
+	<string name="style_android">Android</string>
+		
 	<!-- Color Picker -->
     <string name="dialog_color_picker">Color Picker</string>
     <string name="press_color_to_apply">Press on Color to apply</string>    

@@ -30,15 +30,15 @@ public class DiceAdapter extends Dice {
 	
 	private final static int ANIMATIONTIME = 900; 
 	
-	private GenDiceImage gdi;
-	
 	private boolean anim;
 	
 	private boolean hide;
 	
+	private GenDiceImage gdi;
+	
 	private DiceGraphicObjects dgo;
 	
-	public DiceAdapter(GenDiceImage gdi, DiceGraphicObjects dgo, boolean animation) {
+	public DiceAdapter(GenDiceImage gdi,DiceGraphicObjects dgo, boolean animation) {
 		super();
 		// TODO Auto-generated constructor stub
 		this.gdi = gdi;
@@ -51,7 +51,7 @@ public class DiceAdapter extends Dice {
 		else dgo.getImage().setAnimation(null);
 	}
 
-	public DiceAdapter(char c, GenDiceImage gdi, DiceGraphicObjects dgo, boolean animation) {
+	public DiceAdapter(char c,GenDiceImage gdi, DiceGraphicObjects dgo, boolean animation) {
 		super(c);
 		// TODO Auto-generated constructor stub
 		this.gdi = gdi;

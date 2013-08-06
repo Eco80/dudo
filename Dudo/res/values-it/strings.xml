@@ -58,11 +58,15 @@
 	<string name="vibration_setting_summ">Abilita la vibrazione quando si lanciano i dadi</string>
 	<string name="historyelement_setting_title">Elementi nello storico</string>
 	<string name="historyelement_setting_summ">Definisci il numero di elementi da visualizzare nello storico</string>	
+	<string name="style_setting_title">Stile dei dadi</string>
+	<string name="style_setting_summ">Imposta lo stile dei dadi</string>
 	<string name="background_category_setting">Sfondo</string>
 	<string name="backgroundtype_setting_title">Usa immagine per lo sfondo</string>
 	<string name="backgroundtype_setting_summary">Abilita per utilizzare una immagine come sfondo, disabilita per usare un colore</string>
-	<string name="pickccolor_setting_title">Scegli il colore</string>
-	<string name="pickccolor_setting_summary">Scegli un colore per lo sfondo</string>
+	<string name="solidcolor_setting_title">Colore di sfondo</string>
+	<string name="solidcolor_setting_summary">Scegli il colore dello sfondo</string>
+	<string name="textcolor_setting_title">Colore del testo</string>
+	<string name="textcolor_setting_summary">Scegli il colore del testo nello sfondo</string>
 	<string name="background_color_setting_title">Immagine di sfondo</string>
 	<string name="background_color_setting_summ">Scegli l\'immagine di sfondo</string>
 	
@@ -73,7 +77,11 @@
 	<string name="pattern_galaxy">Galassia</string>
 	<string name="pattern_lava">Lava</string>
 	<string name="pattern_rock">Roccia</string>
-	<string name="pattern_soccer">Campo Calcio</string>
+	<string name="pattern_soccer">Campo da Calcio</string>
+	
+	<!-- Style -->
+	<string name="style_classic">Classico</string>
+	<string name="style_android">Android</string>
 	
 	<!-- Preferences -->
     <string name="pref_category">Categoria</string>

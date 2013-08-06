@@ -11,6 +11,8 @@ public final class R {
     public static final class array {
         public static final int colors_name=0x7f050000;
         public static final int colors_value=0x7f050001;
+        public static final int style_name=0x7f050002;
+        public static final int style_value=0x7f050003;
     }
     public static final class attr {
     }
@@ -166,13 +168,15 @@ public final class R {
         public static final int green_carpet=0x7f020003;
         public static final int ic_help=0x7f020004;
         public static final int ic_launcher=0x7f020005;
-        public static final int lama=0x7f020006;
-        public static final int lava=0x7f020007;
-        public static final int partylight=0x7f020008;
-        public static final int redpoint=0x7f020009;
-        public static final int rock=0x7f02000a;
-        public static final int soccer=0x7f02000b;
-        public static final int wood=0x7f02000c;
+        public static final int lava=0x7f020006;
+        public static final int partylight=0x7f020007;
+        public static final int rock=0x7f020008;
+        public static final int soccer=0x7f020009;
+        public static final int svgandroid=0x7f02000a;
+        public static final int svggreenpoint=0x7f02000b;
+        public static final int svglama=0x7f02000c;
+        public static final int svgredpoint=0x7f02000d;
+        public static final int wood=0x7f02000e;
     }
     public static final class id {
         public static final int ImageButton01=0x7f0b0005;
@@ -240,26 +244,26 @@ public final class R {
         public static final int animation_setting_summ=0x7f080029;
         public static final int animation_setting_title=0x7f080028;
         public static final int app_name=0x7f080000;
-        public static final int background_category_setting=0x7f080030;
-        public static final int background_color_setting_summ=0x7f080036;
-        public static final int background_color_setting_title=0x7f080035;
-        public static final int backgroundtype_setting_summary=0x7f080032;
-        public static final int backgroundtype_setting_title=0x7f080031;
+        public static final int background_category_setting=0x7f080032;
+        public static final int background_color_setting_summ=0x7f08003a;
+        public static final int background_color_setting_title=0x7f080039;
+        public static final int backgroundtype_setting_summary=0x7f080034;
+        public static final int backgroundtype_setting_title=0x7f080033;
         public static final int button_deldice_descr=0x7f080020;
         public static final int button_hidedice_descr=0x7f080022;
         public static final int button_reroll_descr=0x7f080021;
         public static final int close=0x7f080001;
-        public static final int color1_summary=0x7f080042;
-        public static final int color1_title=0x7f080041;
-        public static final int color2_summary=0x7f080044;
-        public static final int color2_title=0x7f080043;
-        public static final int color3_summary=0x7f080046;
-        public static final int color3_title=0x7f080045;
-        public static final int color4_summary=0x7f080048;
-        public static final int color4_title=0x7f080047;
+        public static final int color1_summary=0x7f080048;
+        public static final int color1_title=0x7f080047;
+        public static final int color2_summary=0x7f08004a;
+        public static final int color2_title=0x7f080049;
+        public static final int color3_summary=0x7f08004c;
+        public static final int color3_title=0x7f08004b;
+        public static final int color4_summary=0x7f08004e;
+        public static final int color4_title=0x7f08004d;
         /**  Color Picker 
          */
-        public static final int dialog_color_picker=0x7f08003e;
+        public static final int dialog_color_picker=0x7f080044;
         /**  Description graphics elements 
  Description graphics elements 
          */
@@ -281,33 +285,40 @@ public final class R {
         public static final int menu_settings=0x7f080014;
         public static final int new_play=0x7f08001e;
         public static final int package_not_found=0x7f08001d;
-        public static final int pattern_galaxy=0x7f08003a;
+        public static final int pattern_galaxy=0x7f08003e;
         /**  Backgrounds 
  Backgrounds 
          */
-        public static final int pattern_green_carpet=0x7f080037;
-        public static final int pattern_lava=0x7f08003b;
-        public static final int pattern_partylight=0x7f080038;
-        public static final int pattern_rock=0x7f08003c;
-        public static final int pattern_soccer=0x7f08003d;
-        public static final int pattern_wood=0x7f080039;
-        public static final int pickccolor_setting_summary=0x7f080034;
-        public static final int pickccolor_setting_title=0x7f080033;
+        public static final int pattern_green_carpet=0x7f08003b;
+        public static final int pattern_lava=0x7f08003f;
+        public static final int pattern_partylight=0x7f08003c;
+        public static final int pattern_rock=0x7f080040;
+        public static final int pattern_soccer=0x7f080041;
+        public static final int pattern_wood=0x7f08003d;
         public static final int playername_setting_summ=0x7f080025;
         public static final int playername_setting_title=0x7f080024;
         /**  Preferences 
  Preferences 
          */
-        public static final int pref_category=0x7f080040;
-        public static final int press_color_to_apply=0x7f08003f;
+        public static final int pref_category=0x7f080046;
+        public static final int press_color_to_apply=0x7f080045;
         /**  Description settings elements 
  Description settings elements 
          */
         public static final int settings=0x7f080023;
+        public static final int solidcolor_setting_summary=0x7f080036;
+        public static final int solidcolor_setting_title=0x7f080035;
         public static final int sorting_setting_summ=0x7f08002b;
         public static final int sorting_setting_title=0x7f08002a;
         public static final int sound_setting_summ=0x7f080027;
         public static final int sound_setting_title=0x7f080026;
+        public static final int style_android=0x7f080043;
+        /**  Style 
+ Style 
+         */
+        public static final int style_classic=0x7f080042;
+        public static final int style_setting_summ=0x7f080031;
+        public static final int style_setting_title=0x7f080030;
         public static final int text_cancel=0x7f08000d;
         public static final int text_close=0x7f08000a;
         public static final int text_ok=0x7f08000c;
@@ -322,6 +333,8 @@ public final class R {
         public static final int text_round=0x7f080006;
         public static final int text_time=0x7f08000e;
         public static final int text_version=0x7f08000b;
+        public static final int textcolor_setting_summary=0x7f080038;
+        public static final int textcolor_setting_title=0x7f080037;
         public static final int title_activity_main=0x7f080003;
         public static final int version=0x7f080002;
         public static final int vibration_setting_summ=0x7f08002d;

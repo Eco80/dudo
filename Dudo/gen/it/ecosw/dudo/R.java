@@ -162,20 +162,20 @@ public final class R {
         public static final int DiceMargin=0x7f070000;
     }
     public static final class drawable {
-        public static final int backbox=0x7f020000;
-        public static final int dice_empty=0x7f020001;
-        public static final int galaxy=0x7f020002;
-        public static final int green_carpet=0x7f020003;
-        public static final int ic_help=0x7f020004;
-        public static final int ic_launcher=0x7f020005;
-        public static final int lava=0x7f020006;
-        public static final int partylight=0x7f020007;
-        public static final int rock=0x7f020008;
-        public static final int soccer=0x7f020009;
-        public static final int svgandroid=0x7f02000a;
-        public static final int svggreenpoint=0x7f02000b;
-        public static final int svglama=0x7f02000c;
-        public static final int svgredpoint=0x7f02000d;
+        public static final int android=0x7f020000;
+        public static final int backbox=0x7f020001;
+        public static final int dice_empty=0x7f020002;
+        public static final int galaxy=0x7f020003;
+        public static final int green_carpet=0x7f020004;
+        public static final int greenpoint=0x7f020005;
+        public static final int ic_help=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
+        public static final int lama=0x7f020008;
+        public static final int lava=0x7f020009;
+        public static final int partylight=0x7f02000a;
+        public static final int redpoint=0x7f02000b;
+        public static final int rock=0x7f02000c;
+        public static final int soccer=0x7f02000d;
         public static final int wood=0x7f02000e;
     }
     public static final class id {

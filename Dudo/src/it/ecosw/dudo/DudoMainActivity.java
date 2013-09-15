@@ -17,14 +17,12 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
 import java.util.Date;
 import it.ecosw.dudo.gui.DiceAdapter;
 import it.ecosw.dudo.gui.DiceGraphicObjects;
 import it.ecosw.dudo.gui.DieSetAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
 import it.ecosw.dudo.historical.HistoryActivity;
-import it.ecosw.dudo.historical.RollData;
 import it.ecosw.dudo.historical.SqlHelper;
 import it.ecosw.dudo.media.Background;
 import it.ecosw.dudo.media.GenDiceImage;
@@ -39,7 +37,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -176,7 +173,7 @@ public class DudoMainActivity extends Activity {
 					chrono.start();
 					fx.playSoundRoll();
 					fx.vibration();
-				}
+				} else fx.playErrorSound();
 			}
 		});
         
@@ -186,7 +183,7 @@ public class DudoMainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (d.delDice()!=0) {
+				if (d.delDice()) {
 					chrono.setBase(SystemClock.elapsedRealtime());
 					chrono.stop();
 					fx.playSoundLoseDice();
@@ -194,12 +191,7 @@ public class DudoMainActivity extends Activity {
 					if (d.isEmpty()) {
 						Toast.makeText(DudoMainActivity.this,settings.getPlayerName()+" "+getText(R.string.you_lose),Toast.LENGTH_SHORT).show();
 					}
-					Log.i("DUDO", "Element: "+historian.countRow());
-					ArrayList<RollData> list = historian.getRollData();
-					for(int i=0;i<list.size();i++){
-						Log.i("DUDO", list.get(i).toString());
-					}
-				}
+				} else fx.playErrorSound();
 			}
 		});
         

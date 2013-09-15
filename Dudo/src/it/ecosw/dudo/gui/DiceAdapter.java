@@ -18,6 +18,7 @@ package it.ecosw.dudo.gui;
  */
 
 import android.view.View;
+import android.view.animation.Animation;
 import it.ecosw.dudo.games.Dice;
 import it.ecosw.dudo.media.GenDiceAnimation;
 import it.ecosw.dudo.media.GenDiceImage;
@@ -65,19 +66,31 @@ public class DiceAdapter extends Dice {
 	}
 
 	/**
-	 * Hide current dice
+	 * Hide current dice, if dice is deleted do nothing
 	 */
 	public void hide(){
 		hide = true;
-		dgo.getImage().setImageBitmap(gdi.getImage(0));
+		if(!isDeleted()) {
+			Animation anim = dgo.getImage().getAnimation();
+			dgo.getImage().setImageBitmap(gdi.getImage(0));
+			anim.setDuration(0);
+			dgo.getImage().startAnimation(anim);
+		}
 	}
 	
 	/**
-	 * Show current dice
+	 * Show current dice, if dice is deleted do nothing
 	 */
 	public void show(){
 		hide = false;
-		dgo.getImage().setImageBitmap(gdi.getImage(getLastRoll()));
+		if(!isDeleted()) {
+			Animation anim = dgo.getImage().getAnimation();
+			dgo.getImage().setImageBitmap(gdi.getImage(getLastRoll()));
+			dgo.getImage().startAnimation(GenDiceAnimation.animationRollFactory(0));
+			anim.setDuration(0);
+			dgo.getImage().startAnimation(anim);
+
+		}
 	}
 	
 	/* (non-Javadoc)

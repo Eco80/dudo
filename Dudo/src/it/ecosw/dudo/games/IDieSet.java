@@ -21,9 +21,9 @@ public interface IDieSet<T extends IDice> {
 
 	/**
 	 * Remove last dice from the set
-	 * @return number of Dice Removed
+	 * @return true if one dice is removed
 	 */
-	public int delDice();
+	public boolean delDice();
 
 	/**
 	 * Restore all die in the set

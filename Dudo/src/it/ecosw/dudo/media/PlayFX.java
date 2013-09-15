@@ -29,6 +29,8 @@ public class PlayFX {
 	
 	private MediaPlayer losedice_sound = null;
 	
+	private MediaPlayer error_sound = null;
+	
 	private Vibrator vib = null;
 	
 	private SettingsHelper settings;
@@ -42,6 +44,7 @@ public class PlayFX {
         // Load game sound
         roll_sound = MediaPlayer.create(context, R.raw.dice_sound) ;
         losedice_sound = MediaPlayer.create(context, R.raw.lose_dice);
+        error_sound = MediaPlayer.create(context, R.raw.error);
         
         // Vibration service
         vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -64,6 +67,16 @@ public class PlayFX {
     	if (settings.isSoundActivated()) {
     		if (losedice_sound.isPlaying()) losedice_sound.seekTo(0);
     		losedice_sound.start();
+    	}
+    }
+    
+    /**
+     * Wrong action sound
+     */
+    public void playErrorSound(){
+    	if (settings.isSoundActivated()) {
+    		if (error_sound.isPlaying()) error_sound.seekTo(0);
+    		error_sound.start();
     	}
     }
     

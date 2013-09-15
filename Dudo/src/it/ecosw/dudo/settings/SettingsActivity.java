@@ -18,9 +18,12 @@ package it.ecosw.dudo.settings;
  */
 
 import it.ecosw.dudo.R;
+import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
+import android.view.Window;
 
 /**
  * Attivity for application settings
@@ -35,6 +38,11 @@ public class SettingsActivity extends PreferenceActivity {
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
 		addPreferencesFromResource(R.layout.activity_pref);
 		// TODO Auto-generated constructor stub
+	    // Set Screen orientation different for Android 2.2 and 2.3+
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
+	    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	    else
+	    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE); 
 	}
 	
 	@Override

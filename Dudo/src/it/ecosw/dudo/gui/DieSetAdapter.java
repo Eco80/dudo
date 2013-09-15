@@ -47,9 +47,9 @@ public class DieSetAdapter extends DieSet<DiceAdapter> {
 	 * @see it.ecosw.dudo.games.DieSet#delDice()
 	 */
 	@Override
-	public int delDice() {
+	public boolean delDice() {
 		// TODO Auto-generated method stub
-		if (diceHide) return 0;
+		if (diceHide) return false;
 		return super.delDice();
 	}
 

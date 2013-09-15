@@ -36,14 +36,14 @@ public class DieSet <T extends IDice> implements IDieSet<T>{
 	/* (non-Javadoc)
 	 * @see it.ecosw.dudo.games.IDieSet#delDice()
 	 */
-	public int delDice(){
+	public boolean delDice(){
 		for(int i=4;i>=0;i--) {
 			if(!set[i].isDeleted()) {
 				set[i].delete();
-				return i;
+				return true;
 			}
 		}
-		return -1;
+		return false;
 	}
 	
 	@Override

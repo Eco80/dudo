@@ -209,6 +209,7 @@ public class DudoMainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.dudo_menu, menu);
         return true;
     }

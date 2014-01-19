@@ -31,6 +31,10 @@ public class PlayFX {
 	
 	private MediaPlayer error_sound = null;
 	
+	private MediaPlayer clickon_sound = null;
+	
+	private MediaPlayer clickoff_sound = null;
+	
 	private Vibrator vib = null;
 	
 	private SettingsHelper settings;
@@ -45,6 +49,8 @@ public class PlayFX {
         roll_sound = MediaPlayer.create(context, R.raw.dice_sound) ;
         losedice_sound = MediaPlayer.create(context, R.raw.lose_dice);
         error_sound = MediaPlayer.create(context, R.raw.error);
+        clickon_sound = MediaPlayer.create(context, R.raw.clickon);
+        clickoff_sound = MediaPlayer.create(context, R.raw.clickoff);
         
         // Vibration service
         vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -77,6 +83,26 @@ public class PlayFX {
     	if (settings.isSoundActivated()) {
     		if (error_sound.isPlaying()) error_sound.seekTo(0);
     		error_sound.start();
+    	}
+    }
+    
+    /**
+     * Clickon sound (used for show action)
+     */
+    public void playClickonSound(){
+    	if (settings.isSoundActivated()) {
+    		if (clickon_sound.isPlaying()) clickon_sound.seekTo(0);
+    		clickon_sound.start();
+    	}
+    }
+    
+    /**
+     * Clickoff sound (used for hide action)
+     */
+    public void playClickoffSound(){
+    	if (settings.isSoundActivated()) {
+    		if (clickoff_sound.isPlaying()) clickoff_sound.seekTo(0);
+    		clickoff_sound.start();
     	}
     }
     

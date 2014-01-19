@@ -17,31 +17,46 @@ package it.ecosw.dudo.gui;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import it.ecosw.dudo.media.GenDiceAnimation;
+import it.ecosw.dudo.media.GenDiceImage;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 /**
  * This class allow to anchor che graphics die with controller die
  * @author Enrico Strocchi
  */
 public class DiceGraphicObjects {
+	
+	private final static int ANIMATIONTIME = 900; 
 
 	private int pos;
 	
+	private GenDiceImage gdi;
+	
 	private ImageView image;
 	
-	private RelativeLayout layout;
+	private ViewGroup layout;
 	
 	/**
 	 * Constructor
 	 * @param pos Position in the graphics
 	 * @param image Dice image
 	 * @param layout Layout
+	 * @param gdi Generator Dice Image
 	 */
-	public DiceGraphicObjects(int pos, ImageView image, RelativeLayout layout){
+	public DiceGraphicObjects(int pos, ImageView image, ViewGroup layout, GenDiceImage gdi, boolean animated){
 		this.pos = pos;
 		this.image = image;
 		this.layout = layout;
+		this.gdi = gdi;
+		
+		if(animated) image.startAnimation(GenDiceAnimation.animationRollFactory(ANIMATIONTIME));
+        else image.setAnimation(null);
+
 	}
 	
 	/**
@@ -51,21 +66,63 @@ public class DiceGraphicObjects {
 	public int getPos() {
 		return pos;
 	}
-
+	
 	/**
-	 * Return ImageView of dice
-	 * @return ImageView of dice
+	 * Hide current dice
 	 */
-	public ImageView getImage() {
-		return image;
+	public void hide(boolean animation){
+		image.setImageBitmap(gdi.getImage(0));
+		if(animation) {
+			Animation anim = image.getAnimation();
+			if(anim!=null) {
+				anim.setDuration(0);
+				image.startAnimation(anim);
+			} else image.startAnimation(GenDiceAnimation.animationRollFactory(0));
+		}
 	}
-
+	
 	/**
-	 * Return layout of dice
-	 * @return layout of dice
+	 * Show current dice
+	 * @param value dice value to show
+	 * @param animation true if animation is enabled
 	 */
-	public RelativeLayout getLayout() {
-		return layout;
+	public void show(int value,boolean animation){
+		image.setImageBitmap(gdi.getImage(value));
+		if(animation){
+			Animation anim = image.getAnimation();
+			if(anim!=null) {
+				anim.setDuration(0);
+				image.startAnimation(anim);
+			} else image.startAnimation(GenDiceAnimation.animationRollFactory(0));
+		}
+		
+	}
+	
+	/**
+	 * Make a new roll animation on current dice
+	 * @param value value to show
+	 * @param isAnimated true to show animation
+	 */
+	public void rollAnimation(int value, boolean isAnimated) {
+		image.setImageBitmap(gdi.getImage(value));
+		layout.setVisibility(View.VISIBLE);
+		if(isAnimated) image.startAnimation(GenDiceAnimation.animationRollFactory(ANIMATIONTIME));
+		else image.setAnimation(null);
+	}
+	
+	/**
+	 * Delete current dice
+	 * @param isAnimated true to show animation
+	 * @param listener animation listener to be executed
+	 */
+	public void deleteAnimation(boolean isAnimated,AnimationListener listener) {
+		// TODO Auto-generated method stub
+		if(isAnimated) {
+			Animation animation = GenDiceAnimation.animationDelFactory(ANIMATIONTIME);
+			animation.setAnimationListener(listener);
+			image.startAnimation(animation);
+		}
+		else layout.setVisibility(View.GONE);
 	}
 	
 }

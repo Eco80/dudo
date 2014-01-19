@@ -23,7 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
-import android.view.Window;
 
 /**
  * Attivity for application settings

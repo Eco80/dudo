@@ -3,13 +3,65 @@
     android:id="@+id/parentLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
+  
+    <LinearLayout
+        android:id="@+id/playerBarLayout"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="3sp"
+        android:gravity="center"
+        android:orientation="horizontal" >
 
+        <Button
+            android:id="@+id/PlayerButton01"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/PlayerButton02"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/PlayerButton03"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/PlayerButton04"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/PlayerButton05"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/PlayerButton06"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        
+    </LinearLayout>
+	
         <LinearLayout
             android:id="@+id/dieLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/buttonDeldice"
-            android:layout_toRightOf="@+id/buttonReroll"
+            android:layout_below="@+id/playerBarLayout"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -101,42 +153,26 @@
             </LinearLayout>
 
     </LinearLayout>
- 
- <TextView
-	 android:id="@+id/playernameTextView"
-	 android:layout_width="wrap_content"
-	 android:layout_height="wrap_content" 
-	 android:layout_alignParentBottom="true"
-	 android:layout_toRightOf="@+id/buttonReroll"
-	 android:paddingLeft="10dp"
-	 android:paddingBottom="10dp"
-	 android:text="@string/text_player_name"
-	 android:textAppearance="?android:attr/textAppearanceLarge"/>
-        
+
  <Chronometer
-	 android:id="@+id/chronometer"
-	 android:layout_width="wrap_content"
-	 android:layout_height="wrap_content" 
-	 android:layout_alignParentBottom="true"
-	 android:layout_toLeftOf="@+id/buttonDeldice"
-	 android:paddingRight="10dp"
-	 android:paddingBottom="10dp"
-	 android:textAppearance="?android:attr/textAppearanceLarge"/>
+     android:id="@+id/chronometer"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentRight="true"
+     android:paddingBottom="10dp"
+     android:paddingRight="10dp"
+     android:textAppearance="?android:attr/textAppearanceLarge" />
 
-<ImageButton
-    android:id="@+id/buttonReroll"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_alignParentLeft="true"
-    android:contentDescription="@string/button_reroll_descr"
-    android:src="@android:drawable/ic_menu_rotate" />
-
-<ImageButton
-    android:id="@+id/buttonDeldice"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_alignParentRight="true"
-    android:contentDescription="@string/button_deldice_descr"
-    android:src="@android:drawable/ic_menu_close_clear_cancel" />
+ <TextView
+     android:id="@+id/playernameTextView"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentLeft="true"
+     android:paddingBottom="10dp"
+     android:paddingLeft="10dp"
+     android:text="@string/text_player_name"
+     android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

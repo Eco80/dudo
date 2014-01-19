@@ -103,16 +103,22 @@ public class GenDiceImage {
 		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.dice_empty,options).copy(Bitmap.Config.ARGB_8888, true);
 		Bitmap dot = null;
 		Bitmap lama = null;
+		Bitmap removed = null;
 		if (style.equals(CLASSIC)){
 			dot = getBitmapFromSVG(context, R.drawable.redpoint,(int)Math.round(bm.getWidth()/5),(int)Math.round(bm.getHeight()/5));
 			lama = getBitmapFromSVG(context,R.drawable.lama,(int)Math.round(bm.getWidth()/1.5),(int)Math.round(bm.getHeight()/1.5));
+			removed = getBitmapFromSVG(context,R.drawable.redremove,(int)Math.round(bm.getWidth()/1.6),(int)Math.round(bm.getHeight()/1.6));
 		} else if(style.equals(ANDROID)){
 			dot = getBitmapFromSVG(context, R.drawable.greenpoint,(int)Math.round(bm.getWidth()/5),(int)Math.round(bm.getHeight()/5));
 			lama = getBitmapFromSVG(context,R.drawable.android,(int)Math.round(bm.getWidth()/1.5),(int)Math.round(bm.getHeight()/1.5));
+			removed = getBitmapFromSVG(context,R.drawable.greenremove,(int)Math.round(bm.getWidth()/1.6),(int)Math.round(bm.getHeight()/1.6));
 		}
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		Canvas canvas = new Canvas(bm);
 		switch(value){
+		case(0):
+			canvas.drawBitmap(removed,bm.getWidth()/2-lama.getWidth()/2, bm.getHeight()/2-lama.getHeight()/2, paint);
+			break;
 		case(1):
 			canvas.drawBitmap(lama,bm.getWidth()/2-lama.getWidth()/2, bm.getHeight()/2-lama.getHeight()/2, paint);
 			break;

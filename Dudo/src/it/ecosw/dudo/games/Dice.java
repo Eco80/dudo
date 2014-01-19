@@ -24,7 +24,7 @@ import java.util.Random;
  * @author Enrico Strocchi
  *
  */
-public class Dice implements IDice{
+public class Dice implements Comparable<Dice>{
 	
 	private final static Random rnd = new Random();
 	
@@ -50,16 +50,18 @@ public class Dice implements IDice{
 		lastroll = Character.getNumericValue(c);
 	}
 		
-	/* (non-Javadoc)
-	 * @see it.ecosw.dudo.games.IDice#getLastRoll()
+	/**
+	 * Return last roll value
+	 * @return last roll
 	 */
 	public int getLastRoll(){
 		if(isDeleted()) return 0;
 		return lastroll;
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.ecosw.dudo.games.IDice#newRoll()
+	/**
+	 * Roll Dice Again
+	 * @return Value of roll
 	 */
 	public int newRoll(){
 		if(isDeleted()) return 0;
@@ -78,7 +80,7 @@ public class Dice implements IDice{
 	 * @see it.ecosw.dudo.games.IDice#compareTo(it.ecosw.dudo.games.Dice)
 	 */
 	@Override
-	public int compareTo(IDice dice) {
+	public int compareTo(Dice dice) {
 		// TODO Auto-generated method stub
 		if(!isDeleted() && dice.isDeleted()) return -1;
 		else if (isDeleted() && dice.isDeleted()) return 0;
@@ -89,13 +91,19 @@ public class Dice implements IDice{
 		else return -1;
 	}
 
-	@Override
+	/**
+	 * Return true if dice is deleted
+	 * @return true if dice is deleted
+	 */	
 	public boolean isDeleted() {
 		// TODO Auto-generated method stub
 		return deleted;
 	}
 
-	@Override
+	/**
+	 * Delete current dice from set
+	 * @return true if one dice was deleted
+	 */
 	public boolean delete() {
 		// TODO Auto-generated method stub
 		if(deleted) return false;
@@ -103,7 +111,10 @@ public class Dice implements IDice{
 		return true;
 	}
 
-	@Override
+	/**
+	 * Restore current dice
+	 * @return result of dice launch
+	 */
 	public int restore() {
 		// TODO Auto-generated method stub
 		if(!deleted) return 0;

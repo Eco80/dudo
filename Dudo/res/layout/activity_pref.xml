@@ -15,22 +15,16 @@
         android:title="@string/animation_setting_title"
         android:summary="@string/animation_setting_summ"
         android:defaultValue="true" />
+      <CheckBoxPreference
+        android:key="vibration_setting"
+        android:title="@string/vibration_setting_title"
+        android:summary="@string/vibration_setting_summ"
+        android:defaultValue="true" />
      <CheckBoxPreference
         android:key="sorting_setting"
         android:title="@string/sorting_setting_title"
         android:summary="@string/sorting_setting_summ"
         android:defaultValue="false" />
-     <CheckBoxPreference
-        android:key="vibration_setting"
-        android:title="@string/vibration_setting_title"
-        android:summary="@string/vibration_setting_summ"
-        android:defaultValue="true" />
-     <EditTextPreference
-        android:key="historyelement_setting"
-        android:title="@string/historyelement_setting_title"
-        android:summary="@string/historyelement_setting_summ"
-        android:inputType="number"
-        android:defaultValue="100" />
       <ListPreference
         android:key="style_setting"
         android:title="@string/style_setting_title"

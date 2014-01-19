@@ -18,6 +18,7 @@ package it.ecosw.dudo.settings;
  */
 
 import it.ecosw.dudo.R;
+import it.ecosw.dudo.games.PlayerInfo;
 import it.ecosw.dudo.media.BackgroundStatus;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -35,6 +36,10 @@ public class SettingsHelper {
 	
 	public static final String PLAYERNAME_SETTING = "playername_setting";
 	
+	public static final String PLAYERNUM_SETTING = "playernum_setting";
+	
+	public static final String PLAYERSAVE_SETTING = "playersave_setting";
+
 	public static final String SOUND_SETTING = "sound_setting";
 	
 	public static final String ANIMATION_SETTING = "animation_setting";
@@ -46,18 +51,13 @@ public class SettingsHelper {
 	public static final String STYLE_SETTING = "style_setting";
 	
 	public static final String BACKGROUNDTYPE_SETTING = "backgroundtype_setting";
-	
 	public static final String BACKGROUND_SOLIDCOLOR_SETTING = "background_solidcolor_setting";
-	
 	public static final String BACKGROUD_TEXTCOLOR_SETTING = "background_textcolor_setting";
-	
 	public static final String BACKGROUND_IMAGE_SETTING = "background_image_setting";
 	
 	public static final String LASTVERSIONRUN_SETTING = "lastversionrun_setting";
 	
-	public static final String SAVEDPLAY_SETTING = "savedplay_setting";
-	
-	public static final String HISTORYELEMENT_SETTING = "historyelement_setting";
+	public static final String CHRONO_SETTING = "chrono_setting";
 	
 	/**
 	 * Constructor
@@ -100,15 +100,6 @@ public class SettingsHelper {
 	}
 	
 	/**
-	 * Return the number of element in history
-	 * @return history number of element
-	 */
-	public int getHistoryNumElement(){
-		String num = PreferenceManager.getDefaultSharedPreferences(mContext).getString(HISTORYELEMENT_SETTING, "100");
-		return Integer.parseInt(num);
-	}
-	
-	/**
 	 * Return the style for die
 	 * @return description of style for dice
 	 */
@@ -133,11 +124,48 @@ public class SettingsHelper {
 	}
 	
 	/**
-	 * Return the player name
-	 * @return playername
+	 * Return the number of players of last match
+	 * @return number of players (1 to 6)
 	 */
-	public String getPlayerName(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING,mContext.getText(R.string.text_player).toString());
+	public int getNumPlayers(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getInt(PLAYERNUM_SETTING, 2);
+	}
+	
+	/**
+	 * Save the number of players
+	 * @param num number of players
+	 * @return true if write was correct
+	 */
+	public boolean setNumPlayers(int num){
+		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+		spe.putInt(PLAYERNUM_SETTING, num);
+		spe.commit();
+		return true;
+	}
+	
+	/**
+	 * Return the information about one player
+	 * @param num Player Number (0 to 5)
+	 * @return Player info
+	 */
+	public PlayerInfo getPlayerStatus(int num){
+		String name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
+		String saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"00000");
+		return new PlayerInfo(name, saved);
+	}
+	
+	/**
+	 * Save information about one player
+	 * @param num Player Number (0 to 5)
+	 * @param info Player Info
+	 * @return 0 if write successfully
+	 */
+	public int setPlayerStatus(int num, PlayerInfo info){
+		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+		spe.putString(PLAYERNAME_SETTING+num, info.getName());
+		spe.putString(PLAYERSAVE_SETTING+num, info.getSave());
+		spe.commit();
+		return 0;
 	}
 	
 	/**
@@ -161,21 +189,21 @@ public class SettingsHelper {
 	}
 	
 	/**
-	 * Return the value of the last match
-	 * @return value.
+	 * Return last chrono save
+	 * @return last chrono save
 	 */
-	public String getSavedPlay(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(SAVEDPLAY_SETTING, "11111");
+	public long getChronoTime(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getLong(CHRONO_SETTING,0);
 	}
 	
 	/**
-	 * Save the value of last play
-	 * @param values last value
+	 * Save chrono time
+	 * @param version software version
 	 * @return 0 if writing was correct
 	 */
-	public int setSavedPlay(String values){
+	public int setChronoTime(Long time){
 		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-		spe.putString(SAVEDPLAY_SETTING, values);
+		spe.putLong(CHRONO_SETTING, time);
 		spe.commit();
 		return 0;
 	}

@@ -27,7 +27,8 @@
             android:label="@string/settings">
         </activity>
         <activity 
-            android:name=".newgame.NewGameActivity">
+            android:name=".newgame.NewGameActivity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
     </application>
 

@@ -27,7 +27,7 @@
     <string name="alert_changelog_label">Changelog</string>
     
     <!-- Description menu elements -->
-    <string name="menu_roll">Roll All</string>
+    <string name="menu_roll">Roll</string>
     <string name="menu_new">New Match</string>
     <string name="menu_restart">Restart Match</string>
     <string name="menu_settings">Settings</string>

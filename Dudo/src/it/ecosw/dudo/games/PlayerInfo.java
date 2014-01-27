@@ -57,8 +57,14 @@ public class PlayerInfo {
 	 * @return PlayerSet
 	 */
 	public PlayerSet getPlayerSet(){
-		if (save.equals("00000")) return new PlayerSet(name);
-		else return new PlayerSet(name,save);
+		if (save.length() == 5 ){
+			if (save.equals("00000")) return new PlayerSet(name, false);
+			return new PlayerSet(name,false,save);
+		} else if (save.length() == 6) {
+			if (save.equals("000000")) return new PlayerSet(name, true);
+			return new PlayerSet(name,true,save);
+		}
+		return null;
 	}
 
 }

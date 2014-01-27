@@ -79,7 +79,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/DiceMargin"
-                        android:contentDescription="@string/dice1_description"
+                        android:contentDescription="@string/die1_description"
                         android:src="@drawable/dice_empty" />
 
                 </RelativeLayout>
@@ -94,7 +94,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/DiceMargin"
-                        android:contentDescription="@string/dice2_description"
+                        android:contentDescription="@string/die2_description"
                         android:src="@drawable/dice_empty" />
 
                 </RelativeLayout>
@@ -109,7 +109,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/DiceMargin"
-                        android:contentDescription="@string/dice3_description"
+                        android:contentDescription="@string/die3_description"
                         android:src="@drawable/dice_empty" />
 
                 </RelativeLayout>
@@ -130,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/DiceMargin"
-                        android:contentDescription="@string/dice4_description"
+                        android:contentDescription="@string/die4_description"
                         android:src="@drawable/dice_empty" />
 
                 </RelativeLayout>
@@ -145,7 +145,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/DiceMargin"
-                        android:contentDescription="@string/dice5_description"
+                        android:contentDescription="@string/die5_description"
+                        android:src="@drawable/dice_empty" />
+
+                </RelativeLayout>
+                
+                <RelativeLayout
+                    android:id="@+id/LayoutDice06"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <ImageView
+                        android:id="@+id/ImageButton06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/DiceMargin"
+                        android:contentDescription="@string/die6_description"
                         android:src="@drawable/dice_empty" />
 
                 </RelativeLayout>

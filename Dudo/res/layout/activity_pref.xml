@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference
-        android:key="playername_setting"
-        android:title="@string/playername_setting_title"
-        android:summary="@string/playername_setting_summ"
-        android:defaultValue="@string/text_player"/>
+    <CheckBoxPreference
+        android:key="sixdice_setting"
+        android:title="@string/sixdice_setting_title"
+        android:summary="@string/sixdice_setting_summ"
+        android:defaultValue="false" />
     <CheckBoxPreference
         android:key="sound_setting"
         android:title="@string/sound_setting_title"

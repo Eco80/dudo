@@ -34,6 +34,8 @@ public class SettingsHelper {
 	
 	private Activity mContext;
 	
+	public static final String SIXDICE_SETTING = "sixdice_setting";
+	
 	public static final String PLAYERNAME_SETTING = "playername_setting";
 	
 	public static final String PLAYERNUM_SETTING = "playernum_setting";
@@ -65,6 +67,14 @@ public class SettingsHelper {
 	 */
 	public SettingsHelper(Activity context) {
 		mContext = context;
+	}
+	
+	/**
+	 * Return true if the sixth die is activated
+	 * @return true if sixth die is activated
+	 */
+	public boolean isSixthDieActivated(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(SIXDICE_SETTING, false);
 	}
 	
 	/**
@@ -149,8 +159,16 @@ public class SettingsHelper {
 	 * @return Player info
 	 */
 	public PlayerInfo getPlayerStatus(int num){
-		String name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
-		String saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"00000");
+		String name, saved;
+		if(isSixthDieActivated()) {
+			name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
+			saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"000000");
+			if(saved.length() == 5) saved = "000000";
+			return new PlayerInfo(name, saved);
+		}
+		name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
+		saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"00000");
+		if(saved.length() == 6) saved = "00000";
 		return new PlayerInfo(name, saved);
 	}
 	

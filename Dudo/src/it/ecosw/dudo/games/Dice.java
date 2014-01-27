@@ -20,7 +20,7 @@ package it.ecosw.dudo.games;
 import java.util.Random;
 
 /**
- * Dice simulator Object
+ * Die simulator Object
  * @author Enrico Strocchi
  *
  */
@@ -60,7 +60,7 @@ public class Dice implements Comparable<Dice>{
 	}
 	
 	/**
-	 * Roll Dice Again
+	 * Roll Die Again
 	 * @return Value of roll
 	 */
 	public int newRoll(){
@@ -92,8 +92,8 @@ public class Dice implements Comparable<Dice>{
 	}
 
 	/**
-	 * Return true if dice is deleted
-	 * @return true if dice is deleted
+	 * Return true if die is deleted
+	 * @return true if die is deleted
 	 */	
 	public boolean isDeleted() {
 		// TODO Auto-generated method stub
@@ -101,7 +101,7 @@ public class Dice implements Comparable<Dice>{
 	}
 
 	/**
-	 * Delete current dice from set
+	 * Delete current die from set
 	 * @return true if one dice was deleted
 	 */
 	public boolean delete() {
@@ -112,8 +112,8 @@ public class Dice implements Comparable<Dice>{
 	}
 
 	/**
-	 * Restore current dice
-	 * @return result of dice launch
+	 * Restore current die
+	 * @return result of die launch
 	 */
 	public int restore() {
 		// TODO Auto-generated method stub

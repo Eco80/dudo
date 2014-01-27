@@ -18,7 +18,7 @@
     <string name="text_start">Inizia</string>
     <string name="text_cancel">Annulla</string>
     <string name="text_time">Tempo</string>
-        <string name="text_yes">Sì</string>
+    <string name="text_yes">Sì</string>
     <string name="text_no">No</string>
     
     <!-- About dialog -->
@@ -40,19 +40,17 @@
 	<string name="dice3_description">Dado 3</string>
 	<string name="dice4_description">Dado 4</string>
 	<string name="dice5_description">Dado 5</string>
+	<string name="dice6_description">Dado 6</string>
 	<string name="you_lose">Hai Perso!</string>
 	<string name="package_not_found">Dudo non è installato da un package</string>
 	<string name="new_play">Nuova partita!</string>
 	<string name="are_you_sure">Vuoi eliminare un dado da %1$s?</string>
 	<string name="last_play_restored">L\'ultima partita è stata ripristinata!</string>
-	<string name="button_deldice_descr">Clicca per eliminare un dado</string>
-	<string name="button_reroll_descr">Clicca per ritirare i dadi</string>
-	<string name="button_hidedice_descr">Clicca per nascondere il valore dei dadi</string>
 	
 	<!-- Description settings elements -->
 	<string name="settings">Preferenze</string>
-	<string name="playername_setting_title">Il tuo nome</string>
-	<string name="playername_setting_summ">Inserisci il tuo nome</string>
+	<string name="sixdice_setting_title">6 Dadi</string>
+	<string name="sixdice_setting_summ">Attiva per giocare con 6 dadi</string>
 	<string name="sound_setting_title">Suono</string>
 	<string name="sound_setting_summ">Abilita o disabilita i suoni durante il gioco</string>
 	<string name="animation_setting_title">Animazioni</string>

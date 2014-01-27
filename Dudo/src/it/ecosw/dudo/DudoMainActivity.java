@@ -17,7 +17,7 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import it.ecosw.dudo.games.PlayerSet;
+import it.ecosw.dudo.games.Match;
 import it.ecosw.dudo.gui.DiceGraphicObjects;
 import it.ecosw.dudo.gui.InterfaceAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
@@ -132,7 +132,7 @@ public class DudoMainActivity extends Activity {
         gdi = new GenDiceImage(this, settings.getStyle());
         
         // Generate static graphic object
-        DiceGraphicObjects[] dgos = new DiceGraphicObjects[5];
+        DiceGraphicObjects[] dgos = new DiceGraphicObjects[6];
         dgos[0] = new DiceGraphicObjects(1, 
         		(ImageView)findViewById(R.id.ImageButton01), 
         		(ViewGroup)findViewById(R.id.LayoutDice01),
@@ -153,6 +153,10 @@ public class DudoMainActivity extends Activity {
         		(ImageView)findViewById(R.id.ImageButton05), 
         		(ViewGroup)findViewById(R.id.LayoutDice05),
         		gdi,settings.isAnimationActivated());
+        dgos[5] = new DiceGraphicObjects(5, 
+        		(ImageView)findViewById(R.id.ImageButton06), 
+        		(ViewGroup)findViewById(R.id.LayoutDice06),
+        		gdi,settings.isAnimationActivated());
         
         Button[] players = new Button[6];
         players[0] = (Button)findViewById(R.id.PlayerButton01);
@@ -164,7 +168,7 @@ public class DudoMainActivity extends Activity {
         
 		d = new InterfaceAdapter(this,dgos,players,playername,fx,settings.isSortingActivated());
         d.setAnimEnabled(settings.isAnimationActivated());
-		d.setPlayerStatus(genPlayerSet());
+		d.setPlayerStatus(new Match(settings));
         
         View die = (View)findViewById(R.id.dieLayout);
         die.setOnClickListener(new OnClickListener() {
@@ -215,14 +219,12 @@ public class DudoMainActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(requestCode == SUB_ACTIVITY_NEW_MATCH) {
 			if(resultCode == RESULT_OK) {
-				d.setPlayerStatus(genPlayerSet());
+				d.setPlayerStatus(new Match(settings));
 	    		chrono.setBase(SystemClock.elapsedRealtime());
 				chrono.start();
 			}
 		}
 	}
-
-
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -255,6 +257,7 @@ public class DudoMainActivity extends Activity {
 		background.setBackground(settings.getBackgroundStatus());
 		d.setAnimEnabled(settings.isAnimationActivated());
 		d.setSorting(settings.isSortingActivated());
+		d.setSixDice(settings.isSixthDieActivated());
 		if(!gdi.getCurrent().equals(settings.getStyle())) {
 			gdi.setStyle(settings.getStyle());
 		}
@@ -301,18 +304,6 @@ public class DudoMainActivity extends Activity {
     	default:
     		return super.onOptionsItemSelected(item);
     	}
-	}
-	
-	/**
-	 * Generate new playersets from settings
-	 * @return new playerset
-	 */
-	private PlayerSet[] genPlayerSet(){
-		PlayerSet[] sets = new PlayerSet[settings.getNumPlayers()];		
-		for(int i=0;i<sets.length;i++){
-			sets[i]=settings.getPlayerStatus(i).getPlayerSet();
-		}
-		return sets;
 	}
 	
 	private long calculateElapsedTime(Chronometer mChronometer) {

@@ -23,30 +23,36 @@ package it.ecosw.dudo.games;
  */
 public class PlayerSet {
 
-	protected Dice[] set;
+	private Dice[] set;
 	
 	private String name;
-
+	
 	/**
 	 * Constructor
 	 * @param name Player Name
+	 * @param sixdice true if there are six dice
 	 */
-	public PlayerSet(String name) {
+	public PlayerSet(String name, boolean sixdice) {
 		// TODO Auto-generated constructor stub
 		this.name = name;
-		set = new Dice[5];
-		for(int i=0;i<5;i++) set[i] = new Dice();
+		if(sixdice) set = new Dice[6];
+		else set = new Dice[5];
+		for(int i=0;i<set.length;i++) set[i] = new Dice();
 	}
 	
 	/**
 	 * Constructor
 	 * @param name Playername
+	 * @param sixdice true if there are six dice
 	 * @param startseq Start sequence
 	 */
-	public PlayerSet(String name, String startseq){
+	public PlayerSet(String name, boolean sixdice, String startseq){
 		this.name = name;
-		set = new Dice[5];
-		for(int i=0;i<5;i++) set[i] = new Dice(startseq.charAt(i));
+		if(sixdice) set = new Dice[6];
+		else set = new Dice[5];
+		for(int i=0;i<set.length;i++) {
+			set[i] = new Dice(startseq.charAt(i));
+		}
 	}
 	
 	/**
@@ -59,20 +65,11 @@ public class PlayerSet {
 	}
 
 	/**
-	 * Set current player name
-	 * @param playername current playername
-	 */
-	public void setPlayerName(String playername) {
-		// TODO Auto-generated method stub
-		this.name = playername;
-	}
-
-	/**
-	 * Remove last dice from the set
+	 * Remove last die from the set
 	 * @return number of dice deleted, (-1) if no dice are removed
 	 */
-	public int delDice(){
-		for(int i=4;i>=0;i--) {
+	public int delDie(){
+		for(int i=set.length-1;i>=0;i--) {
 			if(!set[i].isDeleted()) {
 				set[i].delete();
 				return i;
@@ -82,13 +79,13 @@ public class PlayerSet {
 	}
 	
 	/**
-	 * Restore all die in the set
+	 * Restore all dice in the set
 	 * @param sorting true if you want dice ordered in decreasing order
 	 * @return true if operation was done with success
 	 */
-	public boolean restoreAllDie(boolean sorting) {
+	public boolean restoreAllDice(boolean sorting) {
 		// TODO Auto-generated method stub
-		for(int i=0;i<5;i++) set[i].restore();
+		for(int i=0;i<set.length;i++) set[i].restore();
 		if (sorting) java.util.Arrays.sort(set);
 		return true;
 	}
@@ -99,7 +96,7 @@ public class PlayerSet {
 	 * @return true if the roll was correct
 	 */
 	public boolean rollSet(boolean sorting){
-			for(int i=0;i<5;i++) if(!set[i].isDeleted()) set[i].newRoll();
+			for(int i=0;i<set.length;i++) if(!set[i].isDeleted()) set[i].newRoll();
 			if (sorting) java.util.Arrays.sort(set);
 			return true;
 	}
@@ -110,26 +107,15 @@ public class PlayerSet {
 	 */
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub
-		for(int i=0;i<5;i++) if(!set[i].isDeleted()) return false;
+		for(int i=0;i<set.length;i++) if(!set[i].isDeleted()) return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		String s = name+" [";
-		if (set == null) s += "0";
-		else s+=getDieNumber();
-		return s+"]";
-	}
-
-	/**
-	 * Return current match status
-	 * @return match status
-	 */
-	public String getStatus(){
 		String s="";
-		for(int i=0;i<5;i++) s+=set[i].toString();
+		for(int i=0;i<set.length;i++) s+=set[i].toString();
 		return s;
 	}
 	
@@ -137,19 +123,19 @@ public class PlayerSet {
 	 * Return the current number of die
 	 * @return number of die
 	 */
-	public int getDieNumber() {
+	public int getDiceNumber() {
 		// TODO Auto-generated method stub
 		int count = 0;
-		for(int i=0;i<5;i++) if(!set[i].isDeleted()) count++;
+		for(int i=0;i<set.length;i++) if(!set[i].isDeleted()) count++;
 		return count;
 	}
 
 	/**
-	 * Return value of a dice
+	 * Return value of a die
 	 * @param pos dice position
-	 * @return dice value (0 if dice was deleted)
+	 * @return die value (0 if die was deleted)
 	 */
-	public int getLastDiceValue(int pos) {	
+	public int getDieValue(int pos) {	
 		return set[pos].getLastRoll();
 	}
 	
@@ -158,7 +144,7 @@ public class PlayerSet {
 	 * @param pos dice position
 	 * @return true if dice was deleted
 	 */
-	public boolean isDiceDeleted(int pos){
+	public boolean isDieDeleted(int pos){
 		return set[pos].isDeleted();
 	}
 	

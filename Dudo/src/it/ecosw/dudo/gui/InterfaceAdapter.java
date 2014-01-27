@@ -170,8 +170,7 @@ public class InterfaceAdapter implements OnClickListener,AnimationListener {
 		fx.vibration();
 		diceHide = true;
 		for(int i=0;i<5;i++) {
-			int value = match.getDiceValue(cur, i);
-			if (value != 0) dgos[i].rollAnimation(value, isAnimEnabled);
+			dgos[i].rollAnimation(0, isAnimEnabled);
 		}
 	}
 

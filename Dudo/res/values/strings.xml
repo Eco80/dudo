@@ -27,7 +27,6 @@
     <string name="alert_changelog_label">Changelog</string>
     
     <!-- Description menu elements -->
-    <string name="menu_roll">Roll</string>
     <string name="menu_new">New Match</string>
     <string name="menu_restart">Restart Match</string>
     <string name="menu_settings">Settings</string>
@@ -44,7 +43,8 @@
 	<string name="you_lose">You Lose!</string>
 	<string name="package_not_found">Dudo isn\'t installed as package</string>
 	<string name="new_play">New play!</string>
-	<string name="are_you_sure">Are you sure to delete a %1$s die?</string>
+	<string name="roll_are_you_sure">Are you sure to roll all die?</string>
+	<string name="delete_are_you_sure">Are you sure to delete a %1$s die?</string>
 	<string name="last_play_restored">Last play are restored!</string>
 	
 	<!-- Description settings elements -->

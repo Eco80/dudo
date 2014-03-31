@@ -27,7 +27,6 @@
     <string name="alert_changelog_label">Changelog</string>
     
     <!-- Description menu elements -->
-    <string name="menu_roll">Rilancia</string>
     <string name="menu_new">Nuova Partita</string>
     <string name="menu_restart">Ricomincia Partita</string>
     <string name="menu_settings">Preferenze</string>
@@ -44,7 +43,8 @@
 	<string name="you_lose">Hai Perso!</string>
 	<string name="package_not_found">Dudo non è installato da un package</string>
 	<string name="new_play">Nuova partita!</string>
-	<string name="are_you_sure">Vuoi eliminare un dado da %1$s?</string>
+	<string name="roll_are_you_sure">Vuoi ritirare tutti i dadi?</string>
+	<string name="delete_are_you_sure">Vuoi eliminare un dado da %1$s?</string>
 	<string name="last_play_restored">L\'ultima partita è stata ripristinata!</string>
 	
 	<!-- Description settings elements -->

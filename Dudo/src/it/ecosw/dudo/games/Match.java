@@ -25,6 +25,8 @@ public class Match {
 	
 	private boolean areSixDice;
 	
+	public int round;
+	
 	
 	/**
 	 * Constructor
@@ -36,7 +38,7 @@ public class Match {
 		for(int i=0;i<sets.length;i++){
 			sets[i]=settings.getPlayerStatus(i).getPlayerSet();
 		}
-		
+		round = 1;
 	}
 	
 	/**
@@ -46,6 +48,7 @@ public class Match {
 	 */
 	public boolean restart(boolean sorting){
 		for(int i=0;i<sets.length;i++) sets[i].restoreAllDice(sorting);
+		round = 1;
 		return true;
 	}
 	
@@ -81,6 +84,14 @@ public class Match {
 	 */
 	public String getPlayerStatus(int cur){
 		return sets[cur].toString();
+	}
+	
+	/**
+	 * Return current round
+	 * @return current round
+	 */
+	public int getRound(){
+		return round;
 	}
 	
 	/**
@@ -120,6 +131,7 @@ public class Match {
 	 * @return position of dice deleted
 	 */
 	public int deleteDice(int cur){
+		round++;
 		return sets[cur].delDie();
 	}
 	

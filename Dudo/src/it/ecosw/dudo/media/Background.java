@@ -18,13 +18,13 @@ package it.ecosw.dudo.media;
  */
 
 import it.ecosw.dudo.R;
+import it.ecosw.dudo.gui.GraphicsElement;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
-import android.widget.TextView;
 
 /**
  * Class to change background image or color
@@ -70,16 +70,16 @@ public class Background {
 	
 	private View parentLayout;
 	
-	private TextView[] text;
+	private GraphicsElement ge;
 	
 	/**
 	 * Constructor
 	 * @param context App context
 	 */
-	public Background(Context context,View parentLayout, TextView[] text){
+	public Background(Context context,View parentLayout, GraphicsElement ge){
 		this.context = context;
 		this.parentLayout = parentLayout;
-		this.text = text;
+		this.ge = ge;
 	}
 	
 	/**
@@ -112,11 +112,8 @@ public class Background {
 	    BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(),bmp);
 	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 		parentLayout.setBackgroundDrawable(bitmapDrawable);
-		if(text != null) {
-			for(int i=0;i<text.length;i++){
-				text[i].setTextColor(textcolor);
-			}
-		}
+		ge.getPlayername().setTextColor(textcolor);
+		ge.getChrono().setTextColor(textcolor);
 	}
 	
 	/**
@@ -127,11 +124,8 @@ public class Background {
 	private void setSolidColor(int color, int textcolor){
 		//parentLayout.setBackgroundColor(Color.parseColor(color));
 		parentLayout.setBackgroundColor(color);
-		if(text != null) {
-			for(int i=0;i<text.length;i++){
-				text[i].setTextColor(textcolor);
-			}
-		}
+		ge.getPlayername().setTextColor(textcolor);
+		ge.getChrono().setTextColor(textcolor);
 	}
 	
 }

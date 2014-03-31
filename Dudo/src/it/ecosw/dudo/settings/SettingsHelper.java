@@ -161,12 +161,12 @@ public class SettingsHelper {
 	public PlayerInfo getPlayerStatus(int num){
 		String name, saved;
 		if(isSixthDieActivated()) {
-			name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
+			name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString()+num);
 			saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"000000");
 			if(saved.length() == 5) saved = "000000";
 			return new PlayerInfo(name, saved);
 		}
-		name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString());
+		name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString()+num);
 		saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"00000");
 		if(saved.length() == 6) saved = "00000";
 		return new PlayerInfo(name, saved);

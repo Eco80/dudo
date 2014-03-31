@@ -17,9 +17,12 @@ package it.ecosw.dudo.gui;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
@@ -34,7 +37,7 @@ import it.ecosw.dudo.media.PlayFX;
  * Adapter for set of die
  * @author Enrico Strocchi
  */
-public class InterfaceAdapter implements OnClickListener,AnimationListener {
+public class InterfaceAdapter implements OnClickListener,OnLongClickListener,AnimationListener {
 	
 	private static char dicesymbols[] = {'\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'};
 	
@@ -58,20 +61,25 @@ public class InterfaceAdapter implements OnClickListener,AnimationListener {
 	
 	private int cur;
 	
-	public InterfaceAdapter(Context context, DiceGraphicObjects[] dgos, Button[] playerbuttons, TextView playername, PlayFX fx, boolean sorting) {
+	public InterfaceAdapter(Context context, GraphicsElement ge, PlayFX fx, boolean sorting) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
-		this.dgos = dgos;
-		this.playerbuttons = playerbuttons;
+		this.dgos = ge.getDgos();
+		this.playerbuttons = ge.getPlayers();
 		this.sorting = sorting;
 		this.fx = fx;
-		// Set button player
+		// Set button player listener
 		for(int i=0;i<6;i++) {
 			playerbuttons[i].setOnClickListener(this);
+			playerbuttons[i].setOnLongClickListener(this);
 			playerbuttons[i].setId(1000+i);
 		}
 		
-		this.playername = playername;
+		// Set listener for dice
+		ge.getDieLayout().setOnClickListener(this);
+		ge.getDieLayout().setId(1);
+		
+		this.playername = ge.getPlayername();
 		
 		cur = 0;
 		diceHide = false;
@@ -220,24 +228,6 @@ public class InterfaceAdapter implements OnClickListener,AnimationListener {
 		return match.getNumPlayer();
 	}
 	
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		int tmp = v.getId()-1000;
-		cur = tmp;
-		diceHide = true;
-		fx.playSoundRoll();
-		fx.vibration();
-		int max = 0;
-		if(match.areSixDice()) max = 6;
-		else max = 5;
-		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(cur,i)) dgos[i].deleteAnimation(false,null);
-			else dgos[i].rollAnimation(0, isAnimEnabled);
-		}
-		playername.setText(match.getPlayerName(cur));
-	}
-
 	/**
 	 * Internal method to update players bar
 	 */
@@ -271,6 +261,58 @@ public class InterfaceAdapter implements OnClickListener,AnimationListener {
 	 */
 	public void setSixDice(boolean sixdice){
 		if(match.setSixDice(sixdice)) rollAllDie();
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == 1){
+			switchDiceHide();
+			return;
+		}
+		if (v.getId() == 2){
+			DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					switch (which) {
+							case DialogInterface.BUTTON_POSITIVE:
+								delDice(getNumPlayerCurrent());
+								break;
+							case DialogInterface.BUTTON_NEGATIVE:
+								break;
+					}
+				}
+			};
+			AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+			String name = getPlayerInfo(getNumPlayerCurrent()).getName();
+			Object[] MessageArgument = {name};
+			String msg = String.format(context.getString(R.string.delete_are_you_sure),MessageArgument);
+			builder.setMessage(msg)
+	                  .setPositiveButton(context.getString(R.string.text_yes), dialogClickListener)
+	                  .setNegativeButton(context.getString(R.string.text_no), dialogClickListener).show();
+	
+			return;
+		}
+		
+		int tmp = v.getId()-1000;
+		cur = tmp;
+		diceHide = true;
+		fx.playSoundRoll();
+		fx.vibration();
+		int max = 0;
+		if(match.areSixDice()) max = 6;
+		else max = 5;
+		for(int i=0;i<max;i++) {
+			if (match.isDieDeleted(cur,i)) dgos[i].deleteAnimation(false,null);
+			else dgos[i].rollAnimation(0, isAnimEnabled);
+		}
+		playername.setText(match.getPlayerName(cur));
+	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

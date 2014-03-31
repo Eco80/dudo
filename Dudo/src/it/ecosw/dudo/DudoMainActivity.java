@@ -18,7 +18,7 @@ package it.ecosw.dudo;
  */
 
 import it.ecosw.dudo.games.Match;
-import it.ecosw.dudo.gui.DiceGraphicObjects;
+import it.ecosw.dudo.gui.GraphicsElement;
 import it.ecosw.dudo.gui.InterfaceAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
 import it.ecosw.dudo.media.Background;
@@ -32,22 +32,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ImageView;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -113,101 +106,21 @@ public class DudoMainActivity extends Activity {
         // Sound Management
         PlayFX fx = new PlayFX(this,settings);
         
-        // Set playerName
-        TextView playername = (TextView)findViewById(R.id.playernameTextView);
-        
-        // Set chrono
-        chrono = (Chronometer)findViewById(R.id.chronometer);
-        chrono.setFormat("%s");
-		chrono.setBase(SystemClock.elapsedRealtime()+settings.getChronoTime());
-        chrono.start();
-        
-        // Set initial background
-        TextView[] text = new TextView[]{playername,chrono};
-        parentLayout = (View) findViewById(R.id.parentLayout);
-        background = new Background(this, parentLayout,text);
-        background.setBackground(settings.getBackgroundStatus());  
-        
         // Create new Dice Set
         gdi = new GenDiceImage(this, settings.getStyle());
         
-        // Generate static graphic object
-        DiceGraphicObjects[] dgos = new DiceGraphicObjects[6];
-        dgos[0] = new DiceGraphicObjects(1, 
-        		(ImageView)findViewById(R.id.ImageButton01), 
-        		(ViewGroup)findViewById(R.id.LayoutDice01),
-        		gdi,settings.isAnimationActivated());
-        dgos[1] = new DiceGraphicObjects(2, 
-        		(ImageView)findViewById(R.id.ImageButton02), 
-        		(ViewGroup)findViewById(R.id.LayoutDice02),
-        		gdi,settings.isAnimationActivated());
-        dgos[2] = new DiceGraphicObjects(3, 
-        		(ImageView)findViewById(R.id.ImageButton03), 
-        		(ViewGroup)findViewById(R.id.LayoutDice03),
-        		gdi,settings.isAnimationActivated());
-        dgos[3] = new DiceGraphicObjects(4, 
-        		(ImageView)findViewById(R.id.ImageButton04), 
-        		(ViewGroup)findViewById(R.id.LayoutDice04),
-        		gdi,settings.isAnimationActivated());
-        dgos[4] = new DiceGraphicObjects(5, 
-        		(ImageView)findViewById(R.id.ImageButton05), 
-        		(ViewGroup)findViewById(R.id.LayoutDice05),
-        		gdi,settings.isAnimationActivated());
-        dgos[5] = new DiceGraphicObjects(5, 
-        		(ImageView)findViewById(R.id.ImageButton06), 
-        		(ViewGroup)findViewById(R.id.LayoutDice06),
-        		gdi,settings.isAnimationActivated());
+        // Acquire all graphics element of gui
+        GraphicsElement ge = new GraphicsElement(this, gdi, settings);
         
-        Button[] players = new Button[6];
-        players[0] = (Button)findViewById(R.id.PlayerButton01);
-        players[1] = (Button)findViewById(R.id.PlayerButton02);
-        players[2] = (Button)findViewById(R.id.PlayerButton03);
-        players[3] = (Button)findViewById(R.id.PlayerButton04);
-        players[4] = (Button)findViewById(R.id.PlayerButton05);
-        players[5] = (Button)findViewById(R.id.PlayerButton06);
+        // Set initial background
+        parentLayout = (View) findViewById(R.id.parentLayout);
+        background = new Background(this, parentLayout,ge);
+        background.setBackground(settings.getBackgroundStatus());  
         
-		d = new InterfaceAdapter(this,dgos,players,playername,fx,settings.isSortingActivated());
+		d = new InterfaceAdapter(this,ge,fx,settings.isSortingActivated());
         d.setAnimEnabled(settings.isAnimationActivated());
 		d.setPlayerStatus(new Match(settings));
         
-        View die = (View)findViewById(R.id.dieLayout);
-        die.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				d.switchDiceHide();
-			}
-		});
-        die.setOnLongClickListener(new View.OnLongClickListener() {
-			
-        	@Override
-        	public boolean onLongClick(View v) {
-				// TODO Auto-generated method stub
-				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int which) {
-						switch (which) {
-								case DialogInterface.BUTTON_POSITIVE:
-									d.delDice(d.getNumPlayerCurrent());
-									break;
-								case DialogInterface.BUTTON_NEGATIVE:
-									break;
-						}
-					}
-				};
-				AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-				String name = d.getPlayerInfo(d.getNumPlayerCurrent()).getName();
-				Object[] MessageArgument = {name};
-				String msg = String.format(getString(R.string.are_you_sure),MessageArgument);
-				builder.setMessage(msg)
-		                  .setPositiveButton(getString(R.string.text_yes), dialogClickListener)
-		                  .setNegativeButton(getString(R.string.text_no), dialogClickListener).show();
-
-				return false;
-
-			}
-		});
     }
     
     /* (non-Javadoc)
@@ -268,10 +181,6 @@ public class DudoMainActivity extends Activity {
 		// TODO Auto-generated method stub
     	switch (item.getItemId()){
     	
-    	case R.id.menu_roll:
-    		d.rollAllDie();
-    		return true;
-    	
     	case R.id.menu_new:
     		chrono.setBase(SystemClock.elapsedRealtime());
 			chrono.stop();
@@ -307,9 +216,7 @@ public class DudoMainActivity extends Activity {
 	}
 	
 	private long calculateElapsedTime(Chronometer mChronometer) {
-
 	    long stoppedMilliseconds = 0;
-
 	    String chronoText = mChronometer.getText().toString();
 	    String array[] = chronoText.split(":");
 	    if (array.length == 2) {
@@ -320,9 +227,7 @@ public class DudoMainActivity extends Activity {
 	                + Integer.parseInt(array[1]) * 60 * 1000
 	                + Integer.parseInt(array[2]) * 1000;
 	    }
-
 	    return stoppedMilliseconds;
-
 	}
 	
 }

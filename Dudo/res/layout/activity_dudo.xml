@@ -63,8 +63,8 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/playernameTextView"
             android:layout_below="@+id/playerBarLayout"
-            android:layout_toLeftOf="@+id/buttonDelete"
-            android:layout_toRightOf="@+id/ButtonHide"
+            android:layout_toLeftOf="@+id/imageButtonDeleteLateral"
+            android:layout_toRightOf="@+id/imageButtonRollLateral"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -172,11 +172,39 @@
 
     </LinearLayout>
 
- <TextView
-     android:id="@+id/playernameTextView"
+ <ImageButton
+     android:id="@+id/imageButtonDelete"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
      android:layout_alignParentBottom="true"
+     android:layout_centerHorizontal="true"
+     android:src="@android:drawable/ic_menu_delete" />
+
+ <ImageButton
+     android:id="@+id/imageButtonRollLateral"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentLeft="true"
+     android:layout_alignParentTop="true"
+     android:src="@android:drawable/ic_menu_rotate" />
+
+ <ImageButton
+     android:id="@+id/imageButtonDeleteLateral"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentRight="true"
+     android:layout_alignParentTop="true"
+     android:src="@android:drawable/ic_menu_delete" />
+
+ <TextView
+     android:id="@+id/playernameTextView"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_toRightOf="@+id/imageButtonRollLateral"
+     android:gravity="left"
      android:paddingBottom="10dp"
      android:paddingLeft="10dp"
      android:text="@string/text_player_name"
@@ -184,10 +212,11 @@
 
  <Chronometer
      android:id="@+id/chronometer"
-     android:layout_width="wrap_content"
+     android:layout_width="match_parent"
      android:layout_height="wrap_content"
      android:layout_alignParentBottom="true"
-     android:layout_alignParentRight="true"
+     android:layout_toLeftOf="@+id/imageButtonDeleteLateral"
+     android:gravity="right"
      android:paddingBottom="10dp"
      android:paddingRight="10dp"
      android:textAppearance="?android:attr/textAppearanceLarge" />

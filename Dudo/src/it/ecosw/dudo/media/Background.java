@@ -112,8 +112,10 @@ public class Background {
 	    BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(),bmp);
 	    bitmapDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 		parentLayout.setBackgroundDrawable(bitmapDrawable);
-		ge.getPlayername().setTextColor(textcolor);
-		ge.getChrono().setTextColor(textcolor);
+		if(ge!=null){
+			ge.getPlayername().setTextColor(textcolor);
+			ge.getChrono().setTextColor(textcolor);
+		}
 	}
 	
 	/**

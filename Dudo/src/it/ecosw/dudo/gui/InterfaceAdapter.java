@@ -25,8 +25,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 import it.ecosw.dudo.R;
 import it.ecosw.dudo.games.Match;
@@ -43,11 +41,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	
 	private Context context;
 	
-	private DiceGraphicObjects[] dgos = null;
-	
-	private Button[] playerbuttons;
-	
-	private TextView playername;
+	private GraphicsElement ge;
 	
 	private Match match;
 	
@@ -64,22 +58,29 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	public InterfaceAdapter(Context context, GraphicsElement ge, PlayFX fx, boolean sorting) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
-		this.dgos = ge.getDgos();
-		this.playerbuttons = ge.getPlayers();
+		this.ge = ge;
 		this.sorting = sorting;
 		this.fx = fx;
 		// Set button player listener
 		for(int i=0;i<6;i++) {
-			playerbuttons[i].setOnClickListener(this);
-			playerbuttons[i].setOnLongClickListener(this);
-			playerbuttons[i].setId(1000+i);
+			ge.getPlayers()[i].setOnClickListener(this);
+			ge.getPlayers()[i].setOnLongClickListener(this);
+			ge.getPlayers()[i].setId(1000+i);
 		}
 		
 		// Set listener for dice
 		ge.getDieLayout().setOnClickListener(this);
 		ge.getDieLayout().setId(1);
 		
-		this.playername = ge.getPlayername();
+		//  Set Listener for delete
+		ge.getDelete().setOnClickListener(this);
+		ge.getDelete().setId(2);
+		ge.getDeleteLateral().setOnClickListener(this);
+		ge.getDeleteLateral().setId(2);
+		
+		// Set Listener for roll button
+		ge.getRollLateral().setOnClickListener(this);
+		ge.getRollLateral().setId(3);
 		
 		cur = 0;
 		diceHide = false;
@@ -104,10 +105,10 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		if (match.areSixDice()) max = 6;
 		else max = 5;
 		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(cur,i)) dgos[i].deleteAnimation(false,null);
-			else dgos[i].rollAnimation(0,isAnimEnabled);
+			if (match.isDieDeleted(cur,i)) ge.getDgos()[i].deleteAnimation(false,null);
+			else ge.getDgos()[i].rollAnimation(0,isAnimEnabled);
 		}
-		if(!match.areSixDice()) dgos[5].deleteAnimation(false,null); 
+		if(!match.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null); 
 		return true;
 	}
 	
@@ -127,14 +128,14 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		fx.playSoundLoseDice();
 		fx.vibration();
 		updatePlayers();
-		if (cur == player) dgos[pos].deleteAnimation(isAnimEnabled,this);
+		if (cur == player) ge.getDgos()[pos].deleteAnimation(isAnimEnabled,this);
 		else rollAllDie();
 		if (match.isEmpty(player)) {
 			Toast.makeText(
 					context,
 					match.getPlayerName(player)+" "+context.getResources().getText(R.string.you_lose),
 					Toast.LENGTH_SHORT).show();
-			playerbuttons[player].setVisibility(View.GONE);
+			ge.getPlayers()[player].setVisibility(View.GONE);
 		}
 		//Toast.makeText(context,context.getResources().getText(R.string.text_clickplayername),Toast.LENGTH_SHORT).show();
 		
@@ -152,7 +153,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 			fx.playClickoffSound();
 			for(int i=0;i<6;i++) {
 				if(i==5 && !match.areSixDice()) break;
-				if(!match.isDieDeleted(cur,i)) dgos[i].hide(isAnimEnabled);
+				if(!match.isDieDeleted(cur,i)) ge.getDgos()[i].hide(isAnimEnabled);
 			}
 			return;
 		} if (diceHide) {
@@ -160,7 +161,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 			fx.playClickonSound();
 			for(int i=0;i<6;i++) {
 				if(i==5 && !match.areSixDice()) break;
-				if(!match.isDieDeleted(cur,i)) dgos[i].show(match.getDiceValue(cur,i),isAnimEnabled);
+				if(!match.isDieDeleted(cur,i)) ge.getDgos()[i].show(match.getDiceValue(cur,i),isAnimEnabled);
 			}
 			return;
 		}
@@ -178,7 +179,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		fx.vibration();
 		diceHide = true;
 		for(int i=0;i<5;i++) {
-			dgos[i].rollAnimation(0, isAnimEnabled);
+			ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
 		}
 	}
 
@@ -191,16 +192,16 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		this.match = match;
         updatePlayers();
         cur = 0;
-        playername.setText(match.getPlayerName(0));
+        ge.getPlayername().setText(match.getPlayerName(0));
         diceHide = true;
 		int max = 0;
 		if (match.areSixDice()) max = 6;
 		else max = 5;
 		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(0,i)) dgos[i].deleteAnimation(false,null);
-			else dgos[i].rollAnimation(0, isAnimEnabled);
+			if (match.isDieDeleted(0,i)) ge.getDgos()[i].deleteAnimation(false,null);
+			else ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
 		}
-		if(!match.areSixDice()) dgos[5].deleteAnimation(false,null);
+		if(!match.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null);
 	}
 	
 	/**
@@ -236,15 +237,25 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		for(int i=0;i<match.getNumPlayer();i++) {
 			String text = match.getPlayerName(i)+"\n";
 			for(int j=0;j<match.getNumDice(i);j++) text += dicesymbols[j];
-			playerbuttons[i].setText(text);
-			if(match.isEmpty(i)) playerbuttons[i].setVisibility(View.GONE);
-			else playerbuttons[i].setVisibility(View.VISIBLE);
+			ge.getPlayers()[i].setText(text);
+			if(match.isEmpty(i)) ge.getPlayers()[i].setVisibility(View.GONE);
+			else ge.getPlayers()[i].setVisibility(View.VISIBLE);
 		}
 		// Remove player button for player out of the sets
 		for(int i=match.getNumPlayer();i<6;i++)
-			playerbuttons[i].setVisibility(View.GONE);
+			ge.getPlayers()[i].setVisibility(View.GONE);
 		// Remove bar if there is only one player
-		if(match.getNumPlayer() == 1) playerbuttons[0].setVisibility(View.GONE);
+		if(match.getNumPlayer() == 1) {
+			ge.getPlayers()[0].setVisibility(View.GONE);
+			ge.getRollLateral().setVisibility(View.VISIBLE);
+			ge.getDeleteLateral().setVisibility(View.VISIBLE);
+			ge.getDelete().setVisibility(View.GONE);
+		} else {
+			ge.getPlayers()[0].setVisibility(View.VISIBLE);
+			ge.getRollLateral().setVisibility(View.GONE);
+			ge.getDeleteLateral().setVisibility(View.GONE);
+			ge.getDelete().setVisibility(View.VISIBLE);			
+		}
 	}
 
 	/**
@@ -293,6 +304,10 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	
 			return;
 		}
+		if(v.getId() == 3){
+			rollAllDie();
+			return;
+		}
 		
 		int tmp = v.getId()-1000;
 		cur = tmp;
@@ -303,10 +318,10 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		if(match.areSixDice()) max = 6;
 		else max = 5;
 		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(cur,i)) dgos[i].deleteAnimation(false,null);
-			else dgos[i].rollAnimation(0, isAnimEnabled);
+			if (match.isDieDeleted(cur,i)) ge.getDgos()[i].deleteAnimation(false,null);
+			else ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
 		}
-		playername.setText(match.getPlayerName(cur));
+		ge.getPlayername().setText(match.getPlayerName(cur));
 	}
 
 	@Override

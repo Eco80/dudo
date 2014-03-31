@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ public class GraphicsElement {
 	private TextView playername;
 	
 	private LinearLayout dieLayout;
+	
+	private ImageButton delete,deleteLateral,rollLateral;
 
 	/**
 	 * Constructor
@@ -36,7 +39,7 @@ public class GraphicsElement {
 	 */
 	public GraphicsElement(Activity act, GenDiceImage gdi, SettingsHelper settings){
         // Define player bar
-        Button[] players = new Button[6];
+        players = new Button[6];
         players[0] = (Button)act.findViewById(R.id.PlayerButton01);
         players[1] = (Button)act.findViewById(R.id.PlayerButton02);
         players[2] = (Button)act.findViewById(R.id.PlayerButton03);
@@ -45,7 +48,7 @@ public class GraphicsElement {
         players[5] = (Button)act.findViewById(R.id.PlayerButton06);
         
         // Generate static graphic object
-        DiceGraphicObjects[] dgos = new DiceGraphicObjects[6];
+        dgos = new DiceGraphicObjects[6];
         dgos[0] = new DiceGraphicObjects(1, 
         		(ImageView)act.findViewById(R.id.ImageButton01), 
         		(ViewGroup)act.findViewById(R.id.LayoutDice01),
@@ -71,6 +74,11 @@ public class GraphicsElement {
         		(ViewGroup)act.findViewById(R.id.LayoutDice06),
         		gdi,settings.isAnimationActivated());
         
+        delete = (ImageButton)act.findViewById(R.id.imageButtonDelete);
+        
+        rollLateral = (ImageButton)act.findViewById(R.id.imageButtonRollLateral);
+        deleteLateral = (ImageButton)act.findViewById(R.id.imageButtonDeleteLateral);
+        
         // Set chrono
         chrono = (Chronometer)act.findViewById(R.id.chronometer);
         chrono.setFormat("%s");
@@ -90,6 +98,29 @@ public class GraphicsElement {
 	 */
 	public Button[] getPlayers() {
 		return players;
+	}
+	
+	/**
+	 * Return delete Button
+	 * @return the delete
+	 */
+	public ImageButton getDelete() {
+		return delete;
+	}
+
+	
+	/**
+	 * @return the deleteLateral
+	 */
+	public ImageButton getDeleteLateral() {
+		return deleteLateral;
+	}
+
+	/**
+	 * @return the rollLateral
+	 */
+	public ImageButton getRollLateral() {
+		return rollLateral;
 	}
 
 	/**

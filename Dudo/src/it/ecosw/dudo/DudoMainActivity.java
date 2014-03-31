@@ -117,6 +117,9 @@ public class DudoMainActivity extends Activity {
         background = new Background(this, parentLayout,ge);
         background.setBackground(settings.getBackgroundStatus());  
         
+        // Set Chrono
+        chrono = ge.getChrono();
+        
 		d = new InterfaceAdapter(this,ge,fx,settings.isSortingActivated());
         d.setAnimEnabled(settings.isAnimationActivated());
 		d.setPlayerStatus(new Match(settings));

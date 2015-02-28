@@ -18,6 +18,7 @@ package com.caverock.androidsvg;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -115,6 +116,8 @@ public class SVGAndroidRenderer
    private static final int  LUMINANCE_TO_ALPHA_BLUE = (int)(0.0721f * (1 << LUMINANCE_FACTOR_SHIFT));
 
    private static final String DEFAULT_FONT_FAMILY = "sans-serif";
+
+   private static HashSet<String>  supportedFeatures = null;
 
 
    private class RendererState implements Cloneable
@@ -360,6 +363,8 @@ public class SVGAndroidRenderer
 
    //==============================================================================
 
+
+   @SuppressWarnings("deprecation")
    private void  parentPush(SvgContainer obj)
    {
       parentStack.push(obj);
@@ -437,6 +442,8 @@ public class SVGAndroidRenderer
       canvas.drawPath(path, state.fillPaint);
    }
 
+
+   @SuppressWarnings("deprecation")
    private void  doStroke(Path path)
    {
       // TODO handle degenerate subpaths properly
@@ -501,6 +508,13 @@ public class SVGAndroidRenderer
          Log.d(TAG, String.format(format, args));
    }
 
+
+   private static void  info(String format, Object... args)
+   {
+      Log.i(TAG, String.format(format, args));
+   }
+
+
    //==============================================================================
    // Renderers for each element type
 
@@ -561,6 +575,8 @@ public class SVGAndroidRenderer
       if (viewBox != null) {
          canvas.concat(calculateViewBoxTransform(state.viewPort, viewBox, positioning));
          state.viewBox = obj.viewBox;  // Note: definitely obj.viewBox here. Not viewBox parameter.
+      } else {
+         canvas.translate(_x, _y);
       }
 
       boolean  compositing = pushLayer();
@@ -615,6 +631,7 @@ public class SVGAndroidRenderer
     * This operation is made more tricky because the childs bbox is in the child's coordinate space,
     * but the parent needs it in the parent's coordinate space.
     */
+   @SuppressWarnings("deprecation")
    private void updateParentBoundingBox(SvgElement obj)
    {
       if (obj.parent == null)       // skip this if obj is root element
@@ -719,6 +736,7 @@ public class SVGAndroidRenderer
    }
 
 
+   @SuppressWarnings("deprecation")
    private void duplicateCanvas()
    {
       try {
@@ -833,8 +851,12 @@ public class SVGAndroidRenderer
          }
          // Check features
          Set<String>  reqfeat = condObj.getRequiredFeatures();
-         if (reqfeat != null && (reqfeat.isEmpty() || !SVGParser.supportedFeatures.containsAll(reqfeat))) {
-            continue;
+         if (reqfeat != null) {
+            if (supportedFeatures == null)
+               initialiseSupportedFeaturesMap();
+            if (reqfeat.isEmpty() || !supportedFeatures.containsAll(reqfeat)) {
+               continue;
+            }
          }
          // Check formats (MIME types)
          Set<String>  reqfmts = condObj.getRequiredFormats();
@@ -861,6 +883,80 @@ public class SVGAndroidRenderer
          render(child);
          break;
       }
+   }
+
+
+   private static synchronized void  initialiseSupportedFeaturesMap()
+   {
+      supportedFeatures = new HashSet<String>();
+
+      // SVG features this SVG implementation supports
+      // Actual feature strings have the prefix: FEATURE_STRING_PREFIX (see above)
+      // NO indicates feature will probable not ever be implemented
+      // NYI indicates support is in progress, or is planned
+      
+      // Feature sets that represent sets of other feature strings (ie a group of features strings)
+      //supportedFeatures.add("SVG");                       // NO
+      //supportedFeatures.add("SVGDOM");                    // NO
+      //supportedFeatures.add("SVG-static");                // NO
+      //supportedFeatures.add("SVGDOM-static");             // NO
+      //supportedFeatures.add("SVG-animation");             // NO
+      //supportedFeatures.add("SVGDOM-animation");          // NO 
+      //supportedFeatures.add("SVG-dynamic");               // NO
+      //supportedFeatures.add("SVGDOM-dynamic");            // NO
+
+      // Individual features
+      //supportedFeatures.add("CoreAttribute");             // NO
+      supportedFeatures.add("Structure");                   // YES (although desc title and metadata are ignored)
+      supportedFeatures.add("BasicStructure");              // YES (although desc title and metadata are ignored)
+      //supportedFeatures.add("ContainerAttribute");        // NO (filter related. NYI)
+      supportedFeatures.add("ConditionalProcessing");       // YES
+      supportedFeatures.add("Image");                       // YES (bitmaps only - not SVG files)
+      supportedFeatures.add("Style");                       // YES
+      supportedFeatures.add("ViewportAttribute");           // YES
+      supportedFeatures.add("Shape");                       // YES
+      //supportedFeatures.add("Text");                      // NO
+      supportedFeatures.add("BasicText");                   // YES
+      supportedFeatures.add("PaintAttribute");              // YES (except color-interpolation and color-rendering)
+      supportedFeatures.add("BasicPaintAttribute");         // YES (except color-rendering)
+      supportedFeatures.add("OpacityAttribute");            // YES
+      //supportedFeatures.add("GraphicsAttribute");         // NO     
+      supportedFeatures.add("BasicGraphicsAttribute");      // YES
+      supportedFeatures.add("Marker");                      // YES
+      //supportedFeatures.add("ColorProfile");              // NO
+      supportedFeatures.add("Gradient");                    // YES
+      supportedFeatures.add("Pattern");                     // YES
+      supportedFeatures.add("Clip");                        // YES
+      supportedFeatures.add("BasicClip");                   // YES
+      supportedFeatures.add("Mask");                        // YES
+      //supportedFeatures.add("Filter");                    // NO
+      //supportedFeatures.add("BasicFilter");               // NO
+      //supportedFeatures.add("DocumentEventsAttribute");   // NO
+      //supportedFeatures.add("GraphicalEventsAttribute");  // NO
+      //supportedFeatures.add("AnimationEventsAttribute");  // NO
+      //supportedFeatures.add("Cursor");                    // NO
+      //supportedFeatures.add("Hyperlinking");              // NO
+      //supportedFeatures.add("XlinkAttribute");            // NO
+      //supportedFeatures.add("ExternalResourcesRequired"); // NO
+      supportedFeatures.add("View");                        // YES
+      //supportedFeatures.add("Script");                    // NO
+      //supportedFeatures.add("Animation");                 // NO
+      //supportedFeatures.add("Font");                      // NO
+      //supportedFeatures.add("BasicFont");                 // NO
+      //supportedFeatures.add("Extensibility");             // NO
+
+      // SVG 1.0 features - all are too general and include things we are not likely to ever support.
+      // If we ever do support these, we'll need to change how FEATURE_STRING_PREFIX is used.
+      //supportedFeatures.add("org.w3c.svg");
+      //supportedFeatures.add("org.w3c.dom.svg");
+      //supportedFeatures.add("org.w3c.svg.static");
+      //supportedFeatures.add("org.w3c.dom.svg.static");
+      //supportedFeatures.add("org.w3c.svg.animation");
+      //supportedFeatures.add("org.w3c.dom.svg.animation");
+      //supportedFeatures.add("org.w3c.svg.dynamic");
+      //supportedFeatures.add("org.w3c.dom.svg.dynamic");
+      //supportedFeatures.add("org.w3c.svg.all");
+      //supportedFeatures.add("org.w3c.dom.svg.all" );
    }
 
 
@@ -941,6 +1037,9 @@ public class SVGAndroidRenderer
    private void render(SVG.Path obj)
    {
       debug("Path render");
+
+      if (obj.d == null)
+         return;
 
       updateStyleForElement(state, obj);
 
@@ -1822,7 +1921,7 @@ public class SVGAndroidRenderer
 
       viewportFill();
 
-      canvas.drawBitmap(image, 0, 0, state.fillPaint);
+      canvas.drawBitmap(image, 0, 0, new Paint());
 
       if (compositing)
          popLayer(obj);
@@ -2376,6 +2475,8 @@ public class SVGAndroidRenderer
       
       public PathConverter(PathDefinition pathDef)
       {
+         if (pathDef == null)
+            return;
          pathDef.enumeratePath(this);
       }
 
@@ -2680,6 +2781,9 @@ public class SVGAndroidRenderer
       
       public MarkerPositionCalculator(PathDefinition pathDef)
       {
+         if (pathDef == null)
+            return;
+
          // Generate and add markers for the first N-1 points
          pathDef.enumeratePath(this);
 
@@ -2886,32 +2990,32 @@ public class SVGAndroidRenderer
       float _markerWidth = (marker.markerWidth != null) ? marker.markerWidth.floatValueX(this) : 3f;
       float _markerHeight = (marker.markerHeight != null) ? marker.markerHeight.floatValueY(this) : 3f;
 
-      // We now do a simplified version of calculateViewBoxTransform().  For now we will
-      // ignore the alignment setting because refX and refY have to be aligned with the
-      // marker position, and alignment would complicate the calculations.
-      Box   _viewBox = (marker.viewBox != null) ? marker.viewBox : state.viewPort;
-      float xScale, yScale;
-
-      xScale = _markerWidth / _viewBox.width;
-      yScale = _markerHeight / _viewBox.height;
-
-      // If we are keeping aspect ratio, then set both scales to the appropriate value depending on 'slice'
-      PreserveAspectRatio  positioning = (marker.preserveAspectRatio != null) ? marker.preserveAspectRatio :  PreserveAspectRatio.LETTERBOX;
-      if (!positioning.equals(PreserveAspectRatio.STRETCH))
+      if (marker.viewBox != null)
       {
-         float  aspectScale = (positioning.getScale() == PreserveAspectRatio.Scale.Slice) ? Math.max(xScale,  yScale) : Math.min(xScale,  yScale);
-         xScale = yScale = aspectScale;
-      }
+         // We now do a simplified version of calculateViewBoxTransform().  For now we will
+         // ignore the alignment setting because refX and refY have to be aligned with the
+         // marker position, and alignment would complicate the calculations.
+         float xScale, yScale;
 
-      //m.preTranslate(viewPort.minX, viewPort.minY);
-      m.preTranslate(-_refX * xScale, -_refY * yScale);
-      canvas.concat(m);
+         xScale = _markerWidth / marker.viewBox.width;
+         yScale = _markerHeight / marker.viewBox.height;
 
-      if (!state.style.overflow) {
+         // If we are keeping aspect ratio, then set both scales to the appropriate value depending on 'slice'
+         PreserveAspectRatio  positioning = (marker.preserveAspectRatio != null) ? marker.preserveAspectRatio :  PreserveAspectRatio.LETTERBOX;
+         if (!positioning.equals(PreserveAspectRatio.STRETCH))
+         {
+            float  aspectScale = (positioning.getScale() == PreserveAspectRatio.Scale.Slice) ? Math.max(xScale,  yScale) : Math.min(xScale,  yScale);
+            xScale = yScale = aspectScale;
+         }
+
+         //m.preTranslate(viewPort.minX, viewPort.minY);
+         m.preTranslate(-_refX * xScale, -_refY * yScale);
+         canvas.concat(m);
+
          // Now we need to take account of alignment setting, because it affects the
          // size and position of the clip rectangle.
-         float  imageW = _viewBox.width * xScale;
-         float  imageH = _viewBox.height * yScale;
+         float  imageW = marker.viewBox.width * xScale;
+         float  imageH = marker.viewBox.height * yScale;
          float  xOffset = 0f;
          float  yOffset = 0f;
          switch (positioning.getAlignment())
@@ -2928,7 +3032,7 @@ public class SVGAndroidRenderer
                break;
             default:
                // nothing to do 
-               break;
+                  break;
          }
          // Determine final Y position
          switch (positioning.getAlignment())
@@ -2947,12 +3051,26 @@ public class SVGAndroidRenderer
                // nothing to do 
                break;
          }
-         setClipRect(xOffset, yOffset, _markerWidth, _markerHeight);
-      }
 
-      m.reset();
-      m.preScale(xScale, yScale);
-      canvas.concat(m);
+         if (!state.style.overflow) {
+            setClipRect(xOffset, yOffset, _markerWidth, _markerHeight);
+         }
+
+         m.reset();
+         m.preScale(xScale, yScale);
+         canvas.concat(m);
+      }
+      else
+      {
+         // No viewBox provided
+
+         m.preTranslate(-_refX, -_refY);
+         canvas.concat(m);
+
+         if (!state.style.overflow) {
+            setClipRect(0, 0, _markerWidth, _markerHeight);
+         }
+      }
 
       boolean  compositing = pushLayer();
 
@@ -3705,10 +3823,10 @@ public class SVGAndroidRenderer
 
    private Path  makePathAndBoundingBox(Line obj)
    {
-      float x1 = (obj.x1 == null) ? 0 : obj.x1.floatValue(this);
-      float y1 = (obj.y1 == null) ? 0 : obj.y1.floatValue(this);
-      float x2 = (obj.x2 == null) ? 0 : obj.x2.floatValue(this);
-      float y2 = (obj.y2 == null) ? 0 : obj.y2.floatValue(this);
+      float x1 = (obj.x1 == null) ? 0 : obj.x1.floatValueX(this);
+      float y1 = (obj.y1 == null) ? 0 : obj.y1.floatValueY(this);
+      float x2 = (obj.x2 == null) ? 0 : obj.x2.floatValueX(this);
+      float y2 = (obj.y2 == null) ? 0 : obj.y2.floatValueY(this);
 
       if (obj.boundingBox == null) {
          obj.boundingBox = new Box(Math.min(x1, y1), Math.min(y1, y2), Math.abs(x2-x1), Math.abs(y2-y1));

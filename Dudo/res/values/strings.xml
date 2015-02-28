@@ -46,6 +46,7 @@
 	<string name="roll_are_you_sure">Are you sure to roll all die?</string>
 	<string name="delete_are_you_sure">Are you sure to delete a %1$s die?</string>
 	<string name="last_play_restored">Last play are restored!</string>
+	<string name="aks_for_new_match">Want you start a new match?</string>
 	
 	<!-- Description settings elements -->
 	<string name="settings">Settings</string>
@@ -56,11 +57,13 @@
 	<string name="animation_setting_title">Animations</string>
 	<string name="animation_setting_summ">Enable or Disable animations during the game</string>
 	<string name="sorting_setting_title">Sorting</string>
-	<string name="sorting_setting_summ">Enable to show dices in increasing order</string>
+	<string name="sorting_setting_summ">Enable to show dice in increasing order</string>
 	<string name="vibration_setting_title">Vibration</string>
 	<string name="vibration_setting_summ">Enable the vibration during rolldice</string>
 	<string name="style_setting_title">Die style</string>
 	<string name="style_setting_summ">Set the style for dice</string>
+	<string name="askdelete_setting_title">Ask to loose a die</string>
+	<string name="askdelete_setting_summ">Ask confirmation before loose a die</string>
 	<string name="background_category_setting">Background</string>
 	<string name="backgroundtype_setting_title">Use image as backgroud</string>
 	<string name="backgroundtype_setting_summary">Enable to use an image as background, disable for solid color</string>
@@ -70,10 +73,8 @@
 	<string name="textcolor_setting_summary">Choose the text color in background</string>
 	<string name="background_color_setting_title">Choose background image</string>
 	<string name="background_color_setting_summ">Change the background image</string>
-	
-	<!-- New Game Activity -->
-	<string name="newgame_numberofplayer">Number of players</string>
-	<string name="newgame_edithint">Player Name</string>
+	<string name="playername_setting_title">Set playername</string>
+	<string name="playername_setting_summ">Set the playername used in the game</string>
 	
 	<!-- Backgrounds -->
 	<string name="pattern_green_carpet">Green Carpet</string>

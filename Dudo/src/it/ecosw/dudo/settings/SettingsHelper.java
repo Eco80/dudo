@@ -38,8 +38,6 @@ public class SettingsHelper {
 	
 	public static final String PLAYERNAME_SETTING = "playername_setting";
 	
-	public static final String PLAYERNUM_SETTING = "playernum_setting";
-	
 	public static final String PLAYERSAVE_SETTING = "playersave_setting";
 
 	public static final String SOUND_SETTING = "sound_setting";
@@ -51,6 +49,8 @@ public class SettingsHelper {
 	public static final String VIBRATION_SETTING = "vibration_setting";
 	
 	public static final String STYLE_SETTING = "style_setting";
+	
+	public static final String ASKDELETE_SETTING = "askdelete_setting";
 	
 	public static final String BACKGROUNDTYPE_SETTING = "backgroundtype_setting";
 	public static final String BACKGROUND_SOLIDCOLOR_SETTING = "background_solidcolor_setting";
@@ -110,6 +110,14 @@ public class SettingsHelper {
 	}
 	
 	/**
+	 * Return true if the software shall ask before to delete a die
+	 * @return true ask to delete
+	 */
+	public boolean askDeletingDie(){
+		return PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(ASKDELETE_SETTING, false);
+	}
+	
+	/**
 	 * Return the style for die
 	 * @return description of style for dice
 	 */
@@ -133,55 +141,34 @@ public class SettingsHelper {
 		}
 	}
 	
-	/**
-	 * Return the number of players of last match
-	 * @return number of players (1 to 6)
-	 */
-	public int getNumPlayers(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getInt(PLAYERNUM_SETTING, 2);
-	}
-	
-	/**
-	 * Save the number of players
-	 * @param num number of players
-	 * @return true if write was correct
-	 */
-	public boolean setNumPlayers(int num){
-		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-		spe.putInt(PLAYERNUM_SETTING, num);
-		spe.commit();
-		return true;
-	}
 	
 	/**
 	 * Return the information about one player
-	 * @param num Player Number (0 to 5)
 	 * @return Player info
 	 */
-	public PlayerInfo getPlayerStatus(int num){
+	public PlayerInfo getPlayerStatus(){
 		String name, saved;
 		if(isSixthDieActivated()) {
-			name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString()+num);
-			saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"000000");
+			name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING,mContext.getText(R.string.text_player).toString());
+			saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING,"000000");
 			if(saved.length() == 5) saved = "000000";
 			return new PlayerInfo(name, saved);
 		}
-		name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING+num,mContext.getText(R.string.text_player).toString()+num);
-		saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING+num,"00000");
+		name = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERNAME_SETTING,mContext.getText(R.string.text_player).toString());
+		saved = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PLAYERSAVE_SETTING,"00000");
 		if(saved.length() == 6) saved = "00000";
 		return new PlayerInfo(name, saved);
 	}
 	
 	/**
 	 * Save information about one player
-	 * @param num Player Number (0 to 5)
 	 * @param info Player Info
 	 * @return 0 if write successfully
 	 */
-	public int setPlayerStatus(int num, PlayerInfo info){
+	public int setPlayerStatus(PlayerInfo info){
 		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-		spe.putString(PLAYERNAME_SETTING+num, info.getName());
-		spe.putString(PLAYERSAVE_SETTING+num, info.getSave());
+		spe.putString(PLAYERNAME_SETTING+0, info.getName());
+		spe.putString(PLAYERSAVE_SETTING+0, info.getSave());
 		spe.commit();
 		return 0;
 	}

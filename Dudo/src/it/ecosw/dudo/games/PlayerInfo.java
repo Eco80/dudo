@@ -59,10 +59,10 @@ public class PlayerInfo {
 	public PlayerSet getPlayerSet(){
 		if (save.length() == 5 ){
 			if (save.equals("00000")) return new PlayerSet(name, false);
-			return new PlayerSet(name,false,save);
+			return new PlayerSet(this,false);
 		} else if (save.length() == 6) {
 			if (save.equals("000000")) return new PlayerSet(name, true);
-			return new PlayerSet(name,true,save);
+			return new PlayerSet(this,true);
 		}
 		return null;
 	}

@@ -20,15 +20,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Picture;
@@ -75,7 +78,7 @@ public class SVG
 {
    private static final String  TAG = "AndroidSVG";
 
-   private static final String  VERSION = "1.2.0";
+   private static final String  VERSION = "1.2.2-beta-2";
 
    protected static final String  SUPPORTED_SVG_VERSION = "1.2";
 
@@ -83,8 +86,6 @@ public class SVG
    private static final int     DEFAULT_PICTURE_HEIGHT = 512;
 
    private static final double  SQRT2 = 1.414213562373095;
-
-   private static final List<SvgObject>  EMPTY_CHILD_LIST = new ArrayList<SvgObject>(0);
 
 
    private Svg     rootElement = null;
@@ -101,6 +102,9 @@ public class SVG
 
    // CSS rules
    private Ruleset  cssRules = new Ruleset();
+
+   // Map from id attribute to element
+   Map<String, SvgElementBase> idToElementMap = new HashMap<String, SvgElementBase>();
 
 
    protected enum Unit
@@ -168,8 +172,31 @@ public class SVG
     */
    public static SVG  getFromResource(Context context, int resourceId) throws SVGParseException
    {
-      SVGParser  parser = new SVGParser();
-      return parser.parse(context.getResources().openRawResource(resourceId));
+      return getFromResource(context.getResources(), resourceId);
+   }
+
+
+   /**
+    * Read and parse an SVG from the given resource location.
+    *
+    * @param resources the set of Resources in which to locate the file.
+    * @param resourceId the resource identifier of the SVG document.
+    * @return an SVG instance on which you can call one of the render methods.
+    * @throws SVGParseException if there is an error parsing the document.
+    */
+   public static SVG  getFromResource(Resources resources, int resourceId) throws SVGParseException
+   {
+      SVGParser    parser = new SVGParser();
+      InputStream  is = resources.openRawResource(resourceId);
+      try {
+         return parser.parse(is);
+      } finally {
+         try {
+           is.close();
+         } catch (IOException e) {
+           // Do nothing
+         }
+      }
    }
 
 
@@ -184,11 +211,17 @@ public class SVG
     */
    public static SVG  getFromAsset(AssetManager assetManager, String filename) throws SVGParseException, IOException
    {
-      SVGParser  parser = new SVGParser();
+      SVGParser    parser = new SVGParser();
       InputStream  is = assetManager.open(filename);
-      SVG  svg = parser.parse(is);
-      is.close();
-      return svg;
+      try {
+         return parser.parse(is);
+      } finally {
+         try {
+           is.close();
+         } catch (IOException e) {
+           // Do nothing
+         }
+      }
    }
 
 
@@ -445,7 +478,7 @@ public class SVG
     * 
     * @return the version number in string format
     */
-   public String  getVersion()
+   public static String  getVersion()
    {
       return VERSION;
    }
@@ -1767,7 +1800,7 @@ public class SVG
       // Dummy container methods. Stop is officially a container, but we 
       // are not interested in any of its possible child elements.
       @Override
-      public List<SvgObject> getChildren() { return EMPTY_CHILD_LIST; }
+      public List<SvgObject> getChildren() { return Collections.emptyList(); }
       @Override
       public void addChild(SvgObject elem) throws SAXException { /* do nothing */ }
    }
@@ -1849,7 +1882,7 @@ public class SVG
       // Dummy container methods. Stop is officially a container, but we 
       // are not interested in any of its possible child elements.
       @Override
-      public List<SvgObject> getChildren() { return EMPTY_CHILD_LIST; }
+      public List<SvgObject> getChildren() { return Collections.emptyList(); }
       @Override
       public void addChild(SvgObject elem) throws SAXException { /* do nothing */ }
    }
@@ -1894,8 +1927,10 @@ public class SVG
 
    protected static class PathDefinition implements PathInterface
    {
-      private List<Byte>   commands = null;
-      private List<Float>  coords = null;
+      private byte[]   commands = null;
+      private int      commandsLength = 0;
+      private float[]  coords = null;
+      private int      coordsLength = 0;
 
       private static final byte  MOVETO  = 0;
       private static final byte  LINETO  = 1;
@@ -1907,56 +1942,81 @@ public class SVG
 
       public PathDefinition()
       {
-         this.commands = new ArrayList<Byte>();
-         this.coords = new ArrayList<Float>();
+         this.commands = new byte[8];
+         this.coords = new float[16];
       }
 
 
       public boolean  isEmpty()
       {
-         return commands.isEmpty();
+         return commandsLength == 0;
+      }
+
+
+      private void  addCommand(byte value)
+      {
+         if (commandsLength == commands.length) {
+            byte[]  newCommands = new byte[commands.length * 2];
+            System.arraycopy(commands, 0, newCommands, 0, commands.length);
+            commands = newCommands;
+         }
+         commands[commandsLength++] = value;
+      }
+
+
+      private void  coordsEnsure(int num)
+      {
+         if (coords.length < (coordsLength + num)) {
+            float[]  newCoords = new float[coords.length * 2];
+            System.arraycopy(coords, 0, newCoords, 0, coords.length);
+            coords = newCoords;
+         }
       }
 
 
       @Override
       public void  moveTo(float x, float y)
       {
-         commands.add(MOVETO);
-         coords.add(x);
-         coords.add(y);
+         addCommand(MOVETO);
+         coordsEnsure(2);
+         coords[coordsLength++] = x;
+         coords[coordsLength++] = y;
       }
 
 
       @Override
       public void  lineTo(float x, float y)
       {
-         commands.add(LINETO);
-         coords.add(x);
-         coords.add(y);
+         addCommand(LINETO);
+         coordsEnsure(2);
+         coords[coordsLength++] = x;
+         coords[coordsLength++] = y;
       }
 
 
       @Override
       public void  cubicTo(float x1, float y1, float x2, float y2, float x3, float y3)
       {
-         commands.add(CUBICTO);
-         coords.add(x1);
-         coords.add(y1);
-         coords.add(x2);
-         coords.add(y2);
-         coords.add(x3);
-         coords.add(y3);
+         addCommand(CUBICTO);
+         coordsEnsure(6);
+         coords[coordsLength++] = x1;
+         coords[coordsLength++] = y1;
+         coords[coordsLength++] = x2;
+         coords[coordsLength++] = y2;
+         coords[coordsLength++] = x3;
+         coords[coordsLength++] = y3;
       }
 
 
       @Override
       public void  quadTo(float x1, float y1, float x2, float y2)
       {
-         commands.add(QUADTO);
-         coords.add(x1);
-         coords.add(y1);
-         coords.add(x2);
-         coords.add(y2);
+         addCommand(QUADTO);
+         coordsEnsure(4);
+         coords[coordsLength++] = x1;
+         coords[coordsLength++] = y1;
+         coords[coordsLength++] = x2;
+         coords[coordsLength++] = y2;
       }
 
 
@@ -1964,41 +2024,43 @@ public class SVG
       public void  arcTo(float rx, float ry, float xAxisRotation, boolean largeArcFlag, boolean sweepFlag, float x, float y)
       {
          int  arc = ARCTO | (largeArcFlag?2:0) | (sweepFlag?1:0);
-         commands.add((byte) arc);
-         coords.add(rx);
-         coords.add(ry);
-         coords.add(xAxisRotation);
-         coords.add(x);
-         coords.add(y);
+         addCommand((byte) arc);
+         coordsEnsure(5);
+         coords[coordsLength++] = rx;
+         coords[coordsLength++] = ry;
+         coords[coordsLength++] = xAxisRotation;
+         coords[coordsLength++] = x;
+         coords[coordsLength++] = y;
       }
 
 
       @Override
       public void  close()
       {
-         commands.add(CLOSE);
+         addCommand(CLOSE);
       }
 
 
       public void enumeratePath(PathInterface handler)
       {
-         Iterator<Float>  coordsIter = coords.iterator();
+         int  coordsPos = 0;
 
-         for (byte command: commands)
+         for (int commandPos = 0; commandPos < commandsLength; commandPos++)
          {
+            byte  command = commands[commandPos];
             switch (command)
             {
                case MOVETO:
-                  handler.moveTo(coordsIter.next(), coordsIter.next());
+                  handler.moveTo(coords[coordsPos++], coords[coordsPos++]);
                   break;
                case LINETO:
-                  handler.lineTo(coordsIter.next(), coordsIter.next());
+                  handler.lineTo(coords[coordsPos++], coords[coordsPos++]);
                   break;
                case CUBICTO:
-                  handler.cubicTo(coordsIter.next(), coordsIter.next(), coordsIter.next(), coordsIter.next(),coordsIter.next(), coordsIter.next());
+                  handler.cubicTo(coords[coordsPos++], coords[coordsPos++], coords[coordsPos++], coords[coordsPos++],coords[coordsPos++], coords[coordsPos++]);
                   break;
                case QUADTO:
-                  handler.quadTo(coordsIter.next(), coordsIter.next(), coordsIter.next(), coordsIter.next());
+                  handler.quadTo(coords[coordsPos++], coords[coordsPos++], coords[coordsPos++], coords[coordsPos++]);
                   break;
                case CLOSE:
                   handler.close();
@@ -2006,7 +2068,7 @@ public class SVG
                default:
                   boolean  largeArcFlag = (command & 2) != 0;
                   boolean  sweepFlag = (command & 1) != 0;
-                  handler.arcTo(coordsIter.next(), coordsIter.next(), coordsIter.next(), largeArcFlag, sweepFlag, coordsIter.next(), coordsIter.next());
+                  handler.arcTo(coords[coordsPos++], coords[coordsPos++], coords[coordsPos++], largeArcFlag, sweepFlag, coords[coordsPos++], coords[coordsPos++]);
             }
          }
       }
@@ -2016,11 +2078,18 @@ public class SVG
 
    protected SvgObject  getElementById(String id)
    {
+      if (id == null || id.length() == 0)
+         return null;
       if (id.equals(rootElement.id))
          return rootElement;
 
+      if (idToElementMap.containsKey(id))
+         return idToElementMap.get(id);
+
       // Search the object tree for a node with id property that matches 'id'
-      return getElementById(rootElement, id);
+      SvgElementBase  result = getElementById(rootElement, id);
+      idToElementMap.put(id, result);
+      return result;
    }
 
 

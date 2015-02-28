@@ -20,6 +20,7 @@ package it.ecosw.dudo.gui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -27,9 +28,10 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.Toast;
 import it.ecosw.dudo.R;
-import it.ecosw.dudo.games.Match;
 import it.ecosw.dudo.games.PlayerInfo;
+import it.ecosw.dudo.games.PlayerSet;
 import it.ecosw.dudo.media.PlayFX;
+import it.ecosw.dudo.settings.SettingsHelper;
 
 /**
  * Adapter for set of die
@@ -43,7 +45,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	
 	private GraphicsElement ge;
 	
-	private Match match;
+	private PlayerSet player;
 	
 	private boolean sorting;
 	
@@ -53,28 +55,21 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	
 	private boolean isAnimEnabled;
 	
-	private int cur;
+	private boolean askDelete;
 	
-	public InterfaceAdapter(Context context, GraphicsElement ge, PlayFX fx, boolean sorting) {
+	public InterfaceAdapter(Context context, GraphicsElement ge, PlayFX fx, SettingsHelper settings) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.ge = ge;
-		this.sorting = sorting;
+		this.sorting = settings.isSortingActivated();
 		this.fx = fx;
-		// Set button player listener
-		for(int i=0;i<6;i++) {
-			ge.getPlayers()[i].setOnClickListener(this);
-			ge.getPlayers()[i].setOnLongClickListener(this);
-			ge.getPlayers()[i].setId(1000+i);
-		}
+		this.askDelete = settings.askDeletingDie();
 		
 		// Set listener for dice
 		ge.getDieLayout().setOnClickListener(this);
 		ge.getDieLayout().setId(1);
 		
 		//  Set Listener for delete
-		ge.getDelete().setOnClickListener(this);
-		ge.getDelete().setId(2);
 		ge.getDeleteLateral().setOnClickListener(this);
 		ge.getDeleteLateral().setId(2);
 		
@@ -82,7 +77,10 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 		ge.getRollLateral().setOnClickListener(this);
 		ge.getRollLateral().setId(3);
 		
-		cur = 0;
+		// Set Long listener for playername
+		ge.getPlayername().setOnLongClickListener(this);
+		ge.getPlayername().setId(11);
+		
 		diceHide = false;
 		isAnimEnabled = true;
 		
@@ -97,18 +95,15 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	}
 	
 	public boolean rollAllDie(){
-		diceHide = true;
-		match.rollAllDie(sorting);
+		diceHide = false;
+		player.rollSet(sorting);
 		fx.playSoundRoll();
 		fx.vibration();
-		int max = 0;
-		if (match.areSixDice()) max = 6;
-		else max = 5;
-		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(cur,i)) ge.getDgos()[i].deleteAnimation(false,null);
-			else ge.getDgos()[i].rollAnimation(0,isAnimEnabled);
+		for(int i=0;i<(player.areSixDice()?6:5);i++) {
+			if (player.isDieDeleted(i)) ge.getDgos()[i].deleteAnimation(false,null);
+			else ge.getDgos()[i].rollAnimation(player.getDieValue(i),isAnimEnabled);
 		}
-		if(!match.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null); 
+		if(!player.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null); 
 		return true;
 	}
 	
@@ -117,25 +112,22 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	 * @param sort true if dice shall be sorted
 	 * @return true if a dice was deleted
 	 */
-	public boolean delDice(int player) {
+	public boolean delDice() {
 		// TODO Auto-generated method stub
 		// delete a dice from sets
-		int pos = match.deleteDice(player);
+		int pos = player.delDie();
 		if (pos == -1) {
 			fx.playErrorSound();
 			return false;
 		}
 		fx.playSoundLoseDice();
 		fx.vibration();
-		updatePlayers();
-		if (cur == player) ge.getDgos()[pos].deleteAnimation(isAnimEnabled,this);
-		else rollAllDie();
-		if (match.isEmpty(player)) {
+		ge.getDgos()[pos].deleteAnimation(isAnimEnabled,this);
+		if (player.isEmpty()) {
 			Toast.makeText(
 					context,
-					match.getPlayerName(player)+" "+context.getResources().getText(R.string.you_lose),
+					player.getPlayerName()+" "+context.getResources().getText(R.string.you_lose),
 					Toast.LENGTH_SHORT).show();
-			ge.getPlayers()[player].setVisibility(View.GONE);
 		}
 		//Toast.makeText(context,context.getResources().getText(R.string.text_clickplayername),Toast.LENGTH_SHORT).show();
 		
@@ -147,21 +139,21 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	 * @param true to hide dice
 	 */
 	public void switchDiceHide(){
-		if(match.isEmpty(cur)) return;
+		if(player.isEmpty()) return;
 		if (!diceHide) {
 			diceHide = true;
 			fx.playClickoffSound();
 			for(int i=0;i<6;i++) {
-				if(i==5 && !match.areSixDice()) break;
-				if(!match.isDieDeleted(cur,i)) ge.getDgos()[i].hide(isAnimEnabled);
+				if(i==5 && !player.areSixDice()) break;
+				if(!player.isDieDeleted(i)) ge.getDgos()[i].hide(isAnimEnabled);
 			}
 			return;
 		} if (diceHide) {
 			diceHide = false;
 			fx.playClickonSound();
 			for(int i=0;i<6;i++) {
-				if(i==5 && !match.areSixDice()) break;
-				if(!match.isDieDeleted(cur,i)) ge.getDgos()[i].show(match.getDiceValue(cur,i),isAnimEnabled);
+				if(i==5 && !player.areSixDice()) break;
+				if(!player.isDieDeleted(i)) ge.getDgos()[i].show(player.getDieValue(i) ,isAnimEnabled);
 			}
 			return;
 		}
@@ -172,92 +164,42 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	 * @param sorting true if the die shall be sort
 	 */
 	public void restart(){
-		cur = 0;
-		match.restart(sorting);
-		updatePlayers();
+		player.restoreAllDice(sorting);
    		fx.playSoundRoll();
 		fx.vibration();
-		diceHide = true;
-		for(int i=0;i<5;i++) {
-			ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
+		diceHide = false;
+		for(int i=0;i<(player.areSixDice()?6:5);i++) {
+			ge.getDgos()[i].rollAnimation(player.getDieValue(i), isAnimEnabled);
 		}
+		ge.getChrono().setBase(SystemClock.elapsedRealtime());
+		ge.getChrono().start();
 	}
 
+	/**
+	 * Playerinfo for current player
+	 * @return PlayerInfo object
+	 */
+	public PlayerInfo getPlayerInfo(){
+		return player.getPlayerInfo();
+	}
+	
 	/**
 	 * Set player info
 	 * @param sets Array of Player Info
 	 * @param numofplayers Number of player
 	 */
-	public void setPlayerStatus(Match match){
-		this.match = match;
-        updatePlayers();
-        cur = 0;
-        ge.getPlayername().setText(match.getPlayerName(0));
-        diceHide = true;
-		int max = 0;
-		if (match.areSixDice()) max = 6;
-		else max = 5;
-		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(0,i)) ge.getDgos()[i].deleteAnimation(false,null);
-			else ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
+	public void setPlayerStatus(PlayerSet player){
+		this.player = player;
+        ge.getPlayername().setText(player.getPlayerName());
+        diceHide = false;
+		for(int i=0;i<(player.areSixDice()?6:5);i++) {
+			if (player.isDieDeleted(i)) ge.getDgos()[i].deleteAnimation(false,null);
+			else ge.getDgos()[i].rollAnimation(player.getDieValue(i), isAnimEnabled);
 		}
-		if(!match.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null);
-	}
-	
-	/**
-	 * Return player info
-	 * @param num player number
-	 * @return Player info
-	 */
-	public PlayerInfo getPlayerInfo(int num){
-		return new PlayerInfo(match.getPlayerName(num),match.getPlayerStatus(num));
+		if(!player.areSixDice()) ge.getDgos()[5].deleteAnimation(false,null);
 	}
 
-	/**
-	 * Return number of current player
-	 * @return number of current player
-	 */
-	public int getNumPlayerCurrent(){
-		return cur;
-	}
 	
-	/**
-	 * Return current number of player
-	 * @return number of player
-	 */
-	public int getNumPlayer(){
-		return match.getNumPlayer();
-	}
-	
-	/**
-	 * Internal method to update players bar
-	 */
-	private void updatePlayers(){
-		// Set text and visibility for player bar
-		for(int i=0;i<match.getNumPlayer();i++) {
-			String text = match.getPlayerName(i)+"\n";
-			for(int j=0;j<match.getNumDice(i);j++) text += dicesymbols[j];
-			ge.getPlayers()[i].setText(text);
-			if(match.isEmpty(i)) ge.getPlayers()[i].setVisibility(View.GONE);
-			else ge.getPlayers()[i].setVisibility(View.VISIBLE);
-		}
-		// Remove player button for player out of the sets
-		for(int i=match.getNumPlayer();i<6;i++)
-			ge.getPlayers()[i].setVisibility(View.GONE);
-		// Remove bar if there is only one player
-		if(match.getNumPlayer() == 1) {
-			ge.getPlayers()[0].setVisibility(View.GONE);
-			ge.getRollLateral().setVisibility(View.VISIBLE);
-			ge.getDeleteLateral().setVisibility(View.VISIBLE);
-			ge.getDelete().setVisibility(View.GONE);
-		} else {
-			ge.getPlayers()[0].setVisibility(View.VISIBLE);
-			ge.getRollLateral().setVisibility(View.GONE);
-			ge.getDeleteLateral().setVisibility(View.GONE);
-			ge.getDelete().setVisibility(View.VISIBLE);			
-		}
-	}
-
 	/**
 	 * Set sorting for dice
 	 * @param sorting true to sort the die set
@@ -267,11 +209,28 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	}
 	
 	/**
+	 * Set if shall ask before delete dice or no
+	 * @param askDelete true to ask before deleting
+	 */
+	public void setAskDelete(boolean askDelete){
+		this.askDelete = askDelete;
+	}
+	
+	/**
 	 * Set six dice on the match
 	 * @param sixdice true to set sixdice
 	 */
 	public void setSixDice(boolean sixdice){
-		if(match.setSixDice(sixdice)) rollAllDie();
+		if(player.setSixDice(sixdice)) rollAllDie();
+	}
+	
+	/**
+	 * Change playername
+	 * @param name new playername
+	 */
+	public void setPlayerName(String name){
+		this.player.setPlayerName(name);
+        ge.getPlayername().setText(player.getPlayerName());
 	}
 
 	@Override
@@ -282,12 +241,17 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 			return;
 		}
 		if (v.getId() == 2){
+			if(diceHide) {
+				fx.playErrorSound();
+				return;
+			}
+			if(askDelete){
 			DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 				
 				public void onClick(DialogInterface dialog, int which) {
 					switch (which) {
 							case DialogInterface.BUTTON_POSITIVE:
-								delDice(getNumPlayerCurrent());
+								delDice();
 								break;
 							case DialogInterface.BUTTON_NEGATIVE:
 								break;
@@ -295,39 +259,56 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 				}
 			};
 			AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-			String name = getPlayerInfo(getNumPlayerCurrent()).getName();
+			String name = player.getPlayerName();
 			Object[] MessageArgument = {name};
 			String msg = String.format(context.getString(R.string.delete_are_you_sure),MessageArgument);
 			builder.setMessage(msg)
 	                  .setPositiveButton(context.getString(R.string.text_yes), dialogClickListener)
 	                  .setNegativeButton(context.getString(R.string.text_no), dialogClickListener).show();
-	
+			} else delDice();
 			return;
 		}
 		if(v.getId() == 3){
+			if(diceHide) {
+				fx.playErrorSound();
+				return;
+			}
+			if(player.isEmpty()) {
+				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+								case DialogInterface.BUTTON_POSITIVE:
+									restart();
+									break;
+								case DialogInterface.BUTTON_NEGATIVE:
+									break;
+						}
+					}
+				};
+				AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+				String name = player.getPlayerName();
+				Object[] MessageArgument = {name};
+				String msg = String.format(context.getString(R.string.aks_for_new_match),MessageArgument);
+				builder.setMessage(msg)
+		                  .setPositiveButton(context.getString(R.string.text_yes), dialogClickListener)
+		                  .setNegativeButton(context.getString(R.string.text_no), dialogClickListener).show();
+				return;
+			}
 			rollAllDie();
 			return;
 		}
 		
-		int tmp = v.getId()-1000;
-		cur = tmp;
-		diceHide = true;
 		fx.playSoundRoll();
-		fx.vibration();
-		int max = 0;
-		if(match.areSixDice()) max = 6;
-		else max = 5;
-		for(int i=0;i<max;i++) {
-			if (match.isDieDeleted(cur,i)) ge.getDgos()[i].deleteAnimation(false,null);
-			else ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
-		}
-		ge.getPlayername().setText(match.getPlayerName(cur));
-	}
+        fx.vibration();
+        int max = (player.areSixDice()?6:5);
+        for(int i=0;i<max;i++) {
+                if (player.isDieDeleted(i)) ge.getDgos()[i].deleteAnimation(false,null);
+                else ge.getDgos()[i].rollAnimation(0, isAnimEnabled);
+        }
+        ge.getPlayername().setText(player.getPlayerName());
 
-	@Override
-	public boolean onLongClick(View v) {
-		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
@@ -346,6 +327,12 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	public void onAnimationStart(Animation animation) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

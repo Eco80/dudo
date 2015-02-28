@@ -27,6 +27,8 @@ public class PlayerSet {
 	
 	private String name;
 	
+	private boolean areSixDice;
+	
 	/**
 	 * Constructor
 	 * @param name Player Name
@@ -35,6 +37,7 @@ public class PlayerSet {
 	public PlayerSet(String name, boolean sixdice) {
 		// TODO Auto-generated constructor stub
 		this.name = name;
+		areSixDice = sixdice;
 		if(sixdice) set = new Dice[6];
 		else set = new Dice[5];
 		for(int i=0;i<set.length;i++) set[i] = new Dice();
@@ -46,12 +49,26 @@ public class PlayerSet {
 	 * @param sixdice true if there are six dice
 	 * @param startseq Start sequence
 	 */
-	public PlayerSet(String name, boolean sixdice, String startseq){
-		this.name = name;
-		if(sixdice) set = new Dice[6];
-		else set = new Dice[5];
-		for(int i=0;i<set.length;i++) {
-			set[i] = new Dice(startseq.charAt(i));
+	public PlayerSet(PlayerInfo pi, boolean sixdice){
+		this.name = pi.getName();
+		if(sixdice){
+			set = new Dice[6];
+			if(!pi.getSave().equals("000000")){
+				for(int i=0;i<6;i++) {
+					set[i] = new Dice(pi.getSave().charAt(i));
+				}
+			} else {
+				for(int i=0;i<6;i++) set[i] = new Dice();
+			}
+		} else {
+			set = new Dice[5];
+			if(!pi.getSave().equals("00000")){
+				for(int i=0;i<5;i++) {
+					set[i] = new Dice(pi.getSave().charAt(i));
+				}
+			} else {
+				for(int i=0;i<5;i++) set[i] = new Dice();
+			}
 		}
 	}
 	
@@ -63,7 +80,23 @@ public class PlayerSet {
 		// TODO Auto-generated method stub
 		return name;
 	}
+	
+	/**
+	 * Change player name
+	 * @param name New playername
+	 */
+	public void setPlayerName(String name){
+		this.name = name;
+	}
 
+	/**
+	 * Return true if the match is with six dice
+	 * @return true for six dice play
+	 */
+	public boolean areSixDice(){
+		return areSixDice;
+	}
+	
 	/**
 	 * Remove last die from the set
 	 * @return number of dice deleted, (-1) if no dice are removed
@@ -146,6 +179,34 @@ public class PlayerSet {
 	 */
 	public boolean isDieDeleted(int pos){
 		return set[pos].isDeleted();
+	}
+	
+	/**
+	 * Set the match with six dice
+	 * @param newSixDice true if there are six dice
+	 * @return true if something is changed
+	 */
+	public boolean setSixDice(boolean newSixDice){
+		if(!areSixDice && newSixDice){
+			areSixDice = true;
+			set = new Dice[6];
+			for(int i=0;i<set.length;i++) set[i] = new Dice();
+			return true;
+		} else if(areSixDice && !newSixDice){
+			areSixDice = false;
+			set = new Dice[5];
+			for(int i=0;i<set.length;i++) set[i] = new Dice();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Return PlayerInfo object for the settings
+	 * @return PlayerInfo for settings
+	 */
+	public PlayerInfo getPlayerInfo(){
+		return new PlayerInfo(name, toString());
 	}
 	
 }

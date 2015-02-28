@@ -25,7 +25,17 @@
         android:title="@string/sorting_setting_title"
         android:summary="@string/sorting_setting_summ"
         android:defaultValue="false" />
-      <ListPreference
+     <CheckBoxPreference
+        android:key="askdelete_setting"
+        android:title="@string/askdelete_setting_title"
+        android:summary="@string/askdelete_setting_summ"
+        android:defaultValue="false" />
+     <EditTextPreference
+        android:key="playername_setting"
+        android:title="@string/playername_setting_title" 
+        android:summary="@string/playername_setting_summ"
+        android:defaultValue="@string/text_player" />
+     <ListPreference
         android:key="style_setting"
         android:title="@string/style_setting_title"
         android:summary="@string/style_setting_summ"

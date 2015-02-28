@@ -19,6 +19,8 @@ package com.caverock.androidsvg;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 
+import com.caverock.androidsvg.SVG.Style;
+
 /**
  * Resolver class used by the renderer when processing Text and Image elements.
  * <p>

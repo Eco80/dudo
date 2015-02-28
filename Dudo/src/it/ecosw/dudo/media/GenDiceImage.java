@@ -28,6 +28,7 @@ import android.graphics.Paint;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Picture;
 import android.graphics.Rect;
+import android.graphics.drawable.PictureDrawable;
 import it.ecosw.dudo.R;
 
 /**
@@ -83,7 +84,7 @@ public class GenDiceImage {
 	 * Return name of current dice style
 	 * @return name of current dice style
 	 */
-	public String getCurrent(){
+	public String getCurrentStyle(){
 		return current;
 	}
 	
@@ -179,5 +180,4 @@ public class GenDiceImage {
 		canvas.drawPicture(picture, new Rect(0,0,width,height));
 		return bmp;
 	}
-
 }

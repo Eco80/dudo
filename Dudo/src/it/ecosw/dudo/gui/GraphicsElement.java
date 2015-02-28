@@ -6,20 +6,13 @@ import it.ecosw.dudo.settings.SettingsHelper;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * This class include all the graphic elements of the gui
- * @author Enrico Strocchi
- */
 public class GraphicsElement {
-	
-	private Button[] players;
 	
 	private DiceGraphicObjects[] dgos;
 	
@@ -29,8 +22,8 @@ public class GraphicsElement {
 	
 	private LinearLayout dieLayout;
 	
-	private ImageButton delete,deleteLateral,rollLateral;
-
+	private ImageButton deleteLateral,rollLateral;
+	
 	/**
 	 * Constructor
 	 * @param act Activity
@@ -38,15 +31,7 @@ public class GraphicsElement {
 	 * @param settings Application Settings Helper
 	 */
 	public GraphicsElement(Activity act, GenDiceImage gdi, SettingsHelper settings){
-        // Define player bar
-        players = new Button[6];
-        players[0] = (Button)act.findViewById(R.id.PlayerButton01);
-        players[1] = (Button)act.findViewById(R.id.PlayerButton02);
-        players[2] = (Button)act.findViewById(R.id.PlayerButton03);
-        players[3] = (Button)act.findViewById(R.id.PlayerButton04);
-        players[4] = (Button)act.findViewById(R.id.PlayerButton05);
-        players[5] = (Button)act.findViewById(R.id.PlayerButton06);
-        
+		
         // Generate static graphic object
         dgos = new DiceGraphicObjects[6];
         dgos[0] = new DiceGraphicObjects(1, 
@@ -74,11 +59,6 @@ public class GraphicsElement {
         		(ViewGroup)act.findViewById(R.id.LayoutDice06),
         		gdi,settings.isAnimationActivated());
         
-        delete = (ImageButton)act.findViewById(R.id.imageButtonDelete);
-        
-        rollLateral = (ImageButton)act.findViewById(R.id.imageButtonRollLateral);
-        deleteLateral = (ImageButton)act.findViewById(R.id.imageButtonDeleteLateral);
-        
         // Set chrono
         chrono = (Chronometer)act.findViewById(R.id.chronometer);
         chrono.setFormat("%s");
@@ -90,39 +70,12 @@ public class GraphicsElement {
         
         // Set die Layout
         dieLayout = (LinearLayout)act.findViewById(R.id.dieLayout);
+        
+        // Lateral Button for single player game
+        rollLateral = (ImageButton)act.findViewById(R.id.imageButtonRollLateral);
+        deleteLateral = (ImageButton)act.findViewById(R.id.imageButtonDeleteLateral);
 	}
 	
-	/**
-	 * Return player bar
-	 * @return the players
-	 */
-	public Button[] getPlayers() {
-		return players;
-	}
-	
-	/**
-	 * Return delete Button
-	 * @return the delete
-	 */
-	public ImageButton getDelete() {
-		return delete;
-	}
-
-	
-	/**
-	 * @return the deleteLateral
-	 */
-	public ImageButton getDeleteLateral() {
-		return deleteLateral;
-	}
-
-	/**
-	 * @return the rollLateral
-	 */
-	public ImageButton getRollLateral() {
-		return rollLateral;
-	}
-
 	/**
 	 * Return dicegrphicsobject
 	 * @return the dgos
@@ -130,7 +83,7 @@ public class GraphicsElement {
 	public DiceGraphicObjects[] getDgos() {
 		return dgos;
 	}
-
+	
 	/**
 	 * Return chronometer
 	 * @return the chrono
@@ -155,4 +108,18 @@ public class GraphicsElement {
 		return dieLayout;
 	}
 	
+	/**
+	 * @return the deleteLateral
+	 */
+	public ImageButton getDeleteLateral() {
+		return deleteLateral;
+	}
+
+	/**
+	 * @return the rollLateral
+	 */
+	public ImageButton getRollLateral() {
+		return rollLateral;
+	}
+
 }

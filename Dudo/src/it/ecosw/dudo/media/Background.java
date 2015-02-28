@@ -119,7 +119,7 @@ public class Background {
 	}
 	
 	/**
-	 * Set the background to the solid color passed by parametes
+	 * Set the background to the solid color passed by parameters
 	 * @param color new color of background
 	 * @param textcolor for text in the background
 	 */

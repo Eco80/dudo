@@ -16,6 +16,7 @@
 
 package com.caverock.androidsvg;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,7 +25,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -82,48 +85,83 @@ public class SVGParser extends DefaultHandler2
 
    // For handling <title> and <desc>
    private boolean        inMetadataElement = false;
-   private String         metadataTag = null;
+   private SVGElem        metadataTag = null;
    private StringBuilder  metadataElementContents = null;
 
    // For handling <style>
    private boolean        inStyleElement = false;
    private StringBuilder  styleElementContents = null;
 
-   private HashSet<String> supportedFormats = null;
+   private Set<String> supportedFormats = null;
 
 
    // Define SVG tags
-   private static final String  TAG_SVG            = "svg";
-   private static final String  TAG_A              = "a";
-   private static final String  TAG_CIRCLE         = "circle";
-   private static final String  TAG_CLIPPATH       = "clipPath";
-   private static final String  TAG_DEFS           = "defs";
-   private static final String  TAG_DESC           = "desc";
-   private static final String  TAG_ELLIPSE        = "ellipse";
-   private static final String  TAG_G              = "g";
-   private static final String  TAG_IMAGE          = "image";
-   private static final String  TAG_LINE           = "line";
-   private static final String  TAG_LINEARGRADIENT = "linearGradient";
-   private static final String  TAG_MARKER         = "marker";
-   private static final String  TAG_MASK           = "mask";
-   private static final String  TAG_PATH           = "path";
-   private static final String  TAG_PATTERN        = "pattern";
-   private static final String  TAG_POLYGON        = "polygon";
-   private static final String  TAG_POLYLINE       = "polyline";
-   private static final String  TAG_RADIALGRADIENT = "radialGradient";
-   private static final String  TAG_RECT           = "rect";
-   private static final String  TAG_SOLIDCOLOR     = "solidColor";
-   private static final String  TAG_STOP           = "stop";
-   private static final String  TAG_STYLE          = "style";
-   private static final String  TAG_SWITCH         = "switch";
-   private static final String  TAG_SYMBOL         = "symbol";
-   private static final String  TAG_TEXT           = "text";
-   private static final String  TAG_TEXTPATH       = "textPath";
-   private static final String  TAG_TITLE          = "title";
-   private static final String  TAG_TREF           = "tref";
-   private static final String  TAG_TSPAN          = "tspan";
-   private static final String  TAG_USE            = "use";
-   private static final String  TAG_VIEW           = "view";
+   private enum  SVGElem
+   {
+      svg,
+      a,
+      circle,
+      clipPath,
+      defs,
+      desc,
+      ellipse,
+      g,
+      image,
+      line,
+      linearGradient,
+      marker,
+      mask,
+      path,
+      pattern,
+      polygon,
+      polyline,
+      radialGradient,
+      rect,
+      solidColor,
+      stop,
+      style,
+      SWITCH,
+      symbol,
+      text,
+      textPath,
+      title,
+      tref,
+      tspan,
+      use,
+      view,
+      UNSUPPORTED;
+      
+      private static final Map<String,SVGElem>  cache = new HashMap<String,SVGElem>();
+      
+      public static SVGElem  fromString(String str)
+      {
+         // First check cache to see if it is there
+         SVGElem  elem = cache.get(str);
+         if (elem != null)
+            return elem;
+         // Manual check for "switch" which is in upper case because it's a Java reserved identifier
+         if (str.equals("switch")) {
+            cache.put(str, SWITCH);
+            return SWITCH;
+         }
+         // Do the (slow) Enum.valueOf()
+         try
+         {
+            elem = valueOf(str);
+            if (elem != SWITCH) {  // Don't allow matches with "SWITCH"
+               cache.put(str, elem);
+               return elem;
+            }
+         } 
+         catch (IllegalArgumentException e)
+         {
+            // Do nothing
+         }
+         // Unknown element name
+         cache.put(str, UNSUPPORTED);
+         return UNSUPPORTED;
+      }
+   }
 
    // Element types that we don't support. Those that are containers have their
    // contents ignored.
@@ -258,20 +296,39 @@ public class SVGParser extends DefaultHandler2
       visibility,
       UNSUPPORTED;
 
+      private static final Map<String,SVGAttr>  cache = new HashMap<String,SVGAttr>();
+      
       public static SVGAttr  fromString(String str)
       {
-         if (str.equals("class"))
+         // First check cache to see if it is there
+         SVGAttr  attr = cache.get(str);
+         if (attr != null)
+            return attr;
+         // Do the (slow) Enum.valueOf()
+         if (str.equals("class")) {
+            cache.put(str, CLASS);
             return CLASS;
-         if (str.indexOf('_') != -1)
+         }
+         // Check for underscore in attribute - it could potentially confuse us
+         if (str.indexOf('_') != -1) {
+            cache.put(str, UNSUPPORTED);
             return UNSUPPORTED;
+         }
          try
          {
-            return valueOf(str.replace('-', '_'));
+            attr = valueOf(str.replace('-', '_'));
+            if (attr != CLASS) {
+               cache.put(str, attr);
+               return attr;
+            }
          } 
          catch (IllegalArgumentException e)
          {
-            return UNSUPPORTED;
+            // Do nothing
          }
+         // Unknown attribute name
+         cache.put(str, UNSUPPORTED);
+         return UNSUPPORTED;
       }
 
    }
@@ -286,271 +343,223 @@ public class SVGParser extends DefaultHandler2
                                                       "|table-column-group|table-column|table-cell|table-caption|none|";
    private static final String VALID_VISIBILITY_VALUES = "|visible|hidden|collapse|";
 
+   // These static inner classes are only loaded/initialized when first used and are thread safe
+   private static class ColourKeywords {
+      private static final Map<String, Integer> colourKeywords = new HashMap<String, Integer>(47);
+      static {
+         colourKeywords.put("aliceblue", 0xf0f8ff);
+         colourKeywords.put("antiquewhite", 0xfaebd7);
+         colourKeywords.put("aqua", 0x00ffff);
+         colourKeywords.put("aquamarine", 0x7fffd4);
+         colourKeywords.put("azure", 0xf0ffff);
+         colourKeywords.put("beige", 0xf5f5dc);
+         colourKeywords.put("bisque", 0xffe4c4);
+         colourKeywords.put("black", 0x000000);
+         colourKeywords.put("blanchedalmond", 0xffebcd);
+         colourKeywords.put("blue", 0x0000ff);
+         colourKeywords.put("blueviolet", 0x8a2be2);
+         colourKeywords.put("brown", 0xa52a2a);
+         colourKeywords.put("burlywood", 0xdeb887);
+         colourKeywords.put("cadetblue", 0x5f9ea0);
+         colourKeywords.put("chartreuse", 0x7fff00);
+         colourKeywords.put("chocolate", 0xd2691e);
+         colourKeywords.put("coral", 0xff7f50);
+         colourKeywords.put("cornflowerblue", 0x6495ed);
+         colourKeywords.put("cornsilk", 0xfff8dc);
+         colourKeywords.put("crimson", 0xdc143c);
+         colourKeywords.put("cyan", 0x00ffff);
+         colourKeywords.put("darkblue", 0x00008b);
+         colourKeywords.put("darkcyan", 0x008b8b);
+         colourKeywords.put("darkgoldenrod", 0xb8860b);
+         colourKeywords.put("darkgray", 0xa9a9a9);
+         colourKeywords.put("darkgreen", 0x006400);
+         colourKeywords.put("darkgrey", 0xa9a9a9);
+         colourKeywords.put("darkkhaki", 0xbdb76b);
+         colourKeywords.put("darkmagenta", 0x8b008b);
+         colourKeywords.put("darkolivegreen", 0x556b2f);
+         colourKeywords.put("darkorange", 0xff8c00);
+         colourKeywords.put("darkorchid", 0x9932cc);
+         colourKeywords.put("darkred", 0x8b0000);
+         colourKeywords.put("darksalmon", 0xe9967a);
+         colourKeywords.put("darkseagreen", 0x8fbc8f);
+         colourKeywords.put("darkslateblue", 0x483d8b);
+         colourKeywords.put("darkslategray", 0x2f4f4f);
+         colourKeywords.put("darkslategrey", 0x2f4f4f);
+         colourKeywords.put("darkturquoise", 0x00ced1);
+         colourKeywords.put("darkviolet", 0x9400d3);
+         colourKeywords.put("deeppink", 0xff1493);
+         colourKeywords.put("deepskyblue", 0x00bfff);
+         colourKeywords.put("dimgray", 0x696969);
+         colourKeywords.put("dimgrey", 0x696969);
+         colourKeywords.put("dodgerblue", 0x1e90ff);
+         colourKeywords.put("firebrick", 0xb22222);
+         colourKeywords.put("floralwhite", 0xfffaf0);
+         colourKeywords.put("forestgreen", 0x228b22);
+         colourKeywords.put("fuchsia", 0xff00ff);
+         colourKeywords.put("gainsboro", 0xdcdcdc);
+         colourKeywords.put("ghostwhite", 0xf8f8ff);
+         colourKeywords.put("gold", 0xffd700);
+         colourKeywords.put("goldenrod", 0xdaa520);
+         colourKeywords.put("gray", 0x808080);
+         colourKeywords.put("green", 0x008000);
+         colourKeywords.put("greenyellow", 0xadff2f);
+         colourKeywords.put("grey", 0x808080);
+         colourKeywords.put("honeydew", 0xf0fff0);
+         colourKeywords.put("hotpink", 0xff69b4);
+         colourKeywords.put("indianred", 0xcd5c5c);
+         colourKeywords.put("indigo", 0x4b0082);
+         colourKeywords.put("ivory", 0xfffff0);
+         colourKeywords.put("khaki", 0xf0e68c);
+         colourKeywords.put("lavender", 0xe6e6fa);
+         colourKeywords.put("lavenderblush", 0xfff0f5);
+         colourKeywords.put("lawngreen", 0x7cfc00);
+         colourKeywords.put("lemonchiffon", 0xfffacd);
+         colourKeywords.put("lightblue", 0xadd8e6);
+         colourKeywords.put("lightcoral", 0xf08080);
+         colourKeywords.put("lightcyan", 0xe0ffff);
+         colourKeywords.put("lightgoldenrodyellow", 0xfafad2);
+         colourKeywords.put("lightgray", 0xd3d3d3);
+         colourKeywords.put("lightgreen", 0x90ee90);
+         colourKeywords.put("lightgrey", 0xd3d3d3);
+         colourKeywords.put("lightpink", 0xffb6c1);
+         colourKeywords.put("lightsalmon", 0xffa07a);
+         colourKeywords.put("lightseagreen", 0x20b2aa);
+         colourKeywords.put("lightskyblue", 0x87cefa);
+         colourKeywords.put("lightslategray", 0x778899);
+         colourKeywords.put("lightslategrey", 0x778899);
+         colourKeywords.put("lightsteelblue", 0xb0c4de);
+         colourKeywords.put("lightyellow", 0xffffe0);
+         colourKeywords.put("lime", 0x00ff00);
+         colourKeywords.put("limegreen", 0x32cd32);
+         colourKeywords.put("linen", 0xfaf0e6);
+         colourKeywords.put("magenta", 0xff00ff);
+         colourKeywords.put("maroon", 0x800000);
+         colourKeywords.put("mediumaquamarine", 0x66cdaa);
+         colourKeywords.put("mediumblue", 0x0000cd);
+         colourKeywords.put("mediumorchid", 0xba55d3);
+         colourKeywords.put("mediumpurple", 0x9370db);
+         colourKeywords.put("mediumseagreen", 0x3cb371);
+         colourKeywords.put("mediumslateblue", 0x7b68ee);
+         colourKeywords.put("mediumspringgreen", 0x00fa9a);
+         colourKeywords.put("mediumturquoise", 0x48d1cc);
+         colourKeywords.put("mediumvioletred", 0xc71585);
+         colourKeywords.put("midnightblue", 0x191970);
+         colourKeywords.put("mintcream", 0xf5fffa);
+         colourKeywords.put("mistyrose", 0xffe4e1);
+         colourKeywords.put("moccasin", 0xffe4b5);
+         colourKeywords.put("navajowhite", 0xffdead);
+         colourKeywords.put("navy", 0x000080);
+         colourKeywords.put("oldlace", 0xfdf5e6);
+         colourKeywords.put("olive", 0x808000);
+         colourKeywords.put("olivedrab", 0x6b8e23);
+         colourKeywords.put("orange", 0xffa500);
+         colourKeywords.put("orangered", 0xff4500);
+         colourKeywords.put("orchid", 0xda70d6);
+         colourKeywords.put("palegoldenrod", 0xeee8aa);
+         colourKeywords.put("palegreen", 0x98fb98);
+         colourKeywords.put("paleturquoise", 0xafeeee);
+         colourKeywords.put("palevioletred", 0xdb7093);
+         colourKeywords.put("papayawhip", 0xffefd5);
+         colourKeywords.put("peachpuff", 0xffdab9);
+         colourKeywords.put("peru", 0xcd853f);
+         colourKeywords.put("pink", 0xffc0cb);
+         colourKeywords.put("plum", 0xdda0dd);
+         colourKeywords.put("powderblue", 0xb0e0e6);
+         colourKeywords.put("purple", 0x800080);
+         colourKeywords.put("red", 0xff0000);
+         colourKeywords.put("rosybrown", 0xbc8f8f);
+         colourKeywords.put("royalblue", 0x4169e1);
+         colourKeywords.put("saddlebrown", 0x8b4513);
+         colourKeywords.put("salmon", 0xfa8072);
+         colourKeywords.put("sandybrown", 0xf4a460);
+         colourKeywords.put("seagreen", 0x2e8b57);
+         colourKeywords.put("seashell", 0xfff5ee);
+         colourKeywords.put("sienna", 0xa0522d);
+         colourKeywords.put("silver", 0xc0c0c0);
+         colourKeywords.put("skyblue", 0x87ceeb);
+         colourKeywords.put("slateblue", 0x6a5acd);
+         colourKeywords.put("slategray", 0x708090);
+         colourKeywords.put("slategrey", 0x708090);
+         colourKeywords.put("snow", 0xfffafa);
+         colourKeywords.put("springgreen", 0x00ff7f);
+         colourKeywords.put("steelblue", 0x4682b4);
+         colourKeywords.put("tan", 0xd2b48c);
+         colourKeywords.put("teal", 0x008080);
+         colourKeywords.put("thistle", 0xd8bfd8);
+         colourKeywords.put("tomato", 0xff6347);
+         colourKeywords.put("turquoise", 0x40e0d0);
+         colourKeywords.put("violet", 0xee82ee);
+         colourKeywords.put("wheat", 0xf5deb3);
+         colourKeywords.put("white", 0xffffff);
+         colourKeywords.put("whitesmoke", 0xf5f5f5);
+         colourKeywords.put("yellow", 0xffff00);
+         colourKeywords.put("yellowgreen", 0x9acd32);
+      }
 
-   private static HashMap<String, Integer> colourKeywords = new HashMap<String, Integer>();
-   private static HashMap<String, Length> fontSizeKeywords = new HashMap<String, Length>(9);
-   private static HashMap<String, Integer> fontWeightKeywords = new HashMap<String, Integer>(13);
-   private static HashMap<String, Style.FontStyle>fontStyleKeywords = new HashMap<String, Style.FontStyle>(3); 
-   private static HashMap<String, PreserveAspectRatio.Alignment> aspectRatioKeywords = new HashMap<String, PreserveAspectRatio.Alignment>();
-   protected static HashSet<String> supportedFeatures = new HashSet<String>();
-
-   static {
-      colourKeywords.put("aliceblue", 0xf0f8ff);
-      colourKeywords.put("antiquewhite", 0xfaebd7);
-      colourKeywords.put("aqua", 0x00ffff);
-      colourKeywords.put("aquamarine", 0x7fffd4);
-      colourKeywords.put("azure", 0xf0ffff);
-      colourKeywords.put("beige", 0xf5f5dc);
-      colourKeywords.put("bisque", 0xffe4c4);
-      colourKeywords.put("black", 0x000000);
-      colourKeywords.put("blanchedalmond", 0xffebcd);
-      colourKeywords.put("blue", 0x0000ff);
-      colourKeywords.put("blueviolet", 0x8a2be2);
-      colourKeywords.put("brown", 0xa52a2a);
-      colourKeywords.put("burlywood", 0xdeb887);
-      colourKeywords.put("cadetblue", 0x5f9ea0);
-      colourKeywords.put("chartreuse", 0x7fff00);
-      colourKeywords.put("chocolate", 0xd2691e);
-      colourKeywords.put("coral", 0xff7f50);
-      colourKeywords.put("cornflowerblue", 0x6495ed);
-      colourKeywords.put("cornsilk", 0xfff8dc);
-      colourKeywords.put("crimson", 0xdc143c);
-      colourKeywords.put("cyan", 0x00ffff);
-      colourKeywords.put("darkblue", 0x00008b);
-      colourKeywords.put("darkcyan", 0x008b8b);
-      colourKeywords.put("darkgoldenrod", 0xb8860b);
-      colourKeywords.put("darkgray", 0xa9a9a9);
-      colourKeywords.put("darkgreen", 0x006400);
-      colourKeywords.put("darkgrey", 0xa9a9a9);
-      colourKeywords.put("darkkhaki", 0xbdb76b);
-      colourKeywords.put("darkmagenta", 0x8b008b);
-      colourKeywords.put("darkolivegreen", 0x556b2f);
-      colourKeywords.put("darkorange", 0xff8c00);
-      colourKeywords.put("darkorchid", 0x9932cc);
-      colourKeywords.put("darkred", 0x8b0000);
-      colourKeywords.put("darksalmon", 0xe9967a);
-      colourKeywords.put("darkseagreen", 0x8fbc8f);
-      colourKeywords.put("darkslateblue", 0x483d8b);
-      colourKeywords.put("darkslategray", 0x2f4f4f);
-      colourKeywords.put("darkslategrey", 0x2f4f4f);
-      colourKeywords.put("darkturquoise", 0x00ced1);
-      colourKeywords.put("darkviolet", 0x9400d3);
-      colourKeywords.put("deeppink", 0xff1493);
-      colourKeywords.put("deepskyblue", 0x00bfff);
-      colourKeywords.put("dimgray", 0x696969);
-      colourKeywords.put("dimgrey", 0x696969);
-      colourKeywords.put("dodgerblue", 0x1e90ff);
-      colourKeywords.put("firebrick", 0xb22222);
-      colourKeywords.put("floralwhite", 0xfffaf0);
-      colourKeywords.put("forestgreen", 0x228b22);
-      colourKeywords.put("fuchsia", 0xff00ff);
-      colourKeywords.put("gainsboro", 0xdcdcdc);
-      colourKeywords.put("ghostwhite", 0xf8f8ff);
-      colourKeywords.put("gold", 0xffd700);
-      colourKeywords.put("goldenrod", 0xdaa520);
-      colourKeywords.put("gray", 0x808080);
-      colourKeywords.put("green", 0x008000);
-      colourKeywords.put("greenyellow", 0xadff2f);
-      colourKeywords.put("grey", 0x808080);
-      colourKeywords.put("honeydew", 0xf0fff0);
-      colourKeywords.put("hotpink", 0xff69b4);
-      colourKeywords.put("indianred", 0xcd5c5c);
-      colourKeywords.put("indigo", 0x4b0082);
-      colourKeywords.put("ivory", 0xfffff0);
-      colourKeywords.put("khaki", 0xf0e68c);
-      colourKeywords.put("lavender", 0xe6e6fa);
-      colourKeywords.put("lavenderblush", 0xfff0f5);
-      colourKeywords.put("lawngreen", 0x7cfc00);
-      colourKeywords.put("lemonchiffon", 0xfffacd);
-      colourKeywords.put("lightblue", 0xadd8e6);
-      colourKeywords.put("lightcoral", 0xf08080);
-      colourKeywords.put("lightcyan", 0xe0ffff);
-      colourKeywords.put("lightgoldenrodyellow", 0xfafad2);
-      colourKeywords.put("lightgray", 0xd3d3d3);
-      colourKeywords.put("lightgreen", 0x90ee90);
-      colourKeywords.put("lightgrey", 0xd3d3d3);
-      colourKeywords.put("lightpink", 0xffb6c1);
-      colourKeywords.put("lightsalmon", 0xffa07a);
-      colourKeywords.put("lightseagreen", 0x20b2aa);
-      colourKeywords.put("lightskyblue", 0x87cefa);
-      colourKeywords.put("lightslategray", 0x778899);
-      colourKeywords.put("lightslategrey", 0x778899);
-      colourKeywords.put("lightsteelblue", 0xb0c4de);
-      colourKeywords.put("lightyellow", 0xffffe0);
-      colourKeywords.put("lime", 0x00ff00);
-      colourKeywords.put("limegreen", 0x32cd32);
-      colourKeywords.put("linen", 0xfaf0e6);
-      colourKeywords.put("magenta", 0xff00ff);
-      colourKeywords.put("maroon", 0x800000);
-      colourKeywords.put("mediumaquamarine", 0x66cdaa);
-      colourKeywords.put("mediumblue", 0x0000cd);
-      colourKeywords.put("mediumorchid", 0xba55d3);
-      colourKeywords.put("mediumpurple", 0x9370db);
-      colourKeywords.put("mediumseagreen", 0x3cb371);
-      colourKeywords.put("mediumslateblue", 0x7b68ee);
-      colourKeywords.put("mediumspringgreen", 0x00fa9a);
-      colourKeywords.put("mediumturquoise", 0x48d1cc);
-      colourKeywords.put("mediumvioletred", 0xc71585);
-      colourKeywords.put("midnightblue", 0x191970);
-      colourKeywords.put("mintcream", 0xf5fffa);
-      colourKeywords.put("mistyrose", 0xffe4e1);
-      colourKeywords.put("moccasin", 0xffe4b5);
-      colourKeywords.put("navajowhite", 0xffdead);
-      colourKeywords.put("navy", 0x000080);
-      colourKeywords.put("oldlace", 0xfdf5e6);
-      colourKeywords.put("olive", 0x808000);
-      colourKeywords.put("olivedrab", 0x6b8e23);
-      colourKeywords.put("orange", 0xffa500);
-      colourKeywords.put("orangered", 0xff4500);
-      colourKeywords.put("orchid", 0xda70d6);
-      colourKeywords.put("palegoldenrod", 0xeee8aa);
-      colourKeywords.put("palegreen", 0x98fb98);
-      colourKeywords.put("paleturquoise", 0xafeeee);
-      colourKeywords.put("palevioletred", 0xdb7093);
-      colourKeywords.put("papayawhip", 0xffefd5);
-      colourKeywords.put("peachpuff", 0xffdab9);
-      colourKeywords.put("peru", 0xcd853f);
-      colourKeywords.put("pink", 0xffc0cb);
-      colourKeywords.put("plum", 0xdda0dd);
-      colourKeywords.put("powderblue", 0xb0e0e6);
-      colourKeywords.put("purple", 0x800080);
-      colourKeywords.put("red", 0xff0000);
-      colourKeywords.put("rosybrown", 0xbc8f8f);
-      colourKeywords.put("royalblue", 0x4169e1);
-      colourKeywords.put("saddlebrown", 0x8b4513);
-      colourKeywords.put("salmon", 0xfa8072);
-      colourKeywords.put("sandybrown", 0xf4a460);
-      colourKeywords.put("seagreen", 0x2e8b57);
-      colourKeywords.put("seashell", 0xfff5ee);
-      colourKeywords.put("sienna", 0xa0522d);
-      colourKeywords.put("silver", 0xc0c0c0);
-      colourKeywords.put("skyblue", 0x87ceeb);
-      colourKeywords.put("slateblue", 0x6a5acd);
-      colourKeywords.put("slategray", 0x708090);
-      colourKeywords.put("slategrey", 0x708090);
-      colourKeywords.put("snow", 0xfffafa);
-      colourKeywords.put("springgreen", 0x00ff7f);
-      colourKeywords.put("steelblue", 0x4682b4);
-      colourKeywords.put("tan", 0xd2b48c);
-      colourKeywords.put("teal", 0x008080);
-      colourKeywords.put("thistle", 0xd8bfd8);
-      colourKeywords.put("tomato", 0xff6347);
-      colourKeywords.put("turquoise", 0x40e0d0);
-      colourKeywords.put("violet", 0xee82ee);
-      colourKeywords.put("wheat", 0xf5deb3);
-      colourKeywords.put("white", 0xffffff);
-      colourKeywords.put("whitesmoke", 0xf5f5f5);
-      colourKeywords.put("yellow", 0xffff00);
-      colourKeywords.put("yellowgreen", 0x9acd32);
-
-      fontSizeKeywords.put("xx-small", new Length(0.694f, Unit.pt));
-      fontSizeKeywords.put("x-small", new Length(0.833f, Unit.pt));
-      fontSizeKeywords.put("small", new Length(10.0f, Unit.pt));
-      fontSizeKeywords.put("medium", new Length(12.0f, Unit.pt));
-      fontSizeKeywords.put("large", new Length(14.4f, Unit.pt));
-      fontSizeKeywords.put("x-large", new Length(17.3f, Unit.pt));
-      fontSizeKeywords.put("xx-large", new Length(20.7f, Unit.pt));
-      fontSizeKeywords.put("smaller", new Length(83.33f, Unit.percent));
-      fontSizeKeywords.put("larger", new Length(120f, Unit.percent));
-
-      fontWeightKeywords.put("normal", SVG.Style.FONT_WEIGHT_NORMAL);
-      fontWeightKeywords.put("bold", SVG.Style.FONT_WEIGHT_BOLD);
-      fontWeightKeywords.put("bolder", SVG.Style.FONT_WEIGHT_BOLDER);
-      fontWeightKeywords.put("lighter", SVG.Style.FONT_WEIGHT_LIGHTER);
-      fontWeightKeywords.put("100", 100);
-      fontWeightKeywords.put("200", 200);
-      fontWeightKeywords.put("300", 300);
-      fontWeightKeywords.put("400", 400);
-      fontWeightKeywords.put("500", 500);
-      fontWeightKeywords.put("600", 600);
-      fontWeightKeywords.put("700", 700);
-      fontWeightKeywords.put("800", 800);
-      fontWeightKeywords.put("900", 900);
-
-      fontStyleKeywords.put("normal", Style.FontStyle.Normal);
-      fontStyleKeywords.put("italic", Style.FontStyle.Italic);
-      fontStyleKeywords.put("oblique", Style.FontStyle.Oblique);
-
-      aspectRatioKeywords.put(NONE, PreserveAspectRatio.Alignment.None);
-      aspectRatioKeywords.put("xMinYMin", PreserveAspectRatio.Alignment.XMinYMin);
-      aspectRatioKeywords.put("xMidYMin", PreserveAspectRatio.Alignment.XMidYMin);
-      aspectRatioKeywords.put("xMaxYMin", PreserveAspectRatio.Alignment.XMaxYMin);
-      aspectRatioKeywords.put("xMinYMid", PreserveAspectRatio.Alignment.XMinYMid);
-      aspectRatioKeywords.put("xMidYMid", PreserveAspectRatio.Alignment.XMidYMid);
-      aspectRatioKeywords.put("xMaxYMid", PreserveAspectRatio.Alignment.XMaxYMid);
-      aspectRatioKeywords.put("xMinYMax", PreserveAspectRatio.Alignment.XMinYMax);
-      aspectRatioKeywords.put("xMidYMax", PreserveAspectRatio.Alignment.XMidYMax);
-      aspectRatioKeywords.put("xMaxYMax", PreserveAspectRatio.Alignment.XMaxYMax);
-
-      // SVG features this SVG implementation supports
-      // Actual feature strings have the prefix: FEATURE_STRING_PREFIX (see above)
-      // NO indicates feature will probable not ever be implemented
-      // NYI indicates support is in progress, or is planned
-      
-      // Feature sets that represent sets of other feature strings (ie a group of features strings)
-      //supportedFeatures.add("SVG");                       // NO
-      //supportedFeatures.add("SVGDOM");                    // NO
-      //supportedFeatures.add("SVG-static");                // NO
-      //supportedFeatures.add("SVGDOM-static");             // NO
-      //supportedFeatures.add("SVG-animation");             // NO
-      //supportedFeatures.add("SVGDOM-animation");          // NO 
-      //supportedFeatures.add("SVG-dynamic");               // NO
-      //supportedFeatures.add("SVGDOM-dynamic");            // NO
-
-      // Individual features
-      //supportedFeatures.add("CoreAttribute");             // NO
-      supportedFeatures.add("Structure");                   // YES (although desc title and metadata are ignored)
-      supportedFeatures.add("BasicStructure");              // YES (although desc title and metadata are ignored)
-      //supportedFeatures.add("ContainerAttribute");        // NO (filter related. NYI)
-      supportedFeatures.add("ConditionalProcessing");       // YES
-      supportedFeatures.add("Image");                       // YES (bitmaps only - not SVG files)
-      supportedFeatures.add("Style");                       // YES
-      supportedFeatures.add("ViewportAttribute");           // YES
-      supportedFeatures.add("Shape");                       // YES
-      //supportedFeatures.add("Text");                      // NO
-      supportedFeatures.add("BasicText");                   // YES
-      supportedFeatures.add("PaintAttribute");              // YES (except color-interpolation and color-rendering)
-      supportedFeatures.add("BasicPaintAttribute");         // YES (except color-rendering)
-      supportedFeatures.add("OpacityAttribute");            // YES
-      //supportedFeatures.add("GraphicsAttribute");         // NO     
-      supportedFeatures.add("BasicGraphicsAttribute");      // YES
-      supportedFeatures.add("Marker");                      // YES
-      //supportedFeatures.add("ColorProfile");              // NO
-      supportedFeatures.add("Gradient");                    // YES
-      supportedFeatures.add("Pattern");                     // YES
-      supportedFeatures.add("Clip");                        // YES
-      supportedFeatures.add("BasicClip");                   // YES
-      supportedFeatures.add("Mask");                        // YES
-      //supportedFeatures.add("Filter");                    // NO
-      //supportedFeatures.add("BasicFilter");               // NO
-      //supportedFeatures.add("DocumentEventsAttribute");   // NO
-      //supportedFeatures.add("GraphicalEventsAttribute");  // NO
-      //supportedFeatures.add("AnimationEventsAttribute");  // NO
-      //supportedFeatures.add("Cursor");                    // NO
-      //supportedFeatures.add("Hyperlinking");              // NO
-      //supportedFeatures.add("XlinkAttribute");            // NO
-      //supportedFeatures.add("ExternalResourcesRequired"); // NO
-      supportedFeatures.add("View");                        // YES
-      //supportedFeatures.add("Script");                    // NO
-      //supportedFeatures.add("Animation");                 // NO
-      //supportedFeatures.add("Font");                      // NO
-      //supportedFeatures.add("BasicFont");                 // NO
-      //supportedFeatures.add("Extensibility");             // NO
-
-      // SVG 1.0 features - all are too general and include things we are not likely to ever support.
-      // If we ever do support these, we'll need to change how FEATURE_STRING_PREFIX is used.
-      //supportedFeatures.add("org.w3c.svg");
-      //supportedFeatures.add("org.w3c.dom.svg");
-      //supportedFeatures.add("org.w3c.svg.static");
-      //supportedFeatures.add("org.w3c.dom.svg.static");
-      //supportedFeatures.add("org.w3c.svg.animation");
-      //supportedFeatures.add("org.w3c.dom.svg.animation");
-      //supportedFeatures.add("org.w3c.svg.dynamic");
-      //supportedFeatures.add("org.w3c.dom.svg.dynamic");
-      //supportedFeatures.add("org.w3c.svg.all");
-      //supportedFeatures.add("org.w3c.dom.svg.all" );
+      public static Integer get(String colourName) {
+         return colourKeywords.get(colourName);
+      }
    }
+   private static class FontSizeKeywords {
+      private static final Map<String, Length> fontSizeKeywords = new HashMap<String, Length>(9);
+      static {
+         fontSizeKeywords.put("xx-small", new Length(0.694f, Unit.pt));
+         fontSizeKeywords.put("x-small", new Length(0.833f, Unit.pt));
+         fontSizeKeywords.put("small", new Length(10.0f, Unit.pt));
+         fontSizeKeywords.put("medium", new Length(12.0f, Unit.pt));
+         fontSizeKeywords.put("large", new Length(14.4f, Unit.pt));
+         fontSizeKeywords.put("x-large", new Length(17.3f, Unit.pt));
+         fontSizeKeywords.put("xx-large", new Length(20.7f, Unit.pt));
+         fontSizeKeywords.put("smaller", new Length(83.33f, Unit.percent));
+         fontSizeKeywords.put("larger", new Length(120f, Unit.percent));
+      }
 
+      public static Length get(String fontSize) {
+         return fontSizeKeywords.get(fontSize);
+      }
+   }
+   private static class FontWeightKeywords {
+      private static final Map<String, Integer> fontWeightKeywords = new HashMap<String, Integer>(13);
+      static {
+         fontWeightKeywords.put("normal", SVG.Style.FONT_WEIGHT_NORMAL);
+         fontWeightKeywords.put("bold", SVG.Style.FONT_WEIGHT_BOLD);
+         fontWeightKeywords.put("bolder", SVG.Style.FONT_WEIGHT_BOLDER);
+         fontWeightKeywords.put("lighter", SVG.Style.FONT_WEIGHT_LIGHTER);
+         fontWeightKeywords.put("100", 100);
+         fontWeightKeywords.put("200", 200);
+         fontWeightKeywords.put("300", 300);
+         fontWeightKeywords.put("400", 400);
+         fontWeightKeywords.put("500", 500);
+         fontWeightKeywords.put("600", 600);
+         fontWeightKeywords.put("700", 700);
+         fontWeightKeywords.put("800", 800);
+         fontWeightKeywords.put("900", 900);
+      }
+
+      public static Integer get(String fontWeight) {
+         return fontWeightKeywords.get(fontWeight);
+      }
+   }
+   private static class AspectRatioKeywords {
+      private static final Map<String, PreserveAspectRatio.Alignment> aspectRatioKeywords
+            = new HashMap<String, PreserveAspectRatio.Alignment>(10);
+      static {
+         aspectRatioKeywords.put(NONE, PreserveAspectRatio.Alignment.None);
+         aspectRatioKeywords.put("xMinYMin", PreserveAspectRatio.Alignment.XMinYMin);
+         aspectRatioKeywords.put("xMidYMin", PreserveAspectRatio.Alignment.XMidYMin);
+         aspectRatioKeywords.put("xMaxYMin", PreserveAspectRatio.Alignment.XMaxYMin);
+         aspectRatioKeywords.put("xMinYMid", PreserveAspectRatio.Alignment.XMinYMid);
+         aspectRatioKeywords.put("xMidYMid", PreserveAspectRatio.Alignment.XMidYMid);
+         aspectRatioKeywords.put("xMaxYMid", PreserveAspectRatio.Alignment.XMaxYMid);
+         aspectRatioKeywords.put("xMinYMax", PreserveAspectRatio.Alignment.XMinYMax);
+         aspectRatioKeywords.put("xMidYMax", PreserveAspectRatio.Alignment.XMidYMax);
+         aspectRatioKeywords.put("xMaxYMax", PreserveAspectRatio.Alignment.XMaxYMax);
+      }
+
+      public static PreserveAspectRatio.Alignment get(String aspectRatio) {
+         return aspectRatioKeywords.get(aspectRatio);
+      }
+   }
 
    protected void  setSupportedFormats(String[] mimeTypes)
    {
@@ -566,6 +575,27 @@ public class SVGParser extends DefaultHandler2
 
    protected SVG  parse(InputStream is) throws SVGParseException
    {
+      // Transparently handle zipped files (.svgz)
+      if (!is.markSupported()) {
+         // We need a a buffered stream so we can use mark() and reset()
+         is = new BufferedInputStream(is);
+      }
+      try
+      {
+         is.mark(3);
+         int  firstTwoBytes = is.read() + (is.read() << 8);
+         is.reset();
+         if (firstTwoBytes == GZIPInputStream.GZIP_MAGIC) {
+            // Looks like a zipped file.
+            is = new GZIPInputStream(is);
+         }
+      }
+      catch (IOException ioe)
+      {
+         // Not a zipped SVG. Fall through and try parsing it normally.
+      }
+
+      // Invoke the SAX XML parser on the input.
       SAXParserFactory  spf = SAXParserFactory.newInstance();
       try
       {
@@ -587,6 +617,14 @@ public class SVGParser extends DefaultHandler2
       {
          throw new SVGParseException("SVG parse error: "+e.getMessage(), e);
       }
+      finally
+      {
+         try {
+            is.close();
+         } catch (IOException e) {
+            Log.e(TAG, "Exception thrown closing input stream");
+         }
+      }
       return svgDocument;
    }
 
@@ -599,7 +637,6 @@ public class SVGParser extends DefaultHandler2
    @Override
    public void startDocument() throws SAXException
    {
-      super.startDocument();
       svgDocument = new SVG();
    }
 
@@ -607,8 +644,6 @@ public class SVGParser extends DefaultHandler2
    @Override
    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
    {
-      super.startElement(uri, localName, qName, attributes);
-
       if (ignoring) {
          ignoreDepth++;
          return;
@@ -617,70 +652,75 @@ public class SVGParser extends DefaultHandler2
          return;
       }
 
-      if (localName.equals(TAG_SVG)) {
-         svg(attributes);
-      } else if (localName.equals(TAG_G)) {
-         g(attributes);
-      } else if (localName.equals(TAG_DEFS)) {
-         defs(attributes);
-      } else if (localName.equals(TAG_USE)) {
-         use(attributes);
-      } else if (localName.equals(TAG_PATH)) {
-         path(attributes);
-      } else if (localName.equals(TAG_RECT)) {
-         rect(attributes);
-      } else if (localName.equals(TAG_CIRCLE)) {
-         circle(attributes);
-      } else if (localName.equals(TAG_ELLIPSE)) {
-         ellipse(attributes);
-      } else if (localName.equals(TAG_LINE)) {
-         line(attributes);
-      } else if (localName.equals(TAG_POLYLINE)) {
-         polyline(attributes);
-      } else if (localName.equals(TAG_POLYGON)) {
-         polygon(attributes);
-      } else if (localName.equals(TAG_TEXT)) {
-         text(attributes);
-      } else if (localName.equals(TAG_TSPAN)) {
-         tspan(attributes);
-      } else if (localName.equals(TAG_TREF)) {
-         tref(attributes);
-      } else if (localName.equals(TAG_SWITCH)) {
-         zwitch(attributes);
-      } else if (localName.equals(TAG_SYMBOL)) {
-         symbol(attributes);
-      } else if (localName.equals(TAG_MARKER)) {
-         marker(attributes);
-      } else if (localName.equals(TAG_LINEARGRADIENT)) {
-         linearGradient(attributes);
-      } else if (localName.equals(TAG_RADIALGRADIENT)) {
-         radialGradient(attributes);
-      } else if (localName.equals(TAG_STOP)) {
-         stop(attributes);
-      } else if (localName.equals(TAG_A)) {
-         g(attributes);    // Treat like a group element
-      } else if (localName.equals(TAG_TITLE) || localName.equals(TAG_DESC)) {
-         inMetadataElement = true;
-         metadataTag = localName;
-      } else if (localName.equals(TAG_CLIPPATH)) {
-         clipPath(attributes);
-      } else if (localName.equals(TAG_TEXTPATH)) {
-         textPath(attributes);
-      } else if (localName.equals(TAG_PATTERN)) {
-         pattern(attributes);
-      } else if (localName.equals(TAG_IMAGE)) {
-         image(attributes);
-      } else if (localName.equals(TAG_VIEW)) {
-         view(attributes);
-      } else if (localName.equals(TAG_MASK)) {
-         mask(attributes);
-      } else if (localName.equals(TAG_STYLE)) {
-         style(attributes);
-      } else if (localName.equals(TAG_SOLIDCOLOR)) {
-         solidColor(attributes);
-      } else {
-         ignoring = true;
-         ignoreDepth = 1;
+      SVGElem  elem = SVGElem.fromString(localName);
+      switch (elem)
+      {
+         case svg:
+            svg(attributes); break;
+         case g:
+         case a: // <a> treated like a group element
+            g(attributes); break;
+         case defs:
+            defs(attributes); break;
+         case use:
+            use(attributes); break;
+         case path:
+            path(attributes); break;
+         case rect:
+            rect(attributes); break;
+         case circle:
+            circle(attributes); break;
+         case ellipse:
+            ellipse(attributes); break;
+         case line:
+            line(attributes); break;
+         case polyline:
+            polyline(attributes); break;
+         case polygon:
+            polygon(attributes); break;
+         case text:
+            text(attributes); break;
+         case tspan:
+            tspan(attributes); break;
+         case tref:
+            tref(attributes); break;
+         case SWITCH:
+            zwitch(attributes); break;
+         case symbol:
+            symbol(attributes); break;
+         case marker:
+            marker(attributes); break;
+         case linearGradient:
+            linearGradient(attributes); break;
+         case radialGradient:
+            radialGradient(attributes); break;
+         case stop:
+            stop(attributes); break;
+         case title:
+         case desc:
+            inMetadataElement = true;
+            metadataTag = elem;
+            break;
+         case clipPath:
+            clipPath(attributes); break;
+         case textPath:
+            textPath(attributes); break;
+         case pattern:
+            pattern(attributes); break;
+         case image:
+            image(attributes); break;
+         case view:
+            view(attributes); break;
+         case mask:
+            mask(attributes); break;
+         case style:
+            style(attributes); break;
+         case solidColor:
+            solidColor(attributes); break;
+         default:
+            ignoring = true;
+            ignoreDepth = 1;
+            break;
       }
    }
 
@@ -748,8 +788,6 @@ public class SVGParser extends DefaultHandler2
    @Override
    public void endElement(String uri, String localName, String qName) throws SAXException
    {
-      super.endElement(uri, localName, qName);
-
       if (ignoring) {
          if (--ignoreDepth == 0) {
             ignoring = false;
@@ -761,44 +799,51 @@ public class SVGParser extends DefaultHandler2
          return;
       }
 
-      if (localName.equals(TAG_TITLE) || localName.equals(TAG_DESC)) {
-         inMetadataElement = false;
-         if (metadataTag.equals(TAG_TITLE))
-            svgDocument.setTitle(metadataElementContents.toString());
-         else if (metadataTag.equals(TAG_DESC))
-            svgDocument.setDesc(metadataElementContents.toString());
-         metadataElementContents.setLength(0);
-         return;
-      }
+      switch (SVGElem.fromString(localName))
+      {
+         case title:
+         case desc:
+            inMetadataElement = false;
+            if (metadataTag == SVGElem.title)
+               svgDocument.setTitle(metadataElementContents.toString());
+            else if (metadataTag == SVGElem.desc)
+               svgDocument.setDesc(metadataElementContents.toString());
+            metadataElementContents.setLength(0);
+            return;
 
-      if (localName.equals(TAG_STYLE) && styleElementContents != null) {
-         inStyleElement = false;
-         parseCSSStyleSheet(styleElementContents.toString());
-         styleElementContents.setLength(0);
-         return;
-      }
+         case style:
+            if (styleElementContents != null) {
+               inStyleElement = false;
+               parseCSSStyleSheet(styleElementContents.toString());
+               styleElementContents.setLength(0);
+               return;
+            }
+            break;
 
-      // Yes this is ugly. May switch to faster method in the future.
-      if (localName.equals(TAG_SVG) ||
-          localName.equals(TAG_DEFS) ||
-          localName.equals(TAG_G) ||
-          localName.equals(TAG_USE) ||
-          localName.equals(TAG_IMAGE) ||
-          localName.equals(TAG_TEXT) ||
-          localName.equals(TAG_TSPAN) ||
-          localName.equals(TAG_SWITCH) ||
-          localName.equals(TAG_SYMBOL) ||
-          localName.equals(TAG_MARKER) ||
-          localName.equals(TAG_LINEARGRADIENT) ||
-          localName.equals(TAG_RADIALGRADIENT) ||
-          localName.equals(TAG_STOP) ||
-          localName.equals(TAG_CLIPPATH) ||
-          localName.equals(TAG_TEXTPATH) ||
-          localName.equals(TAG_PATTERN) ||
-          localName.equals(TAG_VIEW) ||
-          localName.equals(TAG_MASK) ||
-          localName.equals(TAG_SOLIDCOLOR)) {
-         currentElement = ((SvgObject) currentElement).parent;
+         case svg:
+         case defs:
+         case g:
+         case use:
+         case image:
+         case text:
+         case tspan:
+         case SWITCH:
+         case symbol:
+         case marker:
+         case linearGradient:
+         case radialGradient:
+         case stop:
+         case clipPath:
+         case textPath:
+         case pattern:
+         case view:
+         case mask:
+         case solidColor:
+            currentElement = ((SvgObject) currentElement).parent;
+            break;
+
+         default:
+            // no action
       }
 
    }
@@ -807,8 +852,6 @@ public class SVGParser extends DefaultHandler2
    @Override
    public void endDocument() throws SAXException
    {
-      super.endDocument();
-
       // Dump document
       if (LibConfig.DEBUG)
          dumpNode(svgDocument.getRootElement(), "");
@@ -1347,12 +1390,12 @@ public class SVGParser extends DefaultHandler2
             scan.skipWhitespace();
 
             while (!scan.empty()) {
-               Float x = scan.nextFloat();
-               if (x == null)
+               float x = scan.nextFloat();
+               if (Float.isNaN(x))
                   throw new SAXException("Invalid <"+tag+"> points attribute. Non-coordinate content found in list.");
                scan.skipCommaWhitespace();
-               Float y = scan.nextFloat();
-               if (y == null)
+               float y = scan.nextFloat();
+               if (Float.isNaN(y))
                   throw new SAXException("Invalid <"+tag+"> points attribute. There should be an even number of coordinates.");
                scan.skipCommaWhitespace();
                points.add(x);
@@ -1360,7 +1403,7 @@ public class SVGParser extends DefaultHandler2
             }
             obj.points = new float[points.size()];
             int j = 0;
-            for (Float f: points) {
+            for (float f: points) {
                obj.points[j++] = f;
             }
          }
@@ -1852,7 +1895,7 @@ public class SVGParser extends DefaultHandler2
       }
       try
       {
-         float scalar = Float.parseFloat(val.substring(0, end));
+         float scalar = parseFloat(val, 0, end);
          if (isPercent)
             scalar /= 100f;
          return (scalar < 0) ? 0 : (scalar > 100) ? 100 : scalar;
@@ -2157,11 +2200,15 @@ public class SVGParser extends DefaultHandler2
    {
       protected String   input;
       protected int      position = 0;
+      protected int      inputLength = 0;
+
+      private   NumberParser  numberParser = new NumberParser();
 
 
       public TextScanner(String input)
       {
          this.input = input.trim();
+         this.inputLength = this.input.length();
       }
 
       /**
@@ -2169,7 +2216,7 @@ public class SVGParser extends DefaultHandler2
        */
       public boolean  empty()
       {
-         return (position == input.length());
+         return (position == inputLength);
       }
 
       protected boolean  isWhitespace(int c)
@@ -2179,7 +2226,7 @@ public class SVGParser extends DefaultHandler2
 
       public void  skipWhitespace()
       {
-         while (position < input.length()) {
+         while (position < inputLength) {
             if (!isWhitespace(input.charAt(position)))
                break;
             position++;
@@ -2196,7 +2243,7 @@ public class SVGParser extends DefaultHandler2
       public boolean  skipCommaWhitespace()
       {
          skipWhitespace();
-         if (position == input.length())
+         if (position == inputLength)
             return false;
          if (!(input.charAt(position) == ','))
             return false;
@@ -2206,14 +2253,12 @@ public class SVGParser extends DefaultHandler2
       }
 
 
-      public Float  nextFloat()
+      public float  nextFloat()
       {
-         int  floatEnd = scanForFloat();
-         if (floatEnd == position)
-            return null;
-         Float  result = Float.parseFloat(input.substring(position, floatEnd));
-         position = floatEnd;
-         return result;
+         float  val = numberParser.parseNumber(input, position, inputLength);
+         if (!Float.isNaN(val))
+            position = numberParser.getEndPos();
+         return val;
       }
 
       /*
@@ -2221,39 +2266,49 @@ public class SVGParser extends DefaultHandler2
        * If found, the float is returned. Otherwise null is returned and
        * the scan position left as it was.
        */
-      public Float  possibleNextFloat()
+      public float  possibleNextFloat()
       {
-         int  start = position;
          skipCommaWhitespace();
-         Float  result = nextFloat();
-         if (result != null)
-            return result;
-         position = start;
-         return null;
+         float  val = numberParser.parseNumber(input, position, inputLength);
+         if (!Float.isNaN(val))
+            position = numberParser.getEndPos();
+         return val;
+      }
+
+      /*
+       * Scans for comma-whitespace sequence with a float following it.
+       * But only if the provided 'lastFloat' (representing the last coord
+       * scanned was non-null (ie parsed correctly).
+       */
+      public float  checkedNextFloat(float lastRead)
+      {
+         if (Float.isNaN(lastRead)) {
+            return Float.NaN;
+         }
+         skipCommaWhitespace();
+         return nextFloat();
       }
 
       public Integer  nextInteger()
       {
-         int  intEnd = scanForInteger();
-         //System.out.println("nextFloat: "+position+" "+floatEnd);
-         if (intEnd == position)
+         IntegerParser  ip = IntegerParser.parseInt(input, position, inputLength);
+         if (ip == null)
             return null;
-         Integer  result = Integer.parseInt(input.substring(position, intEnd));
-         position = intEnd;
-         return result;
+         position = ip.getEndPos();
+         return ip.value();
       }
 
       public Integer  nextChar()
       {
-         if (position == input.length())
+         if (position == inputLength)
             return null;
          return Integer.valueOf(input.charAt(position++));
       }
 
       public Length  nextLength()
       {
-         Float  scalar = nextFloat();
-         if (scalar == null)
+         float  scalar = nextFloat();
+         if (Float.isNaN(scalar))
             return null;
          Unit  unit = nextUnit();
          if (unit == null)
@@ -2267,7 +2322,7 @@ public class SVGParser extends DefaultHandler2
        */
       public Boolean  nextFlag()
       {
-         if (position == input.length())
+         if (position == inputLength)
             return null;
          char  ch = input.charAt(position);
          if (ch == '0' || ch == '1') {
@@ -2277,10 +2332,21 @@ public class SVGParser extends DefaultHandler2
          return null;
       }
 
+      /*
+       * Like checkedNextFloat, but reads a flag (see path definition parser)
+       */
+      public Boolean  checkedNextFlag(Object lastRead)
+      {
+         if (lastRead == null) {
+            return null;
+         }
+         skipCommaWhitespace();
+         return nextFlag();
+      }
 
       public boolean  consume(char ch)
       {
-         boolean  found = (position < input.length() && input.charAt(position) == ch);
+         boolean  found = (position < inputLength && input.charAt(position) == ch);
          if (found)
             position++;
          return found;
@@ -2290,7 +2356,7 @@ public class SVGParser extends DefaultHandler2
       public boolean  consume(String str)
       {
          int  len = str.length();
-         boolean  found = (position <= (input.length() - len) && input.substring(position,position+len).equals(str));
+         boolean  found = (position <= (inputLength - len) && input.substring(position,position+len).equals(str));
          if (found)
             position += len;
          return found;
@@ -2299,10 +2365,10 @@ public class SVGParser extends DefaultHandler2
 
       protected int  advanceChar()
       {
-         if (position == input.length())
+         if (position == inputLength)
             return -1;
          position++;
-         if (position < input.length())
+         if (position < inputLength)
             return input.charAt(position);
          else
             return -1;
@@ -2368,87 +2434,6 @@ public class SVGParser extends DefaultHandler2
       }
 
       /*
-       * Scans the input starting immediately at 'position' for a floating point number.
-       * If one is found, the end position of the float will be returned.
-       * If the returned value is the same as 'position' then no float was found.
-       */
-      private int  scanForFloat()
-      {
-         if (empty())
-            return position;
-         int  lastValidPos = position;
-         int  start = position;
-
-         int  ch = input.charAt(position);
-         // Check whole part of mantissa
-         if (ch == '-' || ch == '+')
-            ch = advanceChar();
-         if (Character.isDigit(ch)) {
-            lastValidPos = position + 1;
-            ch = advanceChar();
-            while (Character.isDigit(ch)) {
-               lastValidPos = position + 1;
-               ch = advanceChar();
-            }
-         }
-         // Fraction or exponent starts here
-         if (ch == '.') {
-            lastValidPos = position + 1;
-            ch = advanceChar();
-            while (Character.isDigit(ch)) {
-               lastValidPos = position + 1;
-               ch = advanceChar();
-            }
-         }
-         // Exponent
-         if (ch == 'e' || ch == 'E') {
-            ch = advanceChar();
-            if (ch == '-' || ch == '+')
-               ch = advanceChar();
-            if (Character.isDigit(ch)) {
-               lastValidPos = position + 1;
-               ch = advanceChar();
-               while (Character.isDigit(ch)) {
-                  lastValidPos = position + 1;
-                  ch = advanceChar();
-               }
-            }
-         }
-
-         position = start;
-         return lastValidPos;
-      }
-
-      /*
-       * Scans the input starting immediately at 'position' for an integer number.
-       * If one is found, the end position of the float will be returned.
-       * If the returned value is the same as 'position' then no number was found.
-       */
-      private int  scanForInteger()
-      {
-         if (empty())
-            return position;
-         int  lastValidPos = position;
-         int  start = position;
-
-         int  ch = input.charAt(position);
-         // Check whole part of mantissa
-         if (ch == '-' || ch == '+')
-            ch = advanceChar();
-         if (Character.isDigit(ch)) {
-            lastValidPos = position + 1;
-            ch = advanceChar();
-            while (Character.isDigit(ch)) {
-               lastValidPos = position + 1;
-               ch = advanceChar();
-            }
-         }
-
-         position = start;
-         return lastValidPos;
-      }
-
-      /*
        * Get the next few chars. Mainly used for error messages.
        */
       public String  ahead()
@@ -2470,7 +2455,7 @@ public class SVGParser extends DefaultHandler2
             position++;
             return Unit.percent;
          }
-         if (position > (input.length() - 2))
+         if (position > (inputLength - 2))
             return null;
          try {
             Unit  result = Unit.valueOf(input.substring(position, position + 2).toLowerCase(Locale.US));
@@ -2486,7 +2471,7 @@ public class SVGParser extends DefaultHandler2
        */
       public boolean  hasLetter()
       {
-         if (position == input.length())
+         if (position == inputLength)
             return false;
          char  ch = input.charAt(position);
          return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
@@ -2524,7 +2509,7 @@ public class SVGParser extends DefaultHandler2
             return null;
 
          int  start = position;
-         position = input.length();
+         position = inputLength;
          return input.substring(start);
       }
 
@@ -2903,20 +2888,20 @@ public class SVGParser extends DefaultHandler2
          if (cmd.equals("matrix"))
          {
             scan.skipWhitespace();
-            Float a = scan.nextFloat();
+            float a = scan.nextFloat();
             scan.skipCommaWhitespace();
-            Float b = scan.nextFloat();
+            float b = scan.nextFloat();
             scan.skipCommaWhitespace();
-            Float c = scan.nextFloat();
+            float c = scan.nextFloat();
             scan.skipCommaWhitespace();
-            Float d = scan.nextFloat();
+            float d = scan.nextFloat();
             scan.skipCommaWhitespace();
-            Float e = scan.nextFloat();
+            float e = scan.nextFloat();
             scan.skipCommaWhitespace();
-            Float f = scan.nextFloat();
+            float f = scan.nextFloat();
             scan.skipWhitespace();
 
-            if (f == null || !scan.consume(')'))
+            if (Float.isNaN(f) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
             Matrix m = new Matrix();
@@ -2926,14 +2911,14 @@ public class SVGParser extends DefaultHandler2
          else if (cmd.equals("translate"))
          {
             scan.skipWhitespace();
-            Float  tx = scan.nextFloat();
-            Float  ty = scan.possibleNextFloat();
+            float  tx = scan.nextFloat();
+            float  ty = scan.possibleNextFloat();
             scan.skipWhitespace();
 
-            if (tx == null || !scan.consume(')'))
+            if (Float.isNaN(tx) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
-            if (ty == null)
+            if (Float.isNaN(ty))
                matrix.preTranslate(tx, 0f);
             else
                matrix.preTranslate(tx, ty);
@@ -2941,14 +2926,14 @@ public class SVGParser extends DefaultHandler2
          else if (cmd.equals("scale"))
          {
             scan.skipWhitespace();
-            Float  sx = scan.nextFloat();
-            Float  sy = scan.possibleNextFloat();
+            float  sx = scan.nextFloat();
+            float  sy = scan.possibleNextFloat();
             scan.skipWhitespace();
 
-            if (sx == null || !scan.consume(')'))
+            if (Float.isNaN(sx) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
-            if (sy == null)
+            if (Float.isNaN(sy))
                matrix.preScale(sx, sx);
             else
                matrix.preScale(sx, sy);
@@ -2956,17 +2941,17 @@ public class SVGParser extends DefaultHandler2
          else if (cmd.equals("rotate"))
          {
             scan.skipWhitespace();
-            Float  ang = scan.nextFloat();
-            Float  cx = scan.possibleNextFloat();
-            Float  cy = scan.possibleNextFloat();
+            float  ang = scan.nextFloat();
+            float  cx = scan.possibleNextFloat();
+            float  cy = scan.possibleNextFloat();
             scan.skipWhitespace();
 
-            if (ang == null || !scan.consume(')'))
+            if (Float.isNaN(ang) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
-            if (cx == null) {
+            if (Float.isNaN(cx)) {
                matrix.preRotate(ang);
-            } else if (cy != null) {
+            } else if (!Float.isNaN(cy)) {
                matrix.preRotate(ang, cx, cy);
             } else {
                throw new SAXException("Invalid transform list: "+val);
@@ -2975,10 +2960,10 @@ public class SVGParser extends DefaultHandler2
          else if (cmd.equals("skewX"))
          {
             scan.skipWhitespace();
-            Float  ang = scan.nextFloat();
+            float  ang = scan.nextFloat();
             scan.skipWhitespace();
 
-            if (ang == null || !scan.consume(')'))
+            if (Float.isNaN(ang) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
             matrix.preSkew((float) Math.tan(Math.toRadians(ang)), 0f);
@@ -2986,10 +2971,10 @@ public class SVGParser extends DefaultHandler2
          else if (cmd.equals("skewY"))
          {
             scan.skipWhitespace();
-            Float  ang = scan.nextFloat();
+            float  ang = scan.nextFloat();
             scan.skipWhitespace();
 
-            if (ang == null || !scan.consume(')'))
+            if (Float.isNaN(ang) || !scan.consume(')'))
                throw new SAXException("Invalid transform list: "+val);
 
             matrix.preSkew(0f, (float) Math.tan(Math.toRadians(ang)));
@@ -3038,7 +3023,7 @@ public class SVGParser extends DefaultHandler2
       }
       try
       {
-         float scalar = Float.parseFloat(val.substring(0, end));
+         float scalar = parseFloat(val, 0, end);
          return new Length(scalar, unit);
       }
       catch (NumberFormatException e)
@@ -3063,8 +3048,8 @@ public class SVGParser extends DefaultHandler2
 
       while (!scan.empty())
       {
-         Float scalar = scan.nextFloat();
-         if (scalar == null)
+         float scalar = scan.nextFloat();
+         if (Float.isNaN(scalar))
             throw new SAXException("Invalid length list value: "+scan.ahead());
          Unit  unit = scan.nextUnit();
          if (unit == null)
@@ -3081,15 +3066,20 @@ public class SVGParser extends DefaultHandler2
     */
    private static float  parseFloat(String val) throws SAXException
    {
-      if (val.length() == 0)
+      int  len = val.length();
+      if (len == 0)
          throw new SAXException("Invalid float value (empty string)");
-      try
-      {
-         return Float.parseFloat(val);
-      }
-      catch (NumberFormatException e)
-      {
-         throw new SAXException("Invalid float value: "+val, e);
+      return parseFloat(val, 0, len);
+   }
+
+   private static float  parseFloat(String val, int offset, int len) throws SAXException
+   {
+      NumberParser np = new NumberParser();
+      float  num = np.parseNumber(val, offset, len);
+      if (!Float.isNaN(num)) {
+         return num;
+      } else {
+         throw new SAXException("Invalid float value: "+val);
       }
    }
 
@@ -3112,15 +3102,15 @@ public class SVGParser extends DefaultHandler2
       TextScanner scan = new TextScanner(val);
       scan.skipWhitespace();
 
-      Float minX = scan.nextFloat();
+      float minX = scan.nextFloat();
       scan.skipCommaWhitespace();
-      Float minY = scan.nextFloat();
+      float minY = scan.nextFloat();
       scan.skipCommaWhitespace();
-      Float width = scan.nextFloat();
+      float width = scan.nextFloat();
       scan.skipCommaWhitespace();
-      Float height = scan.nextFloat();
+      float height = scan.nextFloat();
 
-      if (minX==null || minY==null || width == null || height == null)
+      if (Float.isNaN(minX) || Float.isNaN(minY) || Float.isNaN(width) || Float.isNaN(height))
          throw new SAXException("Invalid viewBox definition - should have four numbers");
       if (width < 0)
          throw new SAXException("Invalid viewBox. width cannot be negative");
@@ -3147,7 +3137,7 @@ public class SVGParser extends DefaultHandler2
          scan.skipWhitespace();
          word = scan.nextToken();
       }
-      align = aspectRatioKeywords.get(word);
+      align = AspectRatioKeywords.get(word);
       scan.skipWhitespace();
 
       if (!scan.empty()) {
@@ -3207,40 +3197,45 @@ public class SVGParser extends DefaultHandler2
    {
       if (val.charAt(0) == '#')
       {
-         try
-         {
-            if (val.length() == 7) {
-               return new Colour(Integer.parseInt(val.substring(1), 16));
-            } else if (val.length() == 4) {
-               int threehex = Integer.parseInt(val.substring(1), 16);
-               int h1 = threehex & 0xf00;
-               int h2 = threehex & 0x0f0;
-               int h3 = threehex & 0x00f;
-               return new Colour(h1<<16|h1<<12|h2<<8|h2<<4|h3<<4|h3);
-            } else {
-               throw new SAXException("Bad hex colour value: "+val);
-            }
+         IntegerParser  ip = IntegerParser.parseHex(val, 1, val.length());
+         if (ip == null) {
+            throw new SAXException("Bad hex colour value: "+val);
          }
-         catch (NumberFormatException e)
-         {
-            throw new SAXException("Bad colour value: "+val);
+         int pos = ip.getEndPos();
+         if (pos == 7) {
+            return new Colour(ip.value());
+         } else if (pos == 4) {
+            int threehex = ip.value();
+            int h1 = threehex & 0xf00;
+            int h2 = threehex & 0x0f0;
+            int h3 = threehex & 0x00f;
+            return new Colour(h1<<16|h1<<12|h2<<8|h2<<4|h3<<4|h3);
          }
+         // Hex value had bad length for a colour
+         throw new SAXException("Bad hex colour value: "+val);
       }
       if (val.toLowerCase(Locale.US).startsWith("rgb("))
       {
          TextScanner scan = new TextScanner(val.substring(4));
          scan.skipWhitespace();
 
-         int red = parseColourComponent(scan);
-         scan.skipCommaWhitespace();
-         int green = parseColourComponent(scan);
-         scan.skipCommaWhitespace();
-         int blue = parseColourComponent(scan);
+         float red = scan.nextFloat();
+         if (!Float.isNaN(red) && scan.consume('%'))
+            red = (red * 256) / 100;
+
+         float green = scan.checkedNextFloat(red);
+         if (!Float.isNaN(green) && scan.consume('%'))
+            green = (green * 256) / 100;
+
+         float blue = scan.checkedNextFloat(green);
+         if (!Float.isNaN(blue) && scan.consume('%'))
+            blue = (blue * 256) / 100;
 
          scan.skipWhitespace();
-         if (!scan.consume(')'))
+         if (Float.isNaN(blue) || !scan.consume(')'))
             throw new SAXException("Bad rgb() colour value: "+val);
-         return new Colour(red<<16 | green<<8 | blue);
+
+         return new Colour(clamp255(red)<<16 | clamp255(green)<<8 | clamp255(blue));
       }
       // Must be a colour keyword
       else
@@ -3248,25 +3243,16 @@ public class SVGParser extends DefaultHandler2
    }
 
 
-   // Parse a colour component value (0..255 or 0%-100%)
-   private static int  parseColourComponent(TextScanner scan) throws SAXException
+   private static int clamp255(float val)
    {
-      int  comp = scan.nextInteger();
-      if (scan.consume('%')) {
-         // Spec says to follow CSS rules, which says out-of-range values should be clamped.
-         comp = (comp < 0) ? 0 : (comp > 100) ? 100 : comp;
-         return (comp * 255 / 100);
-      } else {
-         comp = (comp < 0) ? 0 : (comp > 255) ? 255 : comp;
-         return comp;
-      }
+      return (val < 0) ? 0 : (val > 255) ? 255 : Math.round(val);
    }
 
 
    // Parse a colour component value (0..255 or 0%-100%)
    private static Colour  parseColourKeyword(String name) throws SAXException
    {
-      Integer  col = colourKeywords.get(name.toLowerCase(Locale.US));
+      Integer  col = ColourKeywords.get(name.toLowerCase(Locale.US));
       if (col == null) {
          throw new SAXException("Invalid colour keyword: "+name);
       }
@@ -3302,12 +3288,12 @@ public class SVGParser extends DefaultHandler2
          if (item.equals("normal"))  // indeterminate which of these this refers to
             continue;
          if (fontWeight == null) {
-            fontWeight = fontWeightKeywords.get(item);
+            fontWeight = FontWeightKeywords.get(item);
             if (fontWeight != null)
                continue;
          }
          if (fontStyle == null) {
-            fontStyle = fontStyleKeywords.get(item);
+            fontStyle = fontStyleKeyword(item);
             if (fontStyle != null)
                continue;
          }
@@ -3371,7 +3357,7 @@ public class SVGParser extends DefaultHandler2
    // Parse a font size keyword or numerical value
    private static Length  parseFontSize(String val) throws SAXException
    {
-      Length  size = fontSizeKeywords.get(val);
+      Length  size = FontSizeKeywords.get(val);
       if (size == null) {
          size = parseLength(val);
       }
@@ -3382,7 +3368,7 @@ public class SVGParser extends DefaultHandler2
    // Parse a font weight keyword or numerical value
    private static Integer  parseFontWeight(String val) throws SAXException
    {
-      Integer  wt = fontWeightKeywords.get(val);
+      Integer  wt = FontWeightKeywords.get(val);
       if (wt == null) {
          throw new SAXException("Invalid font-weight property: "+val);
       }
@@ -3393,11 +3379,26 @@ public class SVGParser extends DefaultHandler2
    // Parse a font style keyword
    private static Style.FontStyle  parseFontStyle(String val) throws SAXException
    {
-      Style.FontStyle  fs = fontStyleKeywords.get(val);
-      if (fs == null) {
+      Style.FontStyle  fs = fontStyleKeyword(val);
+      if (fs != null)
+         return fs;
+      else
          throw new SAXException("Invalid font-style property: "+val);
-      }
-      return fs;
+   }
+
+
+   // Parse a font style keyword
+   private static Style.FontStyle  fontStyleKeyword(String val)
+   {
+      // Italic is probably the most common, so test that first :)
+      if ("italic".equals(val))
+         return Style.FontStyle.Italic;
+      else if ("normal".equals(val))
+         return Style.FontStyle.Normal;
+      else if ("oblique".equals(val))
+         return Style.FontStyle.Oblique;
+      else
+         return null;
    }
 
 
@@ -3589,8 +3590,8 @@ public class SVGParser extends DefaultHandler2
       float   currentX = 0f, currentY = 0f;    // The last point visited in the subpath
       float   lastMoveX = 0f, lastMoveY = 0f;  // The initial point of current subpath
       float   lastControlX = 0f, lastControlY = 0f;  // Last control point of the just completed bezier curve.
-      Float   x,y, x1,y1, x2,y2;
-      Float   rx,ry, xAxisRotation;
+      float   x,y, x1,y1, x2,y2;
+      float   rx,ry, xAxisRotation;
       Boolean largeArcFlag, sweepFlag;
 
       SVG.PathDefinition  path = new SVG.PathDefinition();
@@ -3613,10 +3614,9 @@ public class SVGParser extends DefaultHandler2
             case 'M':
             case 'm':
                x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                // Relative moveto at the start of a path is treated as an absolute moveto.
@@ -3635,10 +3635,9 @@ public class SVGParser extends DefaultHandler2
             case 'L':
             case 'l':
                x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='l') {
@@ -3654,18 +3653,13 @@ public class SVGParser extends DefaultHandler2
             case 'C':
             case 'c':
                x1 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y1 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               x2 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y2 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y1 = scan.checkedNextFloat(x1);
+               x2 = scan.checkedNextFloat(y1);
+               y2 = scan.checkedNextFloat(x2);
+               x = scan.checkedNextFloat(y2);
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='c') {
@@ -3689,14 +3683,11 @@ public class SVGParser extends DefaultHandler2
                x1 = 2 * currentX - lastControlX;
                y1 = 2 * currentY - lastControlY;
                x2 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y2 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y2 = scan.checkedNextFloat(x2);
+               x = scan.checkedNextFloat(y2);
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='s') {
@@ -3724,8 +3715,8 @@ public class SVGParser extends DefaultHandler2
             case 'H':
             case 'h':
                x = scan.nextFloat();
-               if (x == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               if (Float.isNaN(x)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='h') {
@@ -3739,8 +3730,8 @@ public class SVGParser extends DefaultHandler2
             case 'V':
             case 'v':
                y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='v') {
@@ -3754,14 +3745,11 @@ public class SVGParser extends DefaultHandler2
             case 'Q':
             case 'q':
                x1 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y1 = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y1 = scan.checkedNextFloat(x1);
+               x = scan.checkedNextFloat(y1);
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='q') {
@@ -3783,10 +3771,9 @@ public class SVGParser extends DefaultHandler2
                x1 = 2 * currentX - lastControlX;
                y1 = 2 * currentY - lastControlY;
                x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               y = scan.checkedNextFloat(x);
+               if (Float.isNaN(y)) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='t') {
@@ -3804,20 +3791,18 @@ public class SVGParser extends DefaultHandler2
             case 'A':
             case 'a':
                rx = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               ry = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               xAxisRotation = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               largeArcFlag = scan.nextFlag();
-               scan.skipCommaWhitespace();
-               sweepFlag = scan.nextFlag();
-               scan.skipCommaWhitespace();
-               x = scan.nextFloat();
-               scan.skipCommaWhitespace();
-               y = scan.nextFloat();
-               if (y == null || rx < 0 || ry < 0) {
-                  Log.e(TAG, "Bad path coords for "+pathCommand+" path segment");
+               ry = scan.checkedNextFloat(rx);
+               xAxisRotation = scan.checkedNextFloat(ry);
+               largeArcFlag = scan.checkedNextFlag(xAxisRotation);
+               sweepFlag = scan.checkedNextFlag(largeArcFlag);
+               if (sweepFlag == null)
+                  x = y = Float.NaN;
+               else {
+                  x = scan.possibleNextFloat();
+                  y = scan.checkedNextFloat(x);
+               }
+               if (Float.isNaN(y) || rx < 0 || ry < 0) {
+                  Log.e(TAG, "Bad path coords for "+((char)pathCommand)+" path segment");
                   return path;
                }
                if (pathCommand=='a') {
@@ -3833,7 +3818,7 @@ public class SVGParser extends DefaultHandler2
                return path;
          }
 
-         scan.skipWhitespace();
+         scan.skipCommaWhitespace();
          if (scan.empty())
             break;
 

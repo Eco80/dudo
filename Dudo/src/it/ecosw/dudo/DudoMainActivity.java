@@ -17,14 +17,13 @@ package it.ecosw.dudo;
  *  along with Dudo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import it.ecosw.dudo.games.Match;
+import it.ecosw.dudo.games.PlayerSet;
 import it.ecosw.dudo.gui.GraphicsElement;
 import it.ecosw.dudo.gui.InterfaceAdapter;
 import it.ecosw.dudo.gui.HtmlViewerWindow;
 import it.ecosw.dudo.media.Background;
 import it.ecosw.dudo.media.GenDiceImage;
 import it.ecosw.dudo.media.PlayFX;
-import it.ecosw.dudo.newgame.NewGameActivity;
 import it.ecosw.dudo.settings.SettingsActivity;
 import it.ecosw.dudo.settings.SettingsHelper;
 import it.ecosw.dudo.R;
@@ -71,9 +70,7 @@ public class DudoMainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        setContentView(R.layout.activity_dudo);
-
+        
         // Set Screen orientation different for Android 2.2 and 2.3+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -92,6 +89,9 @@ public class DudoMainActivity extends Activity {
         
         // Load setting object
         settings = new SettingsHelper(this);
+        
+        // Load game layout
+        setContentView(R.layout.layout_dudo_game);
         
         // Check if last version run was different
         String last = settings.getLastVersionRun();
@@ -120,27 +120,11 @@ public class DudoMainActivity extends Activity {
         // Set Chrono
         chrono = ge.getChrono();
         
-		d = new InterfaceAdapter(this,ge,fx,settings.isSortingActivated());
+		d = new InterfaceAdapter(this,ge,fx,settings);
         d.setAnimEnabled(settings.isAnimationActivated());
-		d.setPlayerStatus(new Match(settings));
-        
+		d.setPlayerStatus(new PlayerSet(settings.getPlayerStatus(),settings.isSixthDieActivated()));
+		
     }
-    
-    /* (non-Javadoc)
-	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == SUB_ACTIVITY_NEW_MATCH) {
-			if(resultCode == RESULT_OK) {
-				d.setPlayerStatus(new Match(settings));
-	    		chrono.setBase(SystemClock.elapsedRealtime());
-				chrono.start();
-			}
-		}
-	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -158,7 +142,7 @@ public class DudoMainActivity extends Activity {
 		super.onStop();
 		chrono.stop();
 		settings.setChronoTime(calculateElapsedTime(chrono));
-		for(int i=0;i<d.getNumPlayer();i++) settings.setPlayerStatus(i, d.getPlayerInfo(i));
+		settings.setPlayerStatus(d.getPlayerInfo());
 	}
 
 	/* (non-Javadoc)
@@ -174,7 +158,10 @@ public class DudoMainActivity extends Activity {
 		d.setAnimEnabled(settings.isAnimationActivated());
 		d.setSorting(settings.isSortingActivated());
 		d.setSixDice(settings.isSixthDieActivated());
-		if(!gdi.getCurrent().equals(settings.getStyle())) {
+		d.setAskDelete(settings.askDeletingDie());
+		d.setPlayerName(settings.getPlayerStatus().getName());
+		boolean stylechg = !gdi.getCurrentStyle().equals(settings.getStyle());
+		if(stylechg) {
 			gdi.setStyle(settings.getStyle());
 		}
 	}
@@ -184,17 +171,8 @@ public class DudoMainActivity extends Activity {
 		// TODO Auto-generated method stub
     	switch (item.getItemId()){
     	
-    	case R.id.menu_new:
-    		chrono.setBase(SystemClock.elapsedRealtime());
-			chrono.stop();
-    		Intent i = new Intent(this,NewGameActivity.class);
-    		startActivityForResult(i,SUB_ACTIVITY_NEW_MATCH);
-    		return true;
-    	
     	case R.id.menu_restart:
     		d.restart();
-    		chrono.setBase(SystemClock.elapsedRealtime());
-			chrono.start();
     		return true;
     	
     	case R.id.menu_settings:

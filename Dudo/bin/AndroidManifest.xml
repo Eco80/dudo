@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.ecosw.dudo"
-    android:versionCode="19"
-    android:versionName="0.7.0 @ 28st feb 2014" >
+    android:versionCode="20"
+    android:versionName="0.7.1 @ 1st mar 2015" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -16,7 +16,8 @@
         <activity
             android:name=".DudoMainActivity"
             android:label="@string/title_activity_main"
-            android:configChanges="orientation|keyboardHidden"  >
+            android:configChanges="orientation|keyboardHidden"  
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

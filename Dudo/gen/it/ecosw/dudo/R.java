@@ -205,9 +205,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int hex_val=0x7f0b0001;
         public static final int imageButtonDeleteLateral=0x7f0b0007;
         public static final int imageButtonRollLateral=0x7f0b0006;
-        public static final int menu_about=0x7f0b0019;
+        public static final int menu_about=0x7f0b001a;
+        public static final int menu_changelog=0x7f0b0019;
         public static final int menu_help=0x7f0b0018;
-        public static final int menu_restart=0x7f0b0016;
+        public static final int menu_new=0x7f0b0016;
         public static final int menu_settings=0x7f0b0017;
         public static final int new_color_panel=0x7f0b0003;
         public static final int old_color_panel=0x7f0b0002;
@@ -281,13 +282,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int die6_description=0x7f08001f;
         public static final int last_play_restored=0x7f080025;
         public static final int menu_about=0x7f080019;
-        public static final int menu_help=0x7f080018;
+        public static final int menu_changelog=0x7f080018;
+        public static final int menu_help=0x7f080017;
         /**  Description menu elements 
  Description menu elements 
          */
         public static final int menu_new=0x7f080015;
-        public static final int menu_restart=0x7f080016;
-        public static final int menu_settings=0x7f080017;
+        public static final int menu_settings=0x7f080016;
         public static final int new_play=0x7f080022;
         public static final int package_not_found=0x7f080021;
         public static final int pattern_galaxy=0x7f080044;

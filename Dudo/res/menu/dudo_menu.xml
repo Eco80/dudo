@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_restart"
-        android:title="@string/menu_restart"
+    <item android:id="@+id/menu_new"
+        android:title="@string/menu_new"
         android:orderInCategory="1"/>
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
@@ -8,7 +8,10 @@
     <item android:id="@+id/menu_help"
         android:title="@string/menu_help"
         android:orderInCategory="3"/>
+    <item android:id="@+id/menu_changelog"
+        android:title="@string/menu_changelog"
+        android:orderInCategory="4"/>
     <item android:id="@+id/menu_about"
         android:title="@string/menu_about"
-        android:orderInCategory="4"/>
+        android:orderInCategory="5"/>
 </menu>

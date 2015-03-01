@@ -28,9 +28,9 @@
     
     <!-- Description menu elements -->
     <string name="menu_new">Nuova Partita</string>
-    <string name="menu_restart">Ricomincia Partita</string>
     <string name="menu_settings">Preferenze</string>
     <string name="menu_help">Aiuto</string>
+    <string name="menu_changelog">Changelog</string>
     <string name="menu_about">About</string>
     
     <!-- Description graphics elements -->

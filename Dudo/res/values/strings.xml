@@ -28,9 +28,9 @@
     
     <!-- Description menu elements -->
     <string name="menu_new">New Match</string>
-    <string name="menu_restart">Restart Match</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_help">Help</string>
+    <string name="menu_changelog">Changelog</string>
     <string name="menu_about">About</string>
     
 	<!-- Description graphics elements -->

@@ -57,8 +57,6 @@ public class SettingsHelper {
 	public static final String BACKGROUD_TEXTCOLOR_SETTING = "background_textcolor_setting";
 	public static final String BACKGROUND_IMAGE_SETTING = "background_image_setting";
 	
-	public static final String LASTVERSIONRUN_SETTING = "lastversionrun_setting";
-	
 	public static final String CHRONO_SETTING = "chrono_setting";
 	
 	/**
@@ -171,27 +169,8 @@ public class SettingsHelper {
 		spe.putString(PLAYERSAVE_SETTING+0, info.getSave());
 		spe.commit();
 		return 0;
-	}
-	
-	/**
-	 * Return last version of software was run
-	 * @return last version of software
-	 */
-	public String getLastVersionRun(){
-		return PreferenceManager.getDefaultSharedPreferences(mContext).getString(LASTVERSIONRUN_SETTING, "0");
-	}
-	
-	/**
-	 * Save the version of software
-	 * @param version software version
-	 * @return 0 if writing was correct
-	 */
-	public int setLastVersionRun(String version){
-		SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-		spe.putString(LASTVERSIONRUN_SETTING, version);
-		spe.commit();
-		return 0;
-	}
+	}	
+
 	
 	/**
 	 * Return last chrono save

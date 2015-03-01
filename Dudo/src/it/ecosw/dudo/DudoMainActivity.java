@@ -27,17 +27,14 @@ import it.ecosw.dudo.media.PlayFX;
 import it.ecosw.dudo.settings.SettingsActivity;
 import it.ecosw.dudo.settings.SettingsHelper;
 import it.ecosw.dudo.R;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.Toast;
@@ -55,8 +52,6 @@ public class DudoMainActivity extends Activity {
 	
 	private SettingsHelper settings;
 	
-	private String version;
-	
 	private View parentLayout;
 	
 	private Background background;
@@ -68,40 +63,15 @@ public class DudoMainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        
-        // Set Screen orientation different for Android 2.2 and 2.3+
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE); 
-        
+ 
         // Avoid Standby Mode
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-        try {
-        	version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			Toast.makeText(DudoMainActivity.this,getText(R.string.package_not_found),Toast.LENGTH_SHORT).show();
-		}
         
         // Load setting object
         settings = new SettingsHelper(this);
         
         // Load game layout
         setContentView(R.layout.layout_dudo_game);
-        
-        // Check if last version run was different
-        String last = settings.getLastVersionRun();
-        if(!version.equals(last)) {
-        	java.util.Scanner scanner = new java.util.Scanner(getResources().openRawResource(R.raw.changelog));
-			String help = scanner.useDelimiter("\\A").next();
-			scanner.close();
-       		HtmlViewerWindow.showWindow(this, help,getString(R.string.alert_changelog_label),R.drawable.ic_launcher);
-        }
-        settings.setLastVersionRun(version);
         
         // Sound Management
         PlayFX fx = new PlayFX(this,settings);
@@ -152,6 +122,7 @@ public class DudoMainActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		
 		chrono.setBase(SystemClock.elapsedRealtime()-settings.getChronoTime());
 		chrono.start();
 		background.setBackground(settings.getBackgroundStatus());
@@ -171,8 +142,8 @@ public class DudoMainActivity extends Activity {
 		// TODO Auto-generated method stub
     	switch (item.getItemId()){
     	
-    	case R.id.menu_restart:
-    		d.restart();
+    	case R.id.menu_new:
+    		d.newMatch();
     		return true;
     	
     	case R.id.menu_settings:
@@ -186,8 +157,21 @@ public class DudoMainActivity extends Activity {
     		HtmlViewerWindow.showWindow(this, help,getString(R.string.alert_help_label),R.drawable.ic_help);
     		return true;
     		
+    	case R.id.menu_changelog:
+    		// Convert HTML file in raw resource to string
+    	    String changelog = new java.util.Scanner(getResources().openRawResource(R.raw.changelog)).useDelimiter("\\A").next();
+    		HtmlViewerWindow.showWindow(this,changelog,getString(R.string.alert_changelog_label),R.drawable.ic_launcher);
+    		return true;
+    		
     	case R.id.menu_about:
     		String about = new java.util.Scanner(getResources().openRawResource(R.raw.about)).useDelimiter("\\A").next();
+            String version = "not defined";
+            try {
+            	version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+    		} catch (NameNotFoundException e) {
+    			// TODO Auto-generated catch block
+    			Toast.makeText(DudoMainActivity.this,getText(R.string.package_not_found),Toast.LENGTH_SHORT).show();
+    		}
     		HtmlViewerWindow.showWindow(this, about, getString(R.string.alert_about_label)+" - "+getString(R.string.version)+" "+version, R.drawable.ic_launcher);
     		return true;
     		

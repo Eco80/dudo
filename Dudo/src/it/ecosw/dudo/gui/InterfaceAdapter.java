@@ -160,10 +160,10 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 	}
 	
 	/**
-	 * Restart the match
+	 * New match
 	 * @param sorting true if the die shall be sort
 	 */
-	public void restart(){
+	public void newMatch(){
 		player.restoreAllDice(sorting);
    		fx.playSoundRoll();
 		fx.vibration();
@@ -279,7 +279,7 @@ public class InterfaceAdapter implements OnClickListener,OnLongClickListener,Ani
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 								case DialogInterface.BUTTON_POSITIVE:
-									restart();
+									newMatch();
 									break;
 								case DialogInterface.BUTTON_NEGATIVE:
 									break;

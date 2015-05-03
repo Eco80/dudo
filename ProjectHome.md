@@ -1,0 +1,4 @@
+Dudo (Spanish for I doubt), also known as Cacho, Pico, Perudo or Cachito is popular dice game played in Peru, Chile, Bolivia and other Latin American countries. It is a more specific version of a family of games collectively called Liar's Dice, which has many forms and variants. This game can be played by two or more players and consists of guessing how many dice, placed under cups, there are on the table showing a certain number. The player who loses a round loses one of their dice. The last player to still retain a die (or dice) is the winner.
+[source: wikipedia]
+
+Now Dudo app is available in f-droid.org repository!
